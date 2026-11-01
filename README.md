@@ -1,14 +1,18 @@
-# AMANA (أمانة): clinical-fidelity safety for English → Arabic medication translation
+# AMANA (أمانة): clinical meaning preservation in English → Arabic medication translation
 
 *Amana* means faithfulness to what you were entrusted with.
 
-A translated medication instruction can be fluent, score well on every MT metric, and still tell the
-patient to take **25 mg instead of 25 mcg**, to put drops in the **right** eye instead of the left,
-or to stop following a warning. AMANA asks three questions:
+A translated medication instruction can be fluent, get a strong MT score, and still tell the patient
+to take **25 mg instead of 25 mcg**, or to put drops in the **right** eye instead of the left. AMANA
+is a research framework, not a clinically validated safety system. It asks three questions:
 
-1. **Do standard MT metrics notice clinically critical errors in Arabic?** Mostly no.
-2. **Can a checker catch them, explain them, and run without a reference?** Yes, two are provided here.
-3. **How often do open MT systems make these errors, and can we fix it without retraining?**
+1. **Do standard MT metrics notice clinically critical errors in Arabic?** They can, but a harmless
+   rewording often costs more score than a dangerous one-word error.
+2. **Can a checker catch them, explain them, and run without a reference?** Partly. Two experimental
+   checkers are strong on the controlled benchmark and much weaker on independently written Arabic,
+   instructions with several drugs, and changes in meaning.
+3. **Do open MT systems make these errors, and can reranking help without retraining?** Yes on
+   generated instructions. Reranking helps only when a clean candidate exists.
 
 ![Which metrics notice a clinically critical translation error?](figures/metric_blindness.png)
 
