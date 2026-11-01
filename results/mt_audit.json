@@ -1,0 +1,115 @@
+{
+  "summary": {
+    "NLLB-200-600M": {
+      "1-best": {
+        "critical_flag_rate": 0.06333333333333334,
+        "qe_unsafe_rate": 0.13,
+        "chrF": 67.52357100529083,
+        "COMET-22": 0.877635239760081,
+        "n": 300
+      },
+      "Guard rerank": {
+        "critical_flag_rate": 0.016666666666666666,
+        "qe_unsafe_rate": 0.09666666666666666,
+        "chrF": 67.87581103190539,
+        "COMET-22": 0.8777843115727106,
+        "n": 300
+      },
+      "QE rerank": {
+        "critical_flag_rate": 0.02666666666666667,
+        "qe_unsafe_rate": 0.09,
+        "chrF": 68.69348662025534,
+        "COMET-22": 0.8809694574276606,
+        "n": 300
+      },
+      "Guard+QE rerank": {
+        "critical_flag_rate": 0.016666666666666666,
+        "qe_unsafe_rate": 0.09,
+        "chrF": 68.73412801795084,
+        "COMET-22": 0.881198469599088,
+        "n": 300
+      }
+    },
+    "OPUS-MT-en-ar": {
+      "1-best": {
+        "critical_flag_rate": 0.2733333333333333,
+        "qe_unsafe_rate": 0.27666666666666667,
+        "chrF": 74.43046868104153,
+        "COMET-22": 0.8615507678190867,
+        "n": 300
+      },
+      "Guard rerank": {
+        "critical_flag_rate": 0.25666666666666665,
+        "qe_unsafe_rate": 0.27666666666666667,
+        "chrF": 74.37522393306482,
+        "COMET-22": 0.8614863111575445,
+        "n": 300
+      },
+      "QE rerank": {
+        "critical_flag_rate": 0.31333333333333335,
+        "qe_unsafe_rate": 0.24666666666666667,
+        "chrF": 73.80873998586331,
+        "COMET-22": 0.8600451443592707,
+        "n": 300
+      },
+      "Guard+QE rerank": {
+        "critical_flag_rate": 0.25666666666666665,
+        "qe_unsafe_rate": 0.24666666666666667,
+        "chrF": 73.81687035958083,
+        "COMET-22": 0.8605170090993245,
+        "n": 300
+      }
+    },
+    "M2M100-418M": {
+      "1-best": {
+        "critical_flag_rate": 0.21333333333333335,
+        "qe_unsafe_rate": 0.21666666666666667,
+        "chrF": 66.23875818050712,
+        "COMET-22": 0.8388729317982991,
+        "n": 300
+      },
+      "Guard rerank": {
+        "critical_flag_rate": 0.14333333333333334,
+        "qe_unsafe_rate": 0.14666666666666667,
+        "chrF": 66.51004899407222,
+        "COMET-22": 0.8356280932823817,
+        "n": 300
+      },
+      "QE rerank": {
+        "critical_flag_rate": 0.14666666666666667,
+        "qe_unsafe_rate": 0.14,
+        "chrF": 66.56695912790106,
+        "COMET-22": 0.842031791806221,
+        "n": 300
+      },
+      "Guard+QE rerank": {
+        "critical_flag_rate": 0.14333333333333334,
+        "qe_unsafe_rate": 0.14,
+        "chrF": 66.58141274277354,
+        "COMET-22": 0.8420533883571625,
+        "n": 300
+      }
+    }
+  },
+  "flag_types_1best": {
+    "M2M100-418M": {
+      "omission": 57,
+      "drug": 6,
+      "unit": 5,
+      "dose": 3
+    },
+    "NLLB-200-600M": {
+      "omission": 19
+    },
+    "OPUS-MT-en-ar": {
+      "dose": 21,
+      "negation": 31,
+      "number": 18,
+      "drug": 4,
+      "unit": 18,
+      "duration": 1,
+      "timing": 3,
+      "omission": 2
+    }
+  }
+}

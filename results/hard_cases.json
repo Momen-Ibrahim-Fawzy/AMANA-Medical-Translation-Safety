@@ -1,0 +1,290 @@
+{
+  "errors_caught": [
+    6,
+    14
+  ],
+  "safe_accepted": [
+    0,
+    6
+  ],
+  "garbled_wrong_drug_accepted": {
+    "pairs": [
+      [
+        "amoxicillin",
+        "doxycycline"
+      ],
+      [
+        "cetirizine",
+        "trazodone"
+      ],
+      [
+        "ciprofloxacin",
+        "ofloxacin"
+      ],
+      [
+        "digoxin",
+        "hydroxyzine"
+      ],
+      [
+        "esomeprazole",
+        "omeprazole"
+      ],
+      [
+        "fluoxetine",
+        "ofloxacin"
+      ],
+      [
+        "glipizide",
+        "glimepiride"
+      ],
+      [
+        "hydralazine",
+        "hydroxyzine"
+      ],
+      [
+        "hydrocortisone",
+        "hydroxyzine"
+      ],
+      [
+        "hydroxyzine",
+        "hydrocortisone"
+      ],
+      [
+        "moxifloxacin",
+        "ofloxacin"
+      ],
+      [
+        "ofloxacin",
+        "fluoxetine"
+      ],
+      [
+        "omeprazole",
+        "esomeprazole"
+      ],
+      [
+        "prednisolone",
+        "prednisone"
+      ],
+      [
+        "prednisone",
+        "prednisolone"
+      ]
+    ],
+    "n": 15,
+    "of": 2450
+  },
+  "ci95_flag_rate": {
+    "NLLB-200-600M": {
+      "1-best": [
+        4.1,
+        9.7
+      ],
+      "Guard rerank": [
+        0.7,
+        3.8
+      ],
+      "QE rerank": [
+        1.4,
+        5.2
+      ],
+      "Guard+QE rerank": [
+        0.7,
+        3.8
+      ]
+    },
+    "OPUS-MT-en-ar": {
+      "1-best": [
+        22.6,
+        32.6
+      ],
+      "Guard rerank": [
+        21.1,
+        30.9
+      ],
+      "QE rerank": [
+        26.3,
+        36.8
+      ],
+      "Guard+QE rerank": [
+        21.1,
+        30.9
+      ]
+    },
+    "M2M100-418M": {
+      "1-best": [
+        17.1,
+        26.3
+      ],
+      "Guard rerank": [
+        10.8,
+        18.8
+      ],
+      "QE rerank": [
+        11.1,
+        19.1
+      ],
+      "Guard+QE rerank": [
+        10.8,
+        18.8
+      ]
+    }
+  },
+  "ci95_tico": {
+    "recall": [
+      93.0,
+      96.3
+    ],
+    "false_alarm": [
+      11.8,
+      15.4
+    ]
+  },
+  "cases": [
+    {
+      "case": "count/freq swap",
+      "should_flag": true,
+      "flags": [
+        "[dose] 1 tablet rendered as 2 tablet",
+        "[frequency] 2/day in source vs 1 in translation"
+      ],
+      "passed": true
+    },
+    {
+      "case": "2 drugs: doses swapped",
+      "should_flag": true,
+      "flags": [],
+      "passed": false
+    },
+    {
+      "case": "2 drugs: timing swapped",
+      "should_flag": true,
+      "flags": [],
+      "passed": false
+    },
+    {
+      "case": "2 drugs: frequency swapped",
+      "should_flag": true,
+      "flags": [
+        "[frequency] 1/day in source vs 2 in translation"
+      ],
+      "passed": true
+    },
+    {
+      "case": "negation scope: with vs without food",
+      "should_flag": true,
+      "flags": [
+        "[timing] ['with_food'] vs []"
+      ],
+      "passed": true
+    },
+    {
+      "case": "warning flipped, no negation word",
+      "should_flag": true,
+      "flags": [
+        "[negation] source is not negated, translation is"
+      ],
+      "passed": true
+    },
+    {
+      "case": "warning flipped 2",
+      "should_flag": true,
+      "flags": [],
+      "passed": false
+    },
+    {
+      "case": "wrong prohibition, same count",
+      "should_flag": true,
+      "flags": [],
+      "passed": false
+    },
+    {
+      "case": "condition dropped (only if pain)",
+      "should_flag": true,
+      "flags": [],
+      "passed": false
+    },
+    {
+      "case": "max dose changed",
+      "should_flag": true,
+      "flags": [
+        "[dose] 4 tablet rendered as 8 tablet"
+      ],
+      "passed": true
+    },
+    {
+      "case": "max dose to min dose",
+      "should_flag": true,
+      "flags": [],
+      "passed": false
+    },
+    {
+      "case": "garbled LASA partner: hydroxyzine",
+      "should_flag": true,
+      "flags": [
+        "[drug] ['hydralazine'] vs ['hydroxyzine']"
+      ],
+      "passed": true
+    },
+    {
+      "case": "garbled LASA partner: prednisone",
+      "should_flag": true,
+      "flags": [],
+      "passed": false
+    },
+    {
+      "case": "esomeprazole-like spelling for omeprazole",
+      "should_flag": true,
+      "flags": [],
+      "passed": false
+    },
+    {
+      "case": "SAFE: morning and evening = twice",
+      "should_flag": false,
+      "flags": [
+        "[frequency] 2/day in source vs None in translation",
+        "[timing] [] vs ['evening', 'morning']"
+      ],
+      "passed": false
+    },
+    {
+      "case": "SAFE: every 12 hours words",
+      "should_flag": false,
+      "flags": [
+        "[frequency] 2.0/day in source vs None in translation"
+      ],
+      "passed": false
+    },
+    {
+      "case": "SAFE: half tablet",
+      "should_flag": false,
+      "flags": [
+        "[dose] unexpected quantity 0.5 tablet in translation"
+      ],
+      "passed": false
+    },
+    {
+      "case": "SAFE: word order, dose phrase",
+      "should_flag": false,
+      "flags": [
+        "[frequency] 1/day in source vs None in translation"
+      ],
+      "passed": false
+    },
+    {
+      "case": "SAFE: for two weeks word",
+      "should_flag": false,
+      "flags": [
+        "[number] 14 missing or changed in translation"
+      ],
+      "passed": false
+    },
+    {
+      "case": "SAFE: do not forget prohibition style",
+      "should_flag": false,
+      "flags": [
+        "[negation] 1 prohibition(s) in source vs 0 in translation"
+      ],
+      "passed": false
+    }
+  ]
+}

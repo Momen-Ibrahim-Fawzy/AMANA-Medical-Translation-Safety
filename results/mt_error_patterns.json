@@ -1,0 +1,56 @@
+{
+  "NLLB-200-600M": {
+    "mcg_rendered_as_mg": {
+      "errors": 0,
+      "applicable": 18
+    },
+    "safety_warning_dropped": {
+      "errors": 19,
+      "applicable": 109
+    },
+    "glimepiride_as_contraceptive": {
+      "errors": 0,
+      "applicable": 26
+    },
+    "instill_as_still": {
+      "errors": 0,
+      "applicable": 44
+    }
+  },
+  "OPUS-MT-en-ar": {
+    "mcg_rendered_as_mg": {
+      "errors": 18,
+      "applicable": 18
+    },
+    "safety_warning_dropped": {
+      "errors": 2,
+      "applicable": 109
+    },
+    "glimepiride_as_contraceptive": {
+      "errors": 0,
+      "applicable": 26
+    },
+    "instill_as_still": {
+      "errors": 44,
+      "applicable": 44
+    }
+  },
+  "M2M100-418M": {
+    "mcg_rendered_as_mg": {
+      "errors": 2,
+      "applicable": 18
+    },
+    "safety_warning_dropped": {
+      "errors": 57,
+      "applicable": 109
+    },
+    "glimepiride_as_contraceptive": {
+      "errors": 5,
+      "applicable": 26
+    },
+    "instill_as_still": {
+      "errors": 0,
+      "applicable": 44
+    }
+  }
+}

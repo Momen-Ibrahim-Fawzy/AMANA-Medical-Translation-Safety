@@ -1,0 +1,14 @@
+{
+  "bench_test_heldout_drugs": {
+    "auroc": 0.9990226624555573,
+    "recall_at_0.5": 0.9734866634722887,
+    "false_alarm_at_0.5": 0.0,
+    "n_bad": 6261
+  },
+  "tico19_real_text": {
+    "auroc": 0.7974682775910595,
+    "recall_at_0.5": 0.9743954480796586,
+    "false_alarm_at_0.5": 0.7034139402560455,
+    "n_bad": 703
+  }
+}

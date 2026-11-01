@@ -1,0 +1,578 @@
+{
+  "BLEU": {
+    "contrastive_minimal": 0.2330246913580247,
+    "contrastive_matched": 0.9419753086419753,
+    "auroc": 0.7153014022252705,
+    "mean_score": {
+      "ref": 100.00000000000001,
+      "good": 71.95824896100221,
+      "bad_matched": 60.28763918845771
+    },
+    "per_type": {
+      "dose": {
+        "minimal": 0.15,
+        "matched": 0.9833333333333333
+      },
+      "drug": {
+        "minimal": 0.13,
+        "matched": 0.8366666666666667
+      },
+      "duration": {
+        "minimal": 0.19333333333333333,
+        "matched": 0.8833333333333333
+      },
+      "frequency": {
+        "minimal": 0.29333333333333333,
+        "matched": 0.97
+      },
+      "laterality": {
+        "minimal": 0.31666666666666665,
+        "matched": 1.0
+      },
+      "negation": {
+        "minimal": 0.16,
+        "matched": 1.0
+      },
+      "omission": {
+        "minimal": 0.7133333333333334,
+        "matched": 1.0
+      },
+      "route": {
+        "minimal": 0.21666666666666667,
+        "matched": 0.9533333333333334
+      },
+      "strength": {
+        "minimal": 0.09,
+        "matched": 0.8933333333333333
+      },
+      "timing": {
+        "minimal": 0.2,
+        "matched": 0.98
+      },
+      "unit": {
+        "minimal": 0.11666666666666667,
+        "matched": 0.8733333333333333
+      }
+    },
+    "critical_vs_benign_drop": 1.375005253368657
+  },
+  "chrF": {
+    "contrastive_minimal": 0.3570987654320988,
+    "contrastive_matched": 0.9854938271604938,
+    "auroc": 0.7775958314281358,
+    "mean_score": {
+      "ref": 100.0,
+      "good": 87.81165419520812,
+      "bad_matched": 79.6551444566221
+    },
+    "per_type": {
+      "dose": {
+        "minimal": 0.4533333333333333,
+        "matched": 0.9933333333333333
+      },
+      "drug": {
+        "minimal": 0.47333333333333333,
+        "matched": 1.0
+      },
+      "duration": {
+        "minimal": 0.26666666666666666,
+        "matched": 0.96
+      },
+      "frequency": {
+        "minimal": 0.44666666666666666,
+        "matched": 0.9966666666666667
+      },
+      "laterality": {
+        "minimal": 0.42916666666666664,
+        "matched": 1.0
+      },
+      "negation": {
+        "minimal": 0.11333333333333333,
+        "matched": 1.0
+      },
+      "omission": {
+        "minimal": 0.8933333333333333,
+        "matched": 1.0
+      },
+      "route": {
+        "minimal": 0.34,
+        "matched": 1.0
+      },
+      "strength": {
+        "minimal": 0.02,
+        "matched": 0.92
+      },
+      "timing": {
+        "minimal": 0.3466666666666667,
+        "matched": 1.0
+      },
+      "unit": {
+        "minimal": 0.16,
+        "matched": 0.9733333333333334
+      }
+    },
+    "critical_vs_benign_drop": 1.5910945938271184
+  },
+  "chrF++": {
+    "contrastive_minimal": 0.3287037037037037,
+    "contrastive_matched": 0.9854938271604938,
+    "auroc": 0.7702789208962048,
+    "mean_score": {
+      "ref": 100.0,
+      "good": 86.60807303404574,
+      "bad_matched": 78.27165563432193
+    },
+    "per_type": {
+      "dose": {
+        "minimal": 0.37333333333333335,
+        "matched": 0.9933333333333333
+      },
+      "drug": {
+        "minimal": 0.3933333333333333,
+        "matched": 1.0
+      },
+      "duration": {
+        "minimal": 0.2866666666666667,
+        "matched": 0.96
+      },
+      "frequency": {
+        "minimal": 0.41333333333333333,
+        "matched": 0.9966666666666667
+      },
+      "laterality": {
+        "minimal": 0.3958333333333333,
+        "matched": 1.0
+      },
+      "negation": {
+        "minimal": 0.14,
+        "matched": 1.0
+      },
+      "omission": {
+        "minimal": 0.8933333333333333,
+        "matched": 1.0
+      },
+      "route": {
+        "minimal": 0.28,
+        "matched": 1.0
+      },
+      "strength": {
+        "minimal": 0.02,
+        "matched": 0.92
+      },
+      "timing": {
+        "minimal": 0.29333333333333333,
+        "matched": 1.0
+      },
+      "unit": {
+        "minimal": 0.14,
+        "matched": 0.9733333333333334
+      }
+    },
+    "critical_vs_benign_drop": 1.5203776638894138
+  },
+  "TER (neg)": {
+    "contrastive_minimal": 0.262037037037037,
+    "contrastive_matched": 0.9330246913580247,
+    "auroc": 0.7142013412589544,
+    "mean_score": {
+      "ref": 0.0,
+      "good": -16.932103481908566,
+      "bad_matched": -25.523070356751294
+    },
+    "per_type": {
+      "dose": {
+        "minimal": 0.23333333333333334,
+        "matched": 0.9833333333333333
+      },
+      "drug": {
+        "minimal": 0.10666666666666667,
+        "matched": 0.8366666666666667
+      },
+      "duration": {
+        "minimal": 0.21,
+        "matched": 0.8833333333333333
+      },
+      "frequency": {
+        "minimal": 0.28,
+        "matched": 0.96
+      },
+      "laterality": {
+        "minimal": 0.25,
+        "matched": 1.0
+      },
+      "negation": {
+        "minimal": 0.33666666666666667,
+        "matched": 1.0
+      },
+      "omission": {
+        "minimal": 0.8366666666666667,
+        "matched": 1.0
+      },
+      "route": {
+        "minimal": 0.22666666666666666,
+        "matched": 0.8866666666666667
+      },
+      "strength": {
+        "minimal": 0.07333333333333333,
+        "matched": 0.8933333333333333
+      },
+      "timing": {
+        "minimal": 0.23333333333333334,
+        "matched": 0.96
+      },
+      "unit": {
+        "minimal": 0.09333333333333334,
+        "matched": 0.8733333333333333
+      }
+    },
+    "critical_vs_benign_drop": 1.4705882352941175
+  },
+  "BERTScore": {
+    "contrastive_minimal": 0.3074074074074074,
+    "contrastive_matched": 0.9555555555555556,
+    "auroc": 0.7485329980185947,
+    "mean_score": {
+      "ref": 0.9999999808308518,
+      "good": 0.9655002266904454,
+      "bad_matched": 0.9437776457748296
+    },
+    "per_type": {
+      "dose": {
+        "minimal": 0.41333333333333333,
+        "matched": 1.0
+      },
+      "drug": {
+        "minimal": 0.3466666666666667,
+        "matched": 1.0
+      },
+      "duration": {
+        "minimal": 0.12,
+        "matched": 0.8933333333333333
+      },
+      "frequency": {
+        "minimal": 0.19333333333333333,
+        "matched": 0.9933333333333333
+      },
+      "laterality": {
+        "minimal": 0.38333333333333336,
+        "matched": 1.0
+      },
+      "negation": {
+        "minimal": 0.37333333333333335,
+        "matched": 1.0
+      },
+      "omission": {
+        "minimal": 0.9133333333333333,
+        "matched": 1.0
+      },
+      "route": {
+        "minimal": 0.25333333333333335,
+        "matched": 0.96
+      },
+      "strength": {
+        "minimal": 0.02666666666666667,
+        "matched": 0.9133333333333333
+      },
+      "timing": {
+        "minimal": 0.29333333333333333,
+        "matched": 0.9066666666666666
+      },
+      "unit": {
+        "minimal": 0.08,
+        "matched": 0.8533333333333334
+      }
+    },
+    "critical_vs_benign_drop": 1.5733190927757938
+  },
+  "LaBSE-ref": {
+    "contrastive_minimal": 0.8290123456790124,
+    "contrastive_matched": 0.9969135802469136,
+    "auroc": 0.922329294314891,
+    "mean_score": {
+      "ref": 1.0000000293240134,
+      "good": 0.986969244664098,
+      "bad_matched": 0.948261014730842
+    },
+    "per_type": {
+      "dose": {
+        "minimal": 0.8866666666666667,
+        "matched": 1.0
+      },
+      "drug": {
+        "minimal": 0.9466666666666667,
+        "matched": 1.0
+      },
+      "duration": {
+        "minimal": 0.86,
+        "matched": 0.9933333333333333
+      },
+      "frequency": {
+        "minimal": 0.7866666666666666,
+        "matched": 1.0
+      },
+      "laterality": {
+        "minimal": 0.49166666666666664,
+        "matched": 1.0
+      },
+      "negation": {
+        "minimal": 0.92,
+        "matched": 1.0
+      },
+      "omission": {
+        "minimal": 0.96,
+        "matched": 1.0
+      },
+      "route": {
+        "minimal": 0.7266666666666667,
+        "matched": 1.0
+      },
+      "strength": {
+        "minimal": 0.9866666666666667,
+        "matched": 1.0
+      },
+      "timing": {
+        "minimal": 0.9,
+        "matched": 1.0
+      },
+      "unit": {
+        "minimal": 0.5866666666666667,
+        "matched": 0.9733333333333334
+      }
+    },
+    "critical_vs_benign_drop": 4.404286940087152
+  },
+  "LaBSE-QE": {
+    "contrastive_minimal": 0.8160493827160494,
+    "contrastive_matched": 0.9722222222222222,
+    "auroc": 0.8318701417466849,
+    "mean_score": {
+      "ref": 0.937107906922882,
+      "good": 0.9278111827226333,
+      "bad_matched": 0.8936977079253138
+    },
+    "per_type": {
+      "dose": {
+        "minimal": 0.8666666666666667,
+        "matched": 1.0
+      },
+      "drug": {
+        "minimal": 0.96,
+        "matched": 1.0
+      },
+      "duration": {
+        "minimal": 0.88,
+        "matched": 1.0
+      },
+      "frequency": {
+        "minimal": 0.7866666666666666,
+        "matched": 0.9666666666666667
+      },
+      "laterality": {
+        "minimal": 0.5666666666666667,
+        "matched": 0.9916666666666667
+      },
+      "negation": {
+        "minimal": 0.8733333333333333,
+        "matched": 1.0
+      },
+      "omission": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "route": {
+        "minimal": 0.7666666666666667,
+        "matched": 1.0
+      },
+      "strength": {
+        "minimal": 0.98,
+        "matched": 1.0
+      },
+      "timing": {
+        "minimal": 0.8266666666666667,
+        "matched": 0.94
+      },
+      "unit": {
+        "minimal": 0.42,
+        "matched": 0.8
+      }
+    },
+    "critical_vs_benign_drop": 5.151703131089002
+  },
+  "COMET-22": {
+    "contrastive_minimal": 0.46728395061728395,
+    "contrastive_matched": 0.9462962962962963,
+    "auroc": 0.7334567901234568,
+    "mean_score": {
+      "ref": 0.9521676296805158,
+      "good": 0.9198000683460706,
+      "bad_matched": 0.8896064790310683
+    },
+    "per_type": {
+      "dose": {
+        "minimal": 0.47333333333333333,
+        "matched": 0.9933333333333333
+      },
+      "drug": {
+        "minimal": 0.5666666666666667,
+        "matched": 0.9733333333333334
+      },
+      "duration": {
+        "minimal": 0.11333333333333333,
+        "matched": 0.9266666666666666
+      },
+      "frequency": {
+        "minimal": 0.31333333333333335,
+        "matched": 0.9733333333333334
+      },
+      "laterality": {
+        "minimal": 0.375,
+        "matched": 0.9833333333333333
+      },
+      "negation": {
+        "minimal": 0.94,
+        "matched": 1.0
+      },
+      "omission": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "route": {
+        "minimal": 0.7133333333333334,
+        "matched": 0.9733333333333334
+      },
+      "strength": {
+        "minimal": 0.006666666666666667,
+        "matched": 0.8333333333333334
+      },
+      "timing": {
+        "minimal": 0.4,
+        "matched": 0.9266666666666666
+      },
+      "unit": {
+        "minimal": 0.22,
+        "matched": 0.8333333333333334
+      }
+    },
+    "critical_vs_benign_drop": 1.6361750651170093
+  },
+  "AMANA-Guard (QE)": {
+    "contrastive_minimal": 1.0,
+    "contrastive_matched": 1.0,
+    "auroc": 1.0,
+    "mean_score": {
+      "ref": 1.0,
+      "good": 1.0,
+      "bad_matched": 0.49537037037037035
+    },
+    "per_type": {
+      "dose": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "drug": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "duration": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "frequency": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "laterality": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "negation": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "omission": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "route": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "strength": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "timing": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "unit": {
+        "minimal": 1.0,
+        "matched": 1.0
+      }
+    },
+    "critical_vs_benign_drop": 499999999.99999994
+  },
+  "_meta": {
+    "rows": 1620,
+    "per_type": 150,
+    "seed": 7,
+    "split": "test (held-out drugs)"
+  },
+  "AMANA-QE": {
+    "contrastive_minimal": 1.0,
+    "contrastive_matched": 1.0,
+    "auroc": 0.9992605928974242,
+    "mean_score": {
+      "ref": 0.9997963738294295,
+      "good": 0.9997818637409328,
+      "bad_matched": 0.018795746941438585
+    },
+    "per_type": {
+      "dose": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "drug": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "duration": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "frequency": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "laterality": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "negation": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "omission": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "route": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "strength": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "timing": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "unit": {
+        "minimal": 1.0,
+        "matched": 1.0
+      }
+    },
+    "critical_vs_benign_drop": 524158.47539520264
+  }
+}

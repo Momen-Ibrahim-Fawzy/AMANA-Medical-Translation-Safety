@@ -1,0 +1,26 @@
+{
+  "bench_test_heldout_drugs": {
+    "recall": 1.0,
+    "false_alarm": 0.0,
+    "n_bad": 6261,
+    "n_safe": 12522
+  },
+  "tico19_real_text": {
+    "recall": 0.9487908961593172,
+    "false_alarm": 0.13513513513513514,
+    "n_bad": 703,
+    "n_safe": 1406
+  },
+  "tico19_real_text/negation": {
+    "recall": 0.888,
+    "false_alarm": 0.224,
+    "n_bad": 125,
+    "n_safe": 250
+  },
+  "tico19_real_text/number": {
+    "recall": 0.9619377162629758,
+    "false_alarm": 0.11591695501730104,
+    "n_bad": 578,
+    "n_safe": 1156
+  }
+}

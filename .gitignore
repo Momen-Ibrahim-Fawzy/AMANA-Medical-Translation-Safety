@@ -1,0 +1,19 @@
+# private notes, plans and drafts (never pushed)
+_private/
+
+# data and model artefacts
+data/raw/
+data/cache/
+*.ckpt
+*.pt
+*.safetensors
+checkpoints/
+
+# python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ipynb_checkpoints/
+results/cache/
+results/log_*.txt
