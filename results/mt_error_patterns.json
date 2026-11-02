@@ -12,6 +12,10 @@
       "errors": 0,
       "applicable": 26
     },
+    "rash_as_stool": {
+      "errors": 0,
+      "applicable": 46
+    },
     "instill_as_still": {
       "errors": 0,
       "applicable": 44
@@ -30,6 +34,10 @@
       "errors": 0,
       "applicable": 26
     },
+    "rash_as_stool": {
+      "errors": 0,
+      "applicable": 46
+    },
     "instill_as_still": {
       "errors": 44,
       "applicable": 44
@@ -47,6 +55,10 @@
     "glimepiride_as_contraceptive": {
       "errors": 5,
       "applicable": 26
+    },
+    "rash_as_stool": {
+      "errors": 40,
+      "applicable": 46
     },
     "instill_as_still": {
       "errors": 0,

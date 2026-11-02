@@ -574,5 +574,62 @@
       }
     },
     "critical_vs_benign_drop": 524158.47539520264
+  },
+  "AMANA-Guard2 (QE)": {
+    "contrastive_minimal": 1.0,
+    "contrastive_matched": 1.0,
+    "auroc": 1.0,
+    "mean_score": {
+      "ref": 1.0,
+      "good": 1.0,
+      "bad_matched": 0.43919753086419755
+    },
+    "per_type": {
+      "dose": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "drug": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "duration": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "frequency": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "laterality": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "negation": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "omission": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "route": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "strength": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "timing": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "unit": {
+        "minimal": 1.0,
+        "matched": 1.0
+      }
+    },
+    "critical_vs_benign_drop": 499999999.99999994
   }
 }

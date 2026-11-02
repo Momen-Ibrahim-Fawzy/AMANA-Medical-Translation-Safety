@@ -1,0 +1,137 @@
+{
+  "baseline": {
+    "bench_test": {
+      "recall": 1.0,
+      "false_alarm": 0.0
+    },
+    "tico": {
+      "recall": 0.9488,
+      "false_alarm": 0.1351
+    },
+    "dev_hard_cases": {
+      "errors_caught": [
+        6,
+        14
+      ],
+      "safe_accepted": [
+        0,
+        6
+      ],
+      "missed_errors": [
+        "2 drugs: doses swapped",
+        "2 drugs: timing swapped",
+        "warning flipped 2",
+        "wrong prohibition, same count",
+        "condition dropped (only if pain)",
+        "max dose to min dose",
+        "garbled LASA partner: prednisone",
+        "esomeprazole-like spelling for omeprazole"
+      ],
+      "false_alarms": [
+        "SAFE: morning and evening = twice",
+        "SAFE: every 12 hours words",
+        "SAFE: half tablet",
+        "SAFE: word order, dose phrase",
+        "SAFE: for two weeks word",
+        "SAFE: do not forget prohibition style"
+      ]
+    },
+    "garbled_wrong_drug_accepted": 15,
+    "mt_1best": {
+      "M2M100-418M": {
+        "not_passed": 0.2133,
+        "flagged": 0.2133,
+        "flag_types": {
+          "omission": 57,
+          "drug": 6,
+          "unit": 5,
+          "dose": 3
+        },
+        "review_types": {}
+      },
+      "NLLB-200-600M": {
+        "not_passed": 0.0633,
+        "flagged": 0.0633,
+        "flag_types": {
+          "omission": 19
+        },
+        "review_types": {}
+      },
+      "OPUS-MT-en-ar": {
+        "not_passed": 0.2733,
+        "flagged": 0.2733,
+        "flag_types": {
+          "dose": 21,
+          "negation": 31,
+          "number": 18,
+          "drug": 4,
+          "unit": 18,
+          "duration": 1,
+          "timing": 3,
+          "omission": 2
+        },
+        "review_types": {}
+      }
+    }
+  },
+  "guard2": {
+    "bench_test": {
+      "recall": 1.0,
+      "false_alarm": 0.0
+    },
+    "tico": {
+      "recall": 0.9474,
+      "false_alarm": 0.138
+    },
+    "dev_hard_cases": {
+      "errors_caught": [
+        14,
+        14
+      ],
+      "safe_accepted": [
+        6,
+        6
+      ],
+      "missed_errors": [],
+      "false_alarms": []
+    },
+    "garbled_wrong_drug_accepted": 2,
+    "mt_1best": {
+      "M2M100-418M": {
+        "not_passed": 0.43,
+        "flagged": 0.43,
+        "flag_types": {
+          "omission": 125,
+          "drug": 6,
+          "unit": 5
+        },
+        "review_types": {
+          "dose": 3
+        }
+      },
+      "NLLB-200-600M": {
+        "not_passed": 0.0667,
+        "flagged": 0.0667,
+        "flag_types": {
+          "omission": 20
+        },
+        "review_types": {}
+      },
+      "OPUS-MT-en-ar": {
+        "not_passed": 0.25,
+        "flagged": 0.0967,
+        "flag_types": {
+          "drug": 9,
+          "unit": 18,
+          "omission": 1,
+          "negation": 1
+        },
+        "review_types": {
+          "action": 44,
+          "dose": 11,
+          "duration": 1
+        }
+      }
+    }
+  }
+}

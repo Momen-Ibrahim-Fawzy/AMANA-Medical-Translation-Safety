@@ -1,14 +1,20 @@
 {
   "bench_test_heldout_drugs": {
     "auroc": 0.9990226624555573,
+    "auprc_error_class": 0.9982037251656338,
+    "ece": 0.008632405856464263,
     "recall_at_0.5": 0.9734866634722887,
     "false_alarm_at_0.5": 0.0,
-    "n_bad": 6261
+    "n_bad": 6261,
+    "n_safe": 12522
   },
   "tico19_real_text": {
     "auroc": 0.7974682775910595,
+    "auprc_error_class": 0.6156639076821622,
+    "ece": 0.4640662712978399,
     "recall_at_0.5": 0.9743954480796586,
     "false_alarm_at_0.5": 0.7034139402560455,
-    "n_bad": 703
+    "n_bad": 703,
+    "n_safe": 1406
   }
 }

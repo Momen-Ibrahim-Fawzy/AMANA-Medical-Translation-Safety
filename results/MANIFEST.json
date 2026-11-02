@@ -1,0 +1,65 @@
+{
+ "code_revision_before_this_commit": "800177980450e027aded039c2a63b17f821d3563",
+ "python": "3.11.5",
+ "packages": {
+  "torch": "2.6.0+cu124",
+  "transformers": "4.57.1",
+  "unbabel-comet": "2.2.7",
+  "sacrebleu": "2.6.0",
+  "bert-score": "0.3.13",
+  "scikit-learn": "1.9.1",
+  "pandas": "3.0.6",
+  "numpy": "1.26.4",
+  "scipy": "1.17.1"
+ },
+ "mt_models": {
+  "NLLB-200-600M": {
+   "revision": "f8d333a098d19b4fd9a8b18f94170487ad3f821d",
+   "model": "facebook/nllb-200-distilled-600M",
+   "n": 300,
+   "seed": 5,
+   "nbest": 5,
+   "max_new_tokens": 160
+  },
+  "OPUS-MT-en-ar": {
+   "revision": "03087980e8ce753d64b3248ed0a912444545b840",
+   "model": "Helsinki-NLP/opus-mt-en-ar",
+   "n": 300,
+   "seed": 5,
+   "nbest": 5,
+   "max_new_tokens": 160
+  },
+  "M2M100-418M": {
+   "revision": "55c2e61bbf05dfb8d7abccdc3fae6fc8512fd636",
+   "model": "facebook/m2m100_418M",
+   "n": 300,
+   "seed": 5,
+   "nbest": 5,
+   "max_new_tokens": 160
+  }
+ },
+ "files": {
+  "data/processed/amana_bench.jsonl": "1c38ee82857395039ae77e8f15725b200f19ece27f3789bcc8e063894a4c03b1",
+  "data/processed/amana_tico.jsonl": "84dabf55fb94d331cbcbc7613d0e1d31b1cca24cde6670abff086ab7dcdda386",
+  "results/amana_qe_predictions.json": "fac04c1b8ab6359b9e5d3472a7dce23fe59e83f9f48ae6e28ab03a6acbad6ff0",
+  "results/amana_qe_summary.json": "b65a5943fd3790e5171d076615b4d1fee598775590821a9d46d0520332baa719",
+  "results/audit_set.jsonl": "5e1e342f2913db92762668516190ebe4f9ce57efd28bd47f38a1c3e362ffb9c6",
+  "results/guard2_dev.json": "a73cddb41e3635d46c73a3acd674c5aae6be4ee4123fa1d7277d6246bf959ecb",
+  "results/guard2_holdout.json": "48d7f29560fe18c14489eedf4b37ca1cf9f0f7ef436c8973927b82c59cd9f47f",
+  "results/guard2_holdout_run1_buggy.json": "6a0249d67406b7df5c24da4b044d8586ef388c0bd09acf5aadfc335a5ab00547",
+  "results/guard_summary.json": "882151bd213d5db343b2039407fa03e12552f039c0357871dee56620e8feaaba",
+  "results/hard_cases.json": "ab16c272db12e19ad0445b61d6d55f47848d2e259b6d39780a0000e5ae8dde3b",
+  "results/metric_audit.json": "f06aed40ce156fd4dac9723090045d899130daaf3870b22d49a7417dbab1cc9a",
+  "results/metric_stats.json": "7e7c98d9f06daa6b1c429ae4baf8be4bf535e7f2a1fb1a31f56523d286bf3095",
+  "results/mt_audit.json": "4f08549b0ab32b64a70f0251a4d8221fe1b56c3038b183835d6d557257fc413d",
+  "results/mt_error_patterns.json": "5c3f884d7353baf0236e0f88bf5c7390ef178828ba01a8508a03ecb5eb1535c3",
+  "results/mt_flagged_examples.jsonl": "a8b757ea2a7223075b296ef5ee61f21ee83fdcee2a7360499d59a1b3e0d93fde",
+  "results/mt_outputs.jsonl": "3323e30e77759b08bca29ae3e8ad3db4e90a3764853e74747884bd83c7e88cc0",
+  "results/mt_picks.jsonl": "de02a4822036068b81e170df770ad1be145fe96f1c179956cdee2be51d3dacda",
+  "results/qe_generalization_forms_seed13.json": "6ca9479b93547039a9b48ba4ed4746dc7841b1bc11948b94f640b0c508e53134",
+  "results/qe_generalization_forms_seed14.json": "d75d8cdc1e8fd5bdd17bc0e2b48850f93d00557cc95752c8e7bf7ced7d68e8dc",
+  "results/qe_generalization_types_seed13.json": "2f363c5bff911fb72c50b4ce0c5d8ee65fa01f43181bc526609a813a918473b2",
+  "results/qe_generalization_types_seed14.json": "93040c306f749003e7be483c348ca247a283eda4d62d13120b3bd7fdaabbfc52",
+  "data/hard_cases_holdout.jsonl": "db6ebbab36d5a48ec437171a20e458f45467925e1a1012def551c503502de80e"
+ }
+}

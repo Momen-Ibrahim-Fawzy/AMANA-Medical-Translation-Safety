@@ -86,6 +86,24 @@ reads free-form Arabic, not only the template, including:
 Outside medication instructions it falls back to two domain-general checks: number preservation
 and negation polarity.
 
+## 4b. AMANA-Guard 2 (relation-aware rules)
+
+`amana/guard.py` stays unchanged as the baseline. `amana/guard2.py` parses each side into a document of
+per-drug instructions (quantities, frequency, timing, route, duration, condition, limit) and warnings
+stored as (topic, polarity) over a closed list of 10 topics, and compares them. It reports two levels:
+
+- **flag**: a detected mismatch, such as `[strength] warfarin: 3 mg rendered as 75 mg`
+- **needs review**: the checker could not establish the meaning, such as no recognized dosing verb
+
+A translation passes only with neither. Text that is not a medication instruction falls back to the
+baseline's number and negation checks, so Guard 2 adds nothing on AMANA-TICO.
+
+**Evaluation tracks.** (1) Held-out drugs on AMANA-Bench, an upper bound. (2) A linguistic hold-out,
+`data/hard_cases_holdout.jsonl`: 20 errors and 20 safe paraphrases, frozen by SHA-256 before implementation
+and checked by `scripts/10_guard2_eval.py --holdout`. It was written by the same author and is not blind.
+It was scored on the first code and again after three later changes (two control-character bugs, one fuzzy matching change from development data). Both runs are reported, and it is now spent. (3) Real text
+with controlled errors, AMANA-TICO, which is development data for the guard.
+
 ## 5. AMANA-QE (learned, reference-free)
 
 A LaBSE cross-encoder fine-tuned to classify (source, translation) pairs as safe or critical.
@@ -96,22 +114,30 @@ A LaBSE cross-encoder fine-tuned to classify (source, translation) pairs as safe
   - held-out drugs
   - AMANA-TICO, real professional translations of COVID-19 and medical text with injected number
     and negation errors. This text is out of domain and never seen in training.
+  - unseen error types (unit, laterality, negation) and unseen dosage forms (eye drops, inhalers), left
+    out of training with `--exclude-types` and `--exclude-forms`, two seeds each
+
+The score is used for ranking and is not a calibrated probability. Expected calibration error is reported
+for each track.
 
 ## 6. Real MT audit and safety reranking
 
 300 generated AMANA-Bench instructions for test drugs (not real prescriptions) are translated with NLLB-200 (600M distilled), M2M100-418M and OPUS-MT
 en-ar. `06_mt_audit.py` also lists NLLB-200-1.3B, which can be added with
-`translate --systems NLLB-200-1.3B`. For each, the system keeps its 5-best beam candidates. Four
-strategies are compared:
+`translate --systems NLLB-200-1.3B`, though it was not run. For each, the system keeps its 5-best beam
+candidates. Five strategies are compared:
 
 | strategy | how the output is chosen |
 |---|---|
 | 1-best | the system's normal output |
 | Guard rerank | first candidate with no flags |
 | QE rerank | highest AMANA-QE score |
-| Guard+QE rerank | among guard-clean candidates, the highest QE |
+| Guard+QE rerank | among baseline-clean candidates, the highest QE |
+| Guard2+QE rerank | among candidates Guard 2 passes, the highest QE; otherwise the 1-best |
 
-Each strategy is reported with its flagged-critical rate, chrF and COMET-22 against the reference.
+Each strategy is reported with both checkers' rates, AMANA-QE's unsafe share, chrF and COMET-22 against the
+reference. QE rerank judged by Guard 2 and Guard 2 + QE judged by AMANA-QE are the cross-checks, because a
+checker judging its own choice is partly circular.
 
 **Manual review.** A sample of flagged 1-best outputs was read by hand before the numbers were
 reported. The
@@ -133,14 +159,19 @@ flag rates are not a held-out result.
 - The guard was developed against the template vocabulary. Its numbers on AMANA-Bench are an upper
   bound. False alarms on TICO-19 references also led to guard fixes, so TICO-19 is development data
   for the guard, not an independent test. (It is unseen for AMANA-QE.)
-- The guard compares flat slots. It loses the links between a drug and its dose, timing or condition,
-  and does not read warning content. `scripts/09_hard_cases.py` documents these failures.
+- The baseline guard compares flat slots. `scripts/09_hard_cases.py` documents the resulting failures.
+  Guard 2 keeps those links but is still rule-based, with a closed vocabulary of drugs and warning topics.
+  It passes the 20 development hard cases because it was built on them.
+- The linguistic hold-out has the same author as the checker. The next test needs another author.
 - In the MT audit the guard is both reranker and judge for "Guard rerank". Rates for that strategy
   are therefore paired with AMANA-QE as a second judge (whose threshold is uncalibrated on real
   text), and with a manually reviewed sample.
 - AMANA-QE is trained on template text only. It ranks real TICO-19 translations reasonably
   (AUROC 0.80) but its 0.5 threshold does not transfer: most safe real sentences fall below it.
-  It is used for ranking candidates, not as a pass/fail gate. Its held-out split separates drugs,
-  not sentence templates or error generators.
+  It is used for ranking candidates, not as a pass/fail gate. On error types left out of training, its
+  AUROC is 0.67–0.71, so it has learned the generator to a large degree. Two seeds per track are too few to
+  measure variance well.
+- Bootstrap intervals resample pairs, and pairs from similar instructions are not fully independent.
+- There are no severity tiers, and no clinician has reviewed any result.
 - Arabic only, in Modern Standard Arabic. Dialectal patient-facing Arabic is future work.
 - This is a research tool. It is not a medical device and not prescribing guidance.

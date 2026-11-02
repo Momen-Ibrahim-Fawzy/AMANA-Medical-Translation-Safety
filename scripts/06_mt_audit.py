@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from amana.guard import check  # noqa: E402
+from amana.guard2 import check as check2  # noqa: E402
 
 OUT = ROOT / "results" / "mt_outputs.jsonl"
 SYSTEMS = {
@@ -126,14 +127,21 @@ def cmd_evaluate(args):
         r["qe"] = [float(x) for x in qe_flat[k:k + n]]
         k += n
         r["reports"] = [check(r["src_en"], c) for c in r["cands"]]
+        r["reports2"] = [check2(r["src_en"], c) for c in r["cands"]]
         r["pick"] = {
             "1-best": 0,
             "Guard rerank": next((i for i, rep in enumerate(r["reports"]) if rep.ok), 0),
             "QE rerank": int(np.argmax(r["qe"])) if qe else 0,
             "Guard+QE rerank": (max((i for i, rep in enumerate(r["reports"]) if rep.ok), key=lambda i: r["qe"][i],
                                     default=int(np.argmax(r["qe"])) if qe else 0)),
+            "Guard2+QE rerank": (max((i for i, rep in enumerate(r["reports2"]) if rep.ok), key=lambda i: r["qe"][i],
+                                     default=0)),
         }
-    strategies = ["1-best", "Guard rerank", "QE rerank", "Guard+QE rerank"]
+    strategies = ["1-best", "Guard rerank", "QE rerank", "Guard+QE rerank", "Guard2+QE rerank"]
+    with (ROOT / "results" / "mt_picks.jsonl").open("w", encoding="utf-8") as f:
+        for r in rows:
+            f.write(json.dumps({"system": r["system"], "base_id": r["base_id"], "src_en": r["src_en"], "cands": r["cands"],
+                                "pick": r["pick"]}, ensure_ascii=False) + "\n")
     picks = [(r, s, r["cands"][r["pick"][s]]) for r in rows for s in strategies]
     srcs, hyps, refs = zip(*[(r["src_en"], h, r["ref_ar"]) for r, _, h in picks])
     chrf_s = chrf(srcs, hyps, refs)
@@ -141,7 +149,9 @@ def cmd_evaluate(args):
     table, examples = [], []
     for (r, s, h), c1, c2 in zip(picks, chrf_s, comet_s):
         rep = r["reports"][r["pick"][s]]
+        rep2 = r["reports2"][r["pick"][s]]
         table.append({"system": r["system"], "strategy": s, "guard_flagged": not rep.ok,
+                      "guard2_not_passed": not rep2.ok, "guard2_flagged": bool(rep2.flags),
                       "flag_types": [f.kind for f in rep.flags], "qe": r["qe"][r["pick"][s]],
                       "chrF": c1, "COMET-22": c2, "any_clean_candidate": any(x.ok for x in r["reports"])})
         if s == "1-best" and not rep.ok:
@@ -153,6 +163,8 @@ def cmd_evaluate(args):
     for (sysname, strat), g in t.groupby(["system", "strategy"], sort=False):
         summary.setdefault(sysname, {})[strat] = {
             "critical_flag_rate": float(g.guard_flagged.mean()),
+            "guard2_not_passed_rate": float(g.guard2_not_passed.mean()),
+            "guard2_flag_rate": float(g.guard2_flagged.mean()),
             "qe_unsafe_rate": float((g.qe < 0.5).mean()) if qe else None,
             "chrF": float(g.chrF.mean()), "COMET-22": float(g["COMET-22"].mean()),
             "n": int(len(g)),
@@ -166,7 +178,7 @@ def cmd_evaluate(args):
     for sysname, d in summary.items():
         print(sysname)
         for strat, v in d.items():
-            print(f"   {strat:16s} flagged={v['critical_flag_rate']:.3f} qe_unsafe={v['qe_unsafe_rate']} "
+            print(f"   {strat:16s} guard1={v['critical_flag_rate']:.3f} guard2={v['guard2_not_passed_rate']:.3f} qe_unsafe={v['qe_unsafe_rate']} "
                   f"chrF={v['chrF']:.1f} COMET={v['COMET-22']:.4f}")
     print(json.dumps(by_type, indent=1))
 

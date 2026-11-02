@@ -1,0 +1,52 @@
+{
+  "baseline": {
+    "errors_caught": [
+      13,
+      20
+    ],
+    "safe_accepted": [
+      10,
+      20
+    ],
+    "missed_errors": [
+      "h01",
+      "h03",
+      "h06",
+      "h07",
+      "h10",
+      "h14",
+      "h20"
+    ],
+    "false_alarms": [
+      "s02",
+      "s03",
+      "s05",
+      "s06",
+      "s08",
+      "s09",
+      "s10",
+      "s11",
+      "s13",
+      "s17"
+    ]
+  },
+  "guard2": {
+    "errors_caught": [
+      20,
+      20
+    ],
+    "safe_accepted": [
+      14,
+      20
+    ],
+    "missed_errors": [],
+    "false_alarms": [
+      "s05",
+      "s06",
+      "s08",
+      "s09",
+      "s10",
+      "s13"
+    ]
+  }
+}

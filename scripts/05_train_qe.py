@@ -1,9 +1,16 @@
-"""AMANA-QE: a reference-free cross-encoder that scores P(translation is clinically safe | source, translation).
+"""AMANA-QE: a reference-free cross-encoder that gives a (source, translation) pair a safety score.
+
+The score is a model output, not a calibrated clinical probability.
 
 Trained only on TRAIN-split drugs of AMANA-Bench. Evaluated on held-out drugs (test split) and on
 real TICO-19 sentences (out of domain: never seen in training).
 
     python scripts/05_train_qe.py --epochs 2
+    python scripts/05_train_qe.py --eval-only
+    python scripts/05_train_qe.py --exclude-types unit laterality negation --tag types --seed 13
+
+With --exclude-types or --exclude-forms, those error types or dosage forms are left out of training
+and the model is scored only on them. Nothing is saved except the summary.
 """
 from __future__ import annotations
 
@@ -16,7 +23,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import torch
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import average_precision_score, roc_auc_score
 from torch.utils.data import DataLoader
 from transformers import AutoModelForSequenceClassification, AutoTokenizer, get_linear_schedule_with_warmup
 
@@ -52,9 +59,24 @@ def predict(model, tok, src, hyp, device, bs=64) -> np.ndarray:
     return np.concatenate(scores) if scores else np.array([])
 
 
+def expected_calibration_error(y: np.ndarray, p: np.ndarray, bins: int = 10) -> float:
+    edges = np.minimum((p * bins).astype(int), bins - 1)
+    return float(sum((edges == b).mean() * abs(y[edges == b].mean() - p[edges == b].mean())
+                     for b in range(bins) if (edges == b).any()))
+
+
+def score_block(safe: np.ndarray, bad: np.ndarray) -> dict:
+    y = np.r_[np.ones(len(safe)), np.zeros(len(bad))]
+    sc = np.r_[safe, bad]
+    return {"auroc": float(roc_auc_score(y, sc)), "auprc_error_class": float(average_precision_score(1 - y, 1 - sc)),
+            "ece": expected_calibration_error(y, sc), "recall_at_0.5": float((bad < 0.5).mean()),
+            "false_alarm_at_0.5": float((safe < 0.5).mean()), "n_bad": int(len(bad)), "n_safe": int(len(safe))}
+
+
 def fit(args, bench, rng, device):
-    train = pairs(bench[bench.split == "train"], rng)
-    dev = pairs(bench[bench.split == "dev"], rng)
+    keep = ~bench.error_type.isin(args.exclude_types) & ~bench.form.isin(args.exclude_forms)
+    train = pairs(bench[(bench.split == "train") & keep], rng)
+    dev = pairs(bench[(bench.split == "dev") & keep], rng)
     print(f"train pairs {len(train)}  dev pairs {len(dev)}  device {device}")
 
     tok = AutoTokenizer.from_pretrained(args.model)
@@ -90,9 +112,10 @@ def fit(args, bench, rng, device):
         p = predict(model, tok, list(s), list(h), device)
         print(f"epoch {ep} dev AUROC {roc_auc_score(y, p):.4f}  acc {((p > 0.5) == np.array(y)).mean():.4f}")
 
-    Path(args.out).mkdir(parents=True, exist_ok=True)
-    model.save_pretrained(args.out)
-    tok.save_pretrained(args.out)
+    if not args.tag:
+        Path(args.out).mkdir(parents=True, exist_ok=True)
+        model.save_pretrained(args.out)
+        tok.save_pretrained(args.out)
     return tok, model
 
 
@@ -105,6 +128,9 @@ def main():
     ap.add_argument("--seed", type=int, default=13)
     ap.add_argument("--out", default=str(ROOT / "checkpoints" / "amana-qe"))
     ap.add_argument("--eval-only", action="store_true", help="score with the saved checkpoint")
+    ap.add_argument("--exclude-types", nargs="*", default=[])
+    ap.add_argument("--exclude-forms", nargs="*", default=[])
+    ap.add_argument("--tag", default="")
     args = ap.parse_args()
 
     torch.manual_seed(args.seed)
@@ -117,6 +143,19 @@ def main():
     else:
         tok, model = fit(args, bench, rng, device)
 
+    if args.tag:
+        test = bench[bench.split == "test"]
+        unseen = test[test.error_type.isin(args.exclude_types) | test.form.isin(args.exclude_forms)]
+        safe_rows = test[test.form.isin(args.exclude_forms)] if args.exclude_forms else test
+        safe_pairs = safe_rows.drop_duplicates("base_id")
+        safe = np.r_[predict(model, tok, safe_pairs.src_en.tolist(), safe_pairs.ref_ar.tolist(), device),
+                     predict(model, tok, safe_pairs.src_en.tolist(), safe_pairs.good_ar.tolist(), device)]
+        bad = predict(model, tok, unseen.src_en.tolist(), unseen.bad_matched_ar.tolist(), device)
+        out = {"excluded_types": args.exclude_types, "excluded_forms": args.exclude_forms, "seed": args.seed,
+               **score_block(safe, bad)}
+        (ROOT / "results" / f"qe_generalization_{args.tag}_seed{args.seed}.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
+        print(out)
+        return
     # predictions for every (src, hyp) the audits need: held-out test drugs + TICO-19
     tico = pd.read_json(ROOT / "data" / "processed" / "amana_tico.jsonl", lines=True)
     test = bench[bench.split == "test"]
@@ -133,10 +172,7 @@ def main():
         safe = np.r_[[preds[f"{r.src_en}\t{r.ref_ar}"] for r in d.itertuples()],
                      [preds[f"{r.src_en}\t{r.good_ar}"] for r in d.itertuples()]]
         bad = np.array([preds[f"{r.src_en}\t{r.bad_matched_ar}"] for r in d.itertuples()])
-        y = np.r_[np.ones(len(safe)), np.zeros(len(bad))]
-        sc = np.r_[safe, bad]
-        summary[name] = {"auroc": float(roc_auc_score(y, sc)), "recall_at_0.5": float((bad < 0.5).mean()),
-                         "false_alarm_at_0.5": float((safe < 0.5).mean()), "n_bad": int(len(bad))}
+        summary[name] = score_block(safe, bad)
         print(name, summary[name])
     (ROOT / "results" / "amana_qe_summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
 

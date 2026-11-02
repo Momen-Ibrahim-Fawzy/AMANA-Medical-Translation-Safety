@@ -88,12 +88,17 @@ def amana_guard(srcs, hyps, refs):
     return [check(s, h).score for s, h in zip(srcs, hyps)]
 
 
+def amana_guard2(srcs, hyps, refs):
+    from .guard2 import check
+    return [check(s, h).score for s, h in zip(srcs, hyps)]
+
+
 METRICS = {
     "BLEU": bleu, "chrF": chrf, "chrF++": chrfpp, "TER (neg)": ter, "BERTScore": bertscore,
     "LaBSE-ref": labse_ref, "LaBSE-QE": labse_qe, "COMET-22": comet22, "CometKiwi-22 (QE)": cometkiwi,
-    "AMANA-Guard (QE)": amana_guard,
+    "AMANA-Guard (QE)": amana_guard, "AMANA-Guard2 (QE)": amana_guard2,
 }
-REFERENCE_FREE = {"LaBSE-QE", "CometKiwi-22 (QE)", "AMANA-Guard (QE)", "AMANA-QE"}
+REFERENCE_FREE = {"LaBSE-QE", "CometKiwi-22 (QE)", "AMANA-Guard (QE)", "AMANA-Guard2 (QE)", "AMANA-QE"}
 
 
 def contrastive_accuracy(good: np.ndarray, bad: np.ndarray) -> float:

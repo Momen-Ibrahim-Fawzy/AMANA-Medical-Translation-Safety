@@ -3,90 +3,141 @@
     "NLLB-200-600M": {
       "1-best": {
         "critical_flag_rate": 0.06333333333333334,
+        "guard2_not_passed_rate": 0.06666666666666667,
+        "guard2_flag_rate": 0.06666666666666667,
         "qe_unsafe_rate": 0.13,
         "chrF": 67.52357100529083,
-        "COMET-22": 0.877635239760081,
+        "COMET-22": 0.8776352381706238,
         "n": 300
       },
       "Guard rerank": {
         "critical_flag_rate": 0.016666666666666666,
+        "guard2_not_passed_rate": 0.03,
+        "guard2_flag_rate": 0.03,
         "qe_unsafe_rate": 0.09666666666666666,
         "chrF": 67.87581103190539,
-        "COMET-22": 0.8777843115727106,
+        "COMET-22": 0.8777843058109284,
         "n": 300
       },
       "QE rerank": {
         "critical_flag_rate": 0.02666666666666667,
+        "guard2_not_passed_rate": 0.03666666666666667,
+        "guard2_flag_rate": 0.02666666666666667,
         "qe_unsafe_rate": 0.09,
         "chrF": 68.69348662025534,
-        "COMET-22": 0.8809694574276606,
+        "COMET-22": 0.880969449877739,
         "n": 300
       },
       "Guard+QE rerank": {
         "critical_flag_rate": 0.016666666666666666,
+        "guard2_not_passed_rate": 0.02666666666666667,
+        "guard2_flag_rate": 0.02666666666666667,
         "qe_unsafe_rate": 0.09,
         "chrF": 68.73412801795084,
-        "COMET-22": 0.881198469599088,
+        "COMET-22": 0.8811984644333521,
+        "n": 300
+      },
+      "Guard2+QE rerank": {
+        "critical_flag_rate": 0.023333333333333334,
+        "guard2_not_passed_rate": 0.023333333333333334,
+        "guard2_flag_rate": 0.023333333333333334,
+        "qe_unsafe_rate": 0.09666666666666666,
+        "chrF": 68.6837866814269,
+        "COMET-22": 0.8809347548087438,
         "n": 300
       }
     },
     "OPUS-MT-en-ar": {
       "1-best": {
         "critical_flag_rate": 0.2733333333333333,
+        "guard2_not_passed_rate": 0.25,
+        "guard2_flag_rate": 0.09666666666666666,
         "qe_unsafe_rate": 0.27666666666666667,
         "chrF": 74.43046868104153,
-        "COMET-22": 0.8615507678190867,
+        "COMET-22": 0.8615507558981578,
         "n": 300
       },
       "Guard rerank": {
         "critical_flag_rate": 0.25666666666666665,
+        "guard2_not_passed_rate": 0.24666666666666667,
+        "guard2_flag_rate": 0.09333333333333334,
         "qe_unsafe_rate": 0.27666666666666667,
         "chrF": 74.37522393306482,
-        "COMET-22": 0.8614863111575445,
+        "COMET-22": 0.8614863083759944,
         "n": 300
       },
       "QE rerank": {
         "critical_flag_rate": 0.31333333333333335,
+        "guard2_not_passed_rate": 0.2733333333333333,
+        "guard2_flag_rate": 0.08666666666666667,
         "qe_unsafe_rate": 0.24666666666666667,
         "chrF": 73.80873998586331,
-        "COMET-22": 0.8600451443592707,
+        "COMET-22": 0.8600451664129893,
         "n": 300
       },
       "Guard+QE rerank": {
         "critical_flag_rate": 0.25666666666666665,
+        "guard2_not_passed_rate": 0.25,
+        "guard2_flag_rate": 0.08,
         "qe_unsafe_rate": 0.24666666666666667,
         "chrF": 73.81687035958083,
-        "COMET-22": 0.8605170090993245,
+        "COMET-22": 0.8605170108874639,
+        "n": 300
+      },
+      "Guard2+QE rerank": {
+        "critical_flag_rate": 0.2866666666666667,
+        "guard2_not_passed_rate": 0.24666666666666667,
+        "guard2_flag_rate": 0.09333333333333334,
+        "qe_unsafe_rate": 0.2633333333333333,
+        "chrF": 74.17043409186999,
+        "COMET-22": 0.8587194279829661,
         "n": 300
       }
     },
     "M2M100-418M": {
       "1-best": {
         "critical_flag_rate": 0.21333333333333335,
+        "guard2_not_passed_rate": 0.43,
+        "guard2_flag_rate": 0.43,
         "qe_unsafe_rate": 0.21666666666666667,
         "chrF": 66.23875818050712,
-        "COMET-22": 0.8388729317982991,
+        "COMET-22": 0.8388729631900788,
         "n": 300
       },
       "Guard rerank": {
         "critical_flag_rate": 0.14333333333333334,
+        "guard2_not_passed_rate": 0.42,
+        "guard2_flag_rate": 0.42,
         "qe_unsafe_rate": 0.14666666666666667,
         "chrF": 66.51004899407222,
-        "COMET-22": 0.8356280932823817,
+        "COMET-22": 0.8356281232833862,
         "n": 300
       },
       "QE rerank": {
         "critical_flag_rate": 0.14666666666666667,
+        "guard2_not_passed_rate": 0.4266666666666667,
+        "guard2_flag_rate": 0.42333333333333334,
         "qe_unsafe_rate": 0.14,
         "chrF": 66.56695912790106,
-        "COMET-22": 0.842031791806221,
+        "COMET-22": 0.8420318094889323,
         "n": 300
       },
       "Guard+QE rerank": {
         "critical_flag_rate": 0.14333333333333334,
+        "guard2_not_passed_rate": 0.4266666666666667,
+        "guard2_flag_rate": 0.42333333333333334,
         "qe_unsafe_rate": 0.14,
         "chrF": 66.58141274277354,
-        "COMET-22": 0.8420533883571625,
+        "COMET-22": 0.8420533937215805,
+        "n": 300
+      },
+      "Guard2+QE rerank": {
+        "critical_flag_rate": 0.20333333333333334,
+        "guard2_not_passed_rate": 0.42,
+        "guard2_flag_rate": 0.42,
+        "qe_unsafe_rate": 0.20333333333333334,
+        "chrF": 66.43254490952428,
+        "COMET-22": 0.8382896318038304,
         "n": 300
       }
     }

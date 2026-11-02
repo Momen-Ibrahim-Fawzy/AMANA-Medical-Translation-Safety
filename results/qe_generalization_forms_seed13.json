@@ -1,0 +1,15 @@
+{
+  "excluded_types": [],
+  "excluded_forms": [
+    "eye_drop",
+    "inhaler"
+  ],
+  "seed": 13,
+  "auroc": 0.8528373015873015,
+  "auprc_error_class": 0.9651223720423956,
+  "ece": 0.2604567469537465,
+  "recall_at_0.5": 0.8559523809523809,
+  "false_alarm_at_0.5": 0.6958333333333333,
+  "n_bad": 840,
+  "n_safe": 240
+}

@@ -40,7 +40,7 @@ def _params():
         yield pytest.param(should_flag, src, hyp, id=name, marks=marks)
 
 
-@pytest.mark.parametrize("should_flag,src,hyp", _params())
+@pytest.mark.parametrize("should_flag,src,hyp", list(_params()))
 def test_hard_case(should_flag, src, hyp):
     assert bool(check(src, hyp).flags) == should_flag
 

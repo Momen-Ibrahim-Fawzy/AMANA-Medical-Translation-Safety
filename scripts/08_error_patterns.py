@@ -23,6 +23,8 @@ PATTERNS = {
                                lambda r, rep: any(f.kind == "omission" for f in rep.flags)),
     "glimepiride_as_contraceptive": (lambda r, rep: "glimepiride" in r["src_en"],
                                      lambda r, rep: "منع الحمل" in r["cands"][0]),
+    "rash_as_stool": (lambda r, rep: "rash" in r["src_en"],
+                      lambda r, rep: "البراز" in r["cands"][0]),
     "instill_as_still": (lambda r, rep: r["src_en"].startswith("Instill"),
                          lambda r, rep: bool(re.search("لا [تي]زال", r["cands"][0]))),
 }

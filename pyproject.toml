@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "amana"
+version = "0.2.0"
+description = "Research framework for clinical meaning preservation in English to Arabic medication translation."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Momen Ibrahim Fawzy" }]
+dependencies = []  # the checkers use the standard library only; requirements.txt covers the experiments
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[tool.setuptools]
+packages = ["amana"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

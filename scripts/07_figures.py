@@ -23,24 +23,29 @@ def is_ours(name: str) -> bool:
 
 
 def fig_blindness(audit: dict):
-    names = [k for k in audit if not k.startswith("_")]
+    names = [k for k in audit if not k.startswith("_") and not is_ours(k)]
     names.sort(key=lambda k: audit[k]["contrastive_minimal"])
-    vals = [audit[k]["contrastive_minimal"] for k in names]
-    fig, ax = plt.subplots(figsize=(7.2, 0.42 * len(names) + 1.2))
     y = np.arange(len(names))
-    ax.barh(y, vals, height=0.62, color=[BLUE if is_ours(n) else GRAY for n in names])
+    h = 0.36
+    fig, ax = plt.subplots(figsize=(7.4, 0.62 * len(names) + 1.5))
+    series = (("contrastive_minimal", BLUE, "Safe translation reworded, error sentence close to the reference"),
+              ("contrastive_matched", GRAY, "Both share the same wording"))
+    for (key, color, label), off in zip(series, (h / 2 + 0.01, -h / 2 - 0.01)):
+        vals = [audit[k][key] for k in names]
+        ax.barh(y + off, vals, height=h, color=color, label=label)
+        for yi, v in zip(y + off, vals):
+            ax.text(v + 0.01, yi, f"{v:.0%}", va="center", fontsize=8.5, color=INK)
     ax.axvline(0.5, color=MUTED, lw=1, ls=(0, (3, 3)))
-    ax.text(0.505, -0.75, "coin flip", color=MUTED, fontsize=8, va="bottom")
-    for yi, v in zip(y, vals):
-        ax.text(v + 0.01, yi, f"{v:.0%}", va="center", fontsize=9, color=INK)
+    ax.text(0.505, -0.82, "coin flip", color=MUTED, fontsize=8, va="bottom")
     ax.set_yticks(y, names)
-    ax.set_ylim(-0.9, len(names) - 0.5)
-    ax.set_xlim(0, 1.08)
+    ax.set_ylim(-0.9, len(names) + 0.35)
+    ax.set_xlim(0, 1.1)
     ax.xaxis.set_major_formatter(lambda x, _: f"{x:.0%}")
     ax.grid(axis="x", color=GRID, lw=0.8)
     ax.set_axisbelow(True)
-    ax.set_xlabel("How often the metric scores the safe translation above the dangerous one")
-    ax.set_title("Which metrics notice a clinically critical translation error?", loc="left",
+    ax.set_xlabel("How often the metric scores the safe translation above the one with a clinical error")
+    ax.legend(frameon=True, facecolor="white", edgecolor="none", framealpha=1, fontsize=8.5, loc="upper center", ncol=1)
+    ax.set_title("A harmless rewording can cost more score than a clinical error", loc="left",
                  color=INK, fontsize=11.5, fontweight="bold")
     fig.tight_layout()
     fig.savefig(FIG / "metric_blindness.png")
@@ -48,7 +53,7 @@ def fig_blindness(audit: dict):
 
 
 def fig_heatmap(audit: dict):
-    names = [k for k in audit if not k.startswith("_")]
+    names = [k for k in audit if not k.startswith("_") and not is_ours(k)]
     names.sort(key=lambda k: audit[k]["contrastive_minimal"])
     types = [t for t in ERROR_ORDER if t in audit[names[0]]["per_type"]]
     m = np.array([[audit[n]["per_type"][t]["minimal"] for t in types] for n in names])
@@ -75,24 +80,24 @@ def fig_heatmap(audit: dict):
 
 def fig_mt(mt: dict):
     systems = sorted(mt["summary"], key=lambda s: -mt["summary"][s]["1-best"]["chrF"])
-    before = [mt["summary"][s]["1-best"]["critical_flag_rate"] for s in systems]
-    after = [mt["summary"][s]["Guard+QE rerank"]["critical_flag_rate"] for s in systems]
+    before = [mt["summary"][s]["1-best"]["guard2_not_passed_rate"] for s in systems]
+    after = [mt["summary"][s]["Guard2+QE rerank"]["guard2_not_passed_rate"] for s in systems]
     fig, ax = plt.subplots(figsize=(7.2, 3.6))
     x = np.arange(len(systems))
     w = 0.36
     ax.bar(x - w / 2 - 0.01, before, w, color=GRAY, label="Standard output (1-best)")
-    ax.bar(x + w / 2 + 0.01, after, w, color=BLUE, label="AMANA safety reranking (same 5 candidates)")
+    ax.bar(x + w / 2 + 0.01, after, w, color=BLUE, label="Reranked among the same 5 candidates")
     for xi, b, a in zip(x, before, after):
         ax.text(xi - w / 2, b + 0.01, f"{b:.0%}", ha="center", fontsize=9, color=INK)
         ax.text(xi + w / 2, a + 0.01, f"{a:.0%}", ha="center", fontsize=9, color=INK)
     ax.set_xticks(x, [f"{s}\nchrF {mt['summary'][s]['1-best']['chrF']:.1f}" for s in systems])
     ax.yaxis.set_major_formatter(lambda v, _: f"{v:.0%}")
-    ax.set_ylim(0, max(before) * 1.25)
+    ax.set_ylim(0, max(before) * 1.42)
     ax.grid(axis="y", color=GRID, lw=0.8)
     ax.set_axisbelow(True)
-    ax.set_ylabel("Instructions flagged by AMANA-Guard")
-    ax.legend(frameon=False, fontsize=9, loc="upper right")
-    ax.set_title("Open MT systems on generated instructions for held-out drugs (EN → AR)", loc="left",
+    ax.set_ylabel("Instructions not passed by AMANA-Guard 2")
+    ax.legend(frameon=False, fontsize=9, loc="upper left", ncol=2)
+    ax.set_title("Open MT systems on 300 generated instructions (EN → AR)", loc="left",
                  color=INK, fontsize=11.5, fontweight="bold")
     fig.tight_layout()
     fig.savefig(FIG / "mt_audit.png")
