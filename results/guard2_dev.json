@@ -80,8 +80,8 @@
       "false_alarm": 0.0
     },
     "tico": {
-      "recall": 0.9474,
-      "false_alarm": 0.138
+      "recall": 0.9488,
+      "false_alarm": 0.1494
     },
     "dev_hard_cases": {
       "errors_caught": [
@@ -102,6 +102,7 @@
         "flagged": 0.43,
         "flag_types": {
           "omission": 125,
+          "condition": 44,
           "drug": 6,
           "unit": 5
         },

@@ -95,3 +95,44 @@ def test_random_noise_never_crashes():
     alphabet = "ابتثجحخدذرزسشصضطظعغفقكلمنهوي ٠١٢٣٤٥٦٧٨٩ .،؟ mg12"
     for _ in range(300):
         G2.check("Do not take 2 tablets of warfarin 3 mg.", "".join(rng.choice(alphabet) for _ in range(rng.randint(0, 80))))
+
+
+# ---------------------------------------------------------------- what the rules cannot verify
+
+def test_unfamiliar_drug_replaced_by_another_is_flagged():
+    src = "Take 1 tablet of apixaban 5 mg by mouth twice daily."
+    assert "drug" in kinds(src, "خذ قرصا واحدا من ريفاروكسابان 5 ملغ عن طريق الفم مرتين يوميا.")[0]
+
+
+def test_unfamiliar_drug_transliterated_or_left_in_latin_passes():
+    src = "Take 1 tablet of apixaban 5 mg by mouth twice daily."
+    assert G2.check(src, "خذ قرصا واحدا من أبيكسابان 5 ملغ عن طريق الفم مرتين يوميا.").ok
+    assert G2.check(src, "خذ قرصا واحدا من apixaban 5 ملغ عن طريق الفم مرتين يوميا.").ok
+
+
+def test_unverifiable_drug_goes_to_review_not_pass():
+    report = G2.check("Take 1 tablet of apixaban 5 mg by mouth twice daily.",
+                      "خذ قرصا واحدا من الدواء 5 ملغ عن طريق الفم مرتين يوميا.")
+    assert report.status == "needs_review"
+
+
+def test_unrecognized_warning_is_never_a_silent_pass():
+    report = G2.check("Take 1 tablet of warfarin 3 mg once daily. Tell your doctor if you notice unusual bleeding.",
+                      "خذ قرصا واحدا من وارفارين 3 ملغ مرة واحدة يوميا.")
+    assert report.status != "ok" and report.unverified and report.coverage < 1
+
+
+def test_swapped_taper_is_flagged():
+    src = "Take 40 mg daily for 5 days, then 20 mg daily for 5 days."
+    assert "sequence" in kinds(src, "خذ 20 ملغ يوميا لمدة 5 أيام، ثم 40 ملغ يوميا لمدة 5 أيام.")[0]
+    assert "sequence" not in kinds(src, "خذ 40 ملغ يوميا لمدة 5 أيام، ثم 20 ملغ يوميا لمدة 5 أيام.")[0]
+
+
+def test_regex_sources_have_no_doubled_backslashes():
+    # a patch once wrote r"\\\\bif\\\\b", which matches nothing and fails silently
+    assert chr(92) * 2 not in Path(G2.__file__).read_text(encoding="utf-8")
+
+
+def test_report_serializes_for_batch_use():
+    d = G2.check("Take 1 tablet of warfarin 3 mg once daily.", "خذ قرصا واحدا من وارفارين 3 ملغ مرة واحدة يوميا.").to_dict()
+    assert d["status"] == "ok" and d["coverage"] == 1 and d["flags"] == []

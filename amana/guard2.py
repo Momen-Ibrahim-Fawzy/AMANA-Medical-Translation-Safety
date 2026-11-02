@@ -4,8 +4,9 @@ guard.py compares one flat set of slots per text. Here each drug gets its own re
 a timing cannot be credited to the wrong drug. Warnings are read as (topic, polarity) pairs instead
 of being counted. Each finding is either a flag (both sides were understood and they disagree) or a
 review item (the checker could not establish agreement). A translation passes only if it has
-neither. Text with no medication content goes to the guard.py checks. guard.py is kept unchanged as
-the baseline.
+neither, so anything in the source that the checker cannot verify, such as an unfamiliar drug or an
+unrecognized warning, is a review item and never a silent pass. Text with no medication content goes to
+the guard.py checks. guard.py is kept unchanged as the baseline.
 """
 from __future__ import annotations
 
@@ -14,6 +15,7 @@ from dataclasses import dataclass, field
 from difflib import SequenceMatcher
 from functools import lru_cache
 
+from . import drugnames as D
 from . import guard as G
 from .arabic import fmt_num, normalize, number_words_to_digits
 from .guard import Flag
@@ -118,12 +120,12 @@ def _en_mentions(t: str) -> list[Mention]:
 # ------------------------------------------------------------------------------ warnings
 
 TOPICS = {  # topic: (English pattern, Arabic pattern on normalize()d text)
-    "alcohol": (r"\balcohol\b", r"كحول"),
+    "alcohol": (r"\balcohol", r"كحول"),
     "drive": (r"\bdrive\b|\bdriving\b", r"(?<![ء-ي])(?:تقد|تقود|قياده|القياده)(?![ء-ي])|قد السياره"),
     "crush": (r"\bcrush\b|\bchew\b", r"تسحق|اسحق|تمضغ|امضغ|سحق|مضغ"),
     "contact_lens": (r"contact lens", r"عدسات"),
     "swallow": (r"\bswallow\b", r"تبلع|ابلع|تبتلع|ابتلع"),
-    "skip_meals": (r"\bskip\b", r"(?<![ء-ي])(?:تفوت|فوت)(?![ء-ي])"),
+    "skip_meals": (r"\bskip\b|\bmiss\b", r"(?<![ء-ي])(?:تفوت|فوت)(?![ء-ي])"),
     "stop_suddenly": (r"\bsuddenly\b", r"فجاه"),
     "rash": (r"\brash\b", r"طفح"),
     "feel_better": (r"feel better", r"تحسن"),
@@ -131,7 +133,7 @@ TOPICS = {  # topic: (English pattern, Arabic pattern on normalize()d text)
 }
 EN_IMPERATIVE = re.compile(r"\s*(?:do not|don't|never|avoid|stop|keep|continue|rinse|see)\b")
 EN_PRO = re.compile(r"\b(?:do not|don't|never|avoid|must not|should not)\b")
-AR_PRO = re.compile(r"(?:^|\s|،)(?:لا\s+[تي](?!زال)|تجنب|ابتعد عن|يجب عدم|يمنع|ممنوع|اياك)")
+AR_PRO = re.compile(r"(?:^|\s|،)(?<!كنت )(?:لا\s+[تي](?!زال)|تجنب|ابتعد عن|يجب عدم|يمنع|ممنوع|اياك)")
 EN_STOP, EN_GO = r"\bstop\b", r"\bkeep\b|\bcontinue\b"
 AR_STOP, AR_GO = r"توقف|اوقف|ايقاف", r"استمر|واصل|تابع"
 
@@ -147,15 +149,15 @@ def _sign(topic: str, sentence: str, prohibited: bool, stop: str, go: str) -> in
 
 # ------------------------------------------------------------------------------ conditions, limits
 
-EN_COND = r"as needed|when needed|if needed|only if|only when|if you have|when you have"
-AR_COND = r"كما هو مطلوب|عند الحاجه|عند اللزوم|حسب الحاجه|عند الضروره|فقط|في حال|عند الشعور|اذا كان لديك|اذا كنت تعاني"
-EN_MAX, EN_MIN = r"more than|exceed|maximum|at most|up to", r"less than|fewer than|at least|minimum"
-AR_MAX, AR_MIN = r"اكثر من|تتجاوز|يتجاوز|تزيد|اقصي", r"اقل من|ادني"
+EN_COND = r"as needed|when needed|if needed|only if|only when|(?<!even )\bif\b|\bunless\b|when you have"
+AR_COND = r"كما هو مطلوب|عند الحاجه|عند اللزوم|حسب الحاجه|عند الضروره|فقط|في حال(?!ه)|عند الشعور|(?<![ء-ي])[و]?اذا(?![ء-ي])|(?<!حتي )(?<![ء-ي])لو(?![ء-ي])"
+EN_MAX, EN_MIN = r"\bmore\b[^.,;]*\bthan\b|exceed|maximum|at most|up to", r"less than|fewer than|at least|minimum"
+AR_MAX, AR_MIN = r"اكثر مما|اكثر من(?! \d+ دقيق)|تتجاوز|يتجاوز|لا تزيد|لا يزيد|اقصي", r"اقل من|ادني|علي الاقل|لا تقل عن"
 EN_WITHOUT = r"without (?:food|meals|eating)"
 AR_WITHOUT = r"بدون (?:ال)?(?:طعام|اكل)|دون (?:ال)?(?:طعام|اكل)|من غير (?:ال)?(?:طعام|اكل)"
 EN_VERB = r"\b(?:take|instill|apply|inhale|inject|use|give)\b"
-AR_VERB = (r"(?<![ء-ي])[وف]?(?:خذ|تاخذ|تناول|ضع|تضع|وضع|قطر|ادهن|احقن|حقن|اعط|اعطاء|استنشق|استخدم|استخدام|"
-           r"طبق|تطبيق|ادخل|ادخال|قم)(?![ء-ي])")
+AR_VERB = (r"(?<![ء-ي])[وف]?(?:خذ|اخذ|تاخذ|ياخذ|تناول|تتناول|ضع|تضع|وضع|قطر|تقطر|ادهن|تدهن|احقن|تحقن|حقن|اعط|تعطي|اعطاء|استنشق|"
+           r"تستنشق|استخدم|تستخدم|استخدام|استعمل|تستعمل|استعمال|طبق|تطبق|تطبيق|ادخل|تدخل|ادخال|قم)(?![ء-ي])")
 _WORDNUM = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "a": 1, "an": 1}
 _COUNTED = r"tablets?|capsules?|drops?|puffs?|tablespoons?|teaspoons?|units?"
 
@@ -172,6 +174,7 @@ def _ar_pre(text: str) -> str:
     t = number_words_to_digits(normalize(text))
     t = re.sub(r"اثنتي 10|اثني 10|اثنتا 10|اثنا 10", "12", t)
     t = re.sub(r"(?<![ء-ي])ملغما(?![ء-ي])", "ملغم", t)
+    t = re.sub(r"(?<![ء-ي])و?ل(اسبوعين|يومين|شهرين|ساعتين)(?![ء-ي])", r"لمده \1", t)
     return re.sub(r"(قبل|بعد) تناول (?=(?:ال)?وجب)", r"\1 ", t)
 
 
@@ -318,7 +321,99 @@ def parse(text: str, lang: _Lang) -> Document:
 
 def _is_medication(doc: Document) -> bool:
     return bool(doc.mentions or doc.warnings or any(i.slots.qty or i.slots.freq for i in doc.instructions.values())
-                or re.search(r"\b(?:medicine|medication|tablets?|capsules?)\b", doc.text))
+                or re.search(r"\b(?:medicines?|medications?|tablets?|capsules?|doses?|injections?|inhalation|inhaler|ointment|cream|"
+                         r"shampoo|solution|suspension|infusion)\b", doc.text))
+
+
+# ------------------------------------------------------------------------------ what the rules cannot verify
+
+_FORMS = r"tablets?|capsules?|pills?|drops?|puffs?|sachets?|patch(?:es)?|cream|ointment|gel|syrup|injections?|dose"
+_NAME_BEFORE_QTY = re.compile(r"\b([A-Za-z][a-z-]{3,}) \d+(?:\.\d+)? ?(?:mg|mcg|g|ml|units?)\b")
+_NAME_AFTER_FORM = re.compile(rf"\b(?:{_FORMS}) of ([A-Za-z][a-z-]{{3,}})\b", re.I)
+_BRAND = re.compile(r"\b[A-Z][A-Z-]{3,}\b")
+_TITLE_NAME = re.compile(r"(?<=[a-z,] )[A-Z][a-z]{4,}\b")
+_STEMS = re.compile(r"\b[a-z]{3,}(?:azole|pril|sartan|statin|mab|tinib|cillin|mycin|floxacin|olol|dipine|prazole|triptan|tidine|"
+                    r"gliptin|gliflozin|ciclovir|tegravir|buvir|sone|solone|asone|setron|lukast|parin|xaban|gatran|caine|"
+                    r"zepam|zolam|barbital|profen|fenac|oxetine|pramine|triptyline|terol|tropium)\b")
+_NOT_A_NAME = {"take", "dose", "doses", "total", "about", "than", "least", "most", "maximum", "minimum", "only", "usual",
+               "daily", "each", "every", "your", "this", "that", "with", "over", "under", "from", "more", "less", "adults",
+               "children", "apply", "give", "inject", "inhale", "starting", "initial", "weekly", "once", "twice",
+               "medicine", "medication", "water", "food", "milk", "juice", "tablet", "tablets", "capsule", "capsules",
+               "cream", "ointment", "syrup", "solution", "drops", "drop", "weight", "body", "strength", "contains",
+               "up", "the", "and", "not", "warning", "important", "note", "seek", "call", "stop", "then", "store", "keep",
+               "active", "inactive", "ingredients", "doctor", "healthcare", "provider", "pharmacist", "tablets", "extended",
+               "release", "delayed", "before", "after", "during", "while", "other", "people", "these", "those", "there",
+               "their", "which", "where", "when", "could", "should", "would", "first", "second", "third", "week", "weeks",
+               "cycle", "month", "months", "years", "hours", "minutes", "days", "morning", "evening", "night", "usp",
+               "room", "temperature", "patient", "guide", "read", "leaflet", "instructions", "information", "medicines", "children", "adult", "patients"}
+
+
+def _open_names(src_en: str) -> set:
+    """Drug names in the source outside the benchmark's lexicon: known to Wikidata, or placed like a name."""
+    names = {m.group(1).lower() for m in _NAME_BEFORE_QTY.finditer(src_en)}
+    names |= {m.group(1).lower() for m in _NAME_AFTER_FORM.finditer(src_en)}
+    names |= {m.group().lower() for m in _BRAND.finditer(src_en)}
+    names |= {m.group().lower() for m in _TITLE_NAME.finditer(src_en)}
+    names |= set(_STEMS.findall(src_en.lower()))
+    t = src_en.lower()
+    names |= {w for w in set(re.findall(r"[a-z][a-z-]{4,}", t)) if w in D.known_english()}
+    lexicon = set(G._ar_drug_table().values())
+    parts = {w for k in lexicon for w in k.split()}
+    return {n for n in names if n not in _NOT_A_NAME and n not in lexicon and n not in parts}
+
+
+def _check_open_names(src_en: str, hyp_ar: str, flags: list, review: list):
+    for name in sorted(_open_names(src_en)):
+        if re.search(rf"\b{re.escape(name)}\b", hyp_ar, re.I):
+            continue  # left in Latin script, which is a common and acceptable rendering
+        score, _ = D.find_in_arabic(name, hyp_ar)
+        if score >= D.MATCH_THRESHOLD:
+            continue
+        others = D.other_drugs_in_arabic(name, hyp_ar) - {x for x in _open_names(src_en)}
+        if others:
+            flags.append(Flag("drug", f"{name} in source vs {sorted(others)[0]} in translation"))
+        else:
+            review.append(Flag("drug", f"could not verify '{name}' in translation"))
+
+
+_HAS_ACTION = re.compile(r"\b(?:take|use|apply|inject|inhale|instill|give)\b")
+
+
+def _unverified(src_en: str, doc: "Document") -> list[str]:
+    """Source sentences that gave the checker nothing to compare."""
+    out = []
+    for sentence in re.split(EN.split, EN.pre(src_en)):
+        words = sentence.split()
+        if len(words) < 3:
+            continue
+        if any(re.search(pats[0], sentence) for pats in TOPICS.values()) and EN_IMPERATIVE.match(sentence):
+            continue
+        x = EN.extract(sentence)
+        if x.qty or x.duration is not None or x.timing or x.site or x.side or EN.freq(sentence) is not None:
+            continue
+        if EN.mentions(sentence) and _HAS_ACTION.search(sentence):
+            continue
+        out.append(" ".join(words[:8]))
+    return out
+
+
+_THEN = {"en": re.compile(r"\bthen\b"), "ar": re.compile(r"(?<![ء-ي])ثم(?![ء-ي])|بعد ذلك")}
+
+
+def _phases(text: str, lang: _Lang, pattern: re.Pattern) -> list:
+    return [lang.extract(p).qty for p in pattern.split(lang.pre(text)) if p.strip()]
+
+
+def _check_sequence(src_en: str, hyp_ar: str, flags: list, review: list):
+    """'40 mg daily, then 20 mg daily': the same quantities in another order are a different regimen."""
+    a = _phases(src_en, EN, _THEN["en"])
+    if len(a) < 2 or not any(a):
+        return
+    b = _phases(hyp_ar, AR, _THEN["ar"])
+    if len(b) != len(a):
+        review.append(Flag("sequence", "steps in the source could not be matched to steps in the translation"))
+    elif any(x != y for x, y in zip(a, b)) and sum(a, type(a[0])()) == sum(b, type(b[0])()):
+        flags.append(Flag("sequence", "same quantities in a different order"))
 
 
 # ------------------------------------------------------------------------------ comparison
@@ -329,6 +424,8 @@ class Report2:
     review: list
     src: object = None
     hyp: object = None
+    unverified: list = field(default_factory=list)  # source sentences no rule could check
+    sentences: int = 0
 
     @property
     def ok(self) -> bool:
@@ -341,6 +438,15 @@ class Report2:
     @property
     def score(self) -> float:
         return max(0.0, 1.0 - 0.5 * len(self.flags) - 0.25 * len(self.review))
+
+    @property
+    def coverage(self) -> float:
+        """Share of source sentences the rules had something to compare in."""
+        return 1.0 if not self.sentences else 1.0 - len(self.unverified) / self.sentences
+
+    def to_dict(self) -> dict:
+        return {"status": self.status, "coverage": round(self.coverage, 3), "flags": [str(f) for f in self.flags],
+                "review": [str(f) for f in self.review], "unverified": self.unverified}
 
 
 def _quantities(src: G.Slots, hyp: G.Slots, tag: str, flags: list, review: list):
@@ -362,6 +468,8 @@ def _quantities(src: G.Slots, hyp: G.Slots, tag: str, flags: list, review: list)
         else:
             review.append(Flag("dose", f"{tag}{fmt_num(q[0])} {q[1]} not found in translation"))
     for h in left:
+        if h[0] == 1 and h[1] in ("tablet", "capsule", "drop", "puff", "sachet"):
+            continue  # "كل قرص" names the form; it does not add a dose
         if not any(G._q_close(q, h) for q in src.qty):
             flags.append(Flag("dose", f"{tag}unexpected quantity {fmt_num(h[0])} {h[1]} in translation"))
 
@@ -422,8 +530,8 @@ def _compare_warnings(src: Document, hyp: Document, flags: list, review: list):
                 flags.append(Flag("omission", f"warning '{k}' missing in translation"))
         elif hyp.warnings[k] != v:
             flags.append(Flag("negation", f"warning '{k}' reversed in translation"))
-    for k in hyp.warnings:
-        if k not in src.warnings:
+    for k, v in hyp.warnings.items():
+        if k not in src.warnings and (v < 0 or k in ("rash", "feel_better", "stop_suddenly")):
             flags.append(Flag("warning", f"translation has a warning about '{k}' that the source does not"))
     if src.unknown_prohibitions > hyp.unknown_prohibitions and not set(src.warnings) - set(hyp.warnings):
         flags.append(Flag("omission", f"{src.unknown_prohibitions} prohibition(s) in source vs "
@@ -488,4 +596,9 @@ def check(src_en: str, hyp_ar: str) -> Report2:
         baseline = G.check(src_en, hyp_ar)
         return Report2(baseline.flags, [], s, h)
     flags, review = compare(s, h)
-    return Report2(flags, review, s, h)
+    _check_open_names(src_en, hyp_ar, flags, review)
+    _check_sequence(src_en, hyp_ar, flags, review)
+    unverified = _unverified(src_en, s)
+    review += [Flag("unverified", f"not checked: '{u}...'") for u in unverified]
+    n = sum(len(x.split()) >= 3 for x in re.split(EN.split, EN.pre(src_en)))
+    return Report2(flags, review, s, h, unverified, n)

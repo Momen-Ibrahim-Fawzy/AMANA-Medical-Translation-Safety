@@ -20,8 +20,20 @@ reading is "about a coin flip", not "COMET-22 prefers errors".
 ## Does AMANA-Guard 2 understand instructions?
 
 No. It parses them with rules into per-drug records, which fixes the swapped-dose failure of a flat slot
-comparison. It has no general semantics. It knows 56 drugs and 10 warning topics, and it returns
-`needs_review` when it cannot establish meaning.
+comparison. It has no general semantics. It understands 10 warning topics, and it returns `needs_review` when it
+cannot establish meaning, including for any sentence that gave it nothing to compare.
+
+## Does `ok` mean the translation is right?
+
+No. It means every source sentence had something to compare and no mismatch was found. An earlier version also said
+`ok` when it simply had no rule, which was the most serious flaw found in this project. That is fixed, but a wrong
+word that no rule looks at can still pass within a sentence that has other checkable content.
+
+## How does it do on real text?
+
+On sealed FDA label sentences, each system passes 35–39%, and about half go to review. Only 56% of sentences are fully
+covered by the rules. No error labels exist for this text, so these are not accuracy figures. They show how much of the
+work still falls to a person.
 
 ## How independent is the hold-out?
 
@@ -66,7 +78,8 @@ clinical input.
 
 1. A pharmacist's adjudication of the blinded packet.
 2. A fresh test set written by another person.
-3. Real translated medication instructions with naturally occurring, independently annotated errors.
+3. Real translated medication instructions with naturally occurring, independently annotated errors. The PEACH
+   corpus of English-Arabic patient leaflets is a candidate if its author can share the sentences.
 
 ## Why no MLflow, DVC, a config framework or a web service?
 

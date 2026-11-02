@@ -1,0 +1,409 @@
+{
+ "development": [
+  {
+   "threshold": 0.6,
+   "n": 1406,
+   "own_label_accepted": 0.9844,
+   "random_drug_accepted": 0.0562,
+   "closest_name_accepted": 0.8663,
+   "examples": [
+    [
+     "abacavir",
+     "maribavir"
+    ],
+    [
+     "abarelix",
+     "degarelix"
+    ],
+    [
+     "abciximab",
+     "cetuximab"
+    ],
+    [
+     "abemaciclib",
+     "palbociclib"
+    ],
+    [
+     "acamprosate",
+     "camostat"
+    ],
+    [
+     "acebutolol",
+     "penbutolol"
+    ],
+    [
+     "aceclofenac",
+     "alclofenac"
+    ],
+    [
+     "acemetacin",
+     "oxametacin"
+    ]
+   ]
+  },
+  {
+   "threshold": 0.65,
+   "n": 1406,
+   "own_label_accepted": 0.9822,
+   "random_drug_accepted": 0.0256,
+   "closest_name_accepted": 0.7582,
+   "examples": [
+    [
+     "abacavir",
+     "maribavir"
+    ],
+    [
+     "abarelix",
+     "degarelix"
+    ],
+    [
+     "abciximab",
+     "cetuximab"
+    ],
+    [
+     "abemaciclib",
+     "palbociclib"
+    ],
+    [
+     "acamprosate",
+     "camostat"
+    ],
+    [
+     "acebutolol",
+     "penbutolol"
+    ],
+    [
+     "aceclofenac",
+     "alclofenac"
+    ],
+    [
+     "acemetacin",
+     "oxametacin"
+    ]
+   ]
+  },
+  {
+   "threshold": 0.7,
+   "n": 1406,
+   "own_label_accepted": 0.9801,
+   "random_drug_accepted": 0.0114,
+   "closest_name_accepted": 0.596,
+   "examples": [
+    [
+     "abarelix",
+     "degarelix"
+    ],
+    [
+     "abciximab",
+     "cetuximab"
+    ],
+    [
+     "abemaciclib",
+     "palbociclib"
+    ],
+    [
+     "acamprosate",
+     "camostat"
+    ],
+    [
+     "aceclofenac",
+     "alclofenac"
+    ],
+    [
+     "acemetacin",
+     "oxametacin"
+    ],
+    [
+     "acenocoumarol",
+     "dicumarol"
+    ],
+    [
+     "acepromazine",
+     "promazine"
+    ]
+   ]
+  },
+  {
+   "threshold": 0.75,
+   "n": 1406,
+   "own_label_accepted": 0.9787,
+   "random_drug_accepted": 0.005,
+   "closest_name_accepted": 0.4381,
+   "examples": [
+    [
+     "abciximab",
+     "cetuximab"
+    ],
+    [
+     "abemaciclib",
+     "palbociclib"
+    ],
+    [
+     "acamprosate",
+     "camostat"
+    ],
+    [
+     "aceclofenac",
+     "alclofenac"
+    ],
+    [
+     "acemetacin",
+     "oxametacin"
+    ],
+    [
+     "acepromazine",
+     "promazine"
+    ],
+    [
+     "acetazolamide",
+     "methazolamide"
+    ],
+    [
+     "acetohexamide",
+     "metahexamide"
+    ]
+   ]
+  },
+  {
+   "threshold": 0.8,
+   "n": 1406,
+   "own_label_accepted": 0.9737,
+   "random_drug_accepted": 0.0043,
+   "closest_name_accepted": 0.3385,
+   "examples": [
+    [
+     "abciximab",
+     "cetuximab"
+    ],
+    [
+     "acamprosate",
+     "camostat"
+    ],
+    [
+     "aceclofenac",
+     "alclofenac"
+    ],
+    [
+     "acemetacin",
+     "oxametacin"
+    ],
+    [
+     "acepromazine",
+     "promazine"
+    ],
+    [
+     "acetazolamide",
+     "methazolamide"
+    ],
+    [
+     "acetohexamide",
+     "metahexamide"
+    ],
+    [
+     "aciclovir",
+     "famciclovir"
+    ]
+   ]
+  },
+  {
+   "threshold": 0.85,
+   "n": 1406,
+   "own_label_accepted": 0.9644,
+   "random_drug_accepted": 0.0014,
+   "closest_name_accepted": 0.1287,
+   "examples": [
+    [
+     "acemetacin",
+     "oxametacin"
+    ],
+    [
+     "acepromazine",
+     "promazine"
+    ],
+    [
+     "adenosine",
+     "inosine"
+    ],
+    [
+     "albendazol",
+     "flubendazole"
+    ],
+    [
+     "aldosterone",
+     "alosetron"
+    ],
+    [
+     "almotriptan",
+     "zolmitriptan"
+    ],
+    [
+     "alosetron",
+     "aldosterone"
+    ],
+    [
+     "amantadine",
+     "rimantadine"
+    ]
+   ]
+  },
+  {
+   "threshold": 0.9,
+   "n": 1406,
+   "own_label_accepted": 0.9573,
+   "random_drug_accepted": 0.0007,
+   "closest_name_accepted": 0.0697,
+   "examples": [
+    [
+     "acemetacin",
+     "oxametacin"
+    ],
+    [
+     "acepromazine",
+     "promazine"
+    ],
+    [
+     "albendazol",
+     "flubendazole"
+    ],
+    [
+     "aldosterone",
+     "alosetron"
+    ],
+    [
+     "almotriptan",
+     "zolmitriptan"
+    ],
+    [
+     "alosetron",
+     "aldosterone"
+    ],
+    [
+     "amantadine",
+     "rimantadine"
+    ],
+    [
+     "amiodarone",
+     "midodrine"
+    ]
+   ]
+  }
+ ],
+ "lasa_pairs": {
+  "both_directions_rejected": 8,
+  "n": 10,
+  "pairs": [
+   {
+    "pair": [
+     "hydralazine",
+     "hydroxyzine"
+    ],
+    "rejected": true
+   },
+   {
+    "pair": [
+     "tramadol",
+     "trazodone"
+    ],
+    "rejected": true
+   },
+   {
+    "pair": [
+     "clonidine",
+     "clonazepam"
+    ],
+    "rejected": true
+   },
+   {
+    "pair": [
+     "metformin",
+     "metronidazole"
+    ],
+    "rejected": true
+   },
+   {
+    "pair": [
+     "prednisolone",
+     "prednisone"
+    ],
+    "rejected": false
+   },
+   {
+    "pair": [
+     "celecoxib",
+     "citalopram"
+    ],
+    "rejected": true
+   },
+   {
+    "pair": [
+     "glimepiride",
+     "glipizide"
+    ],
+    "rejected": true
+   },
+   {
+    "pair": [
+     "omeprazole",
+     "esomeprazole"
+    ],
+    "rejected": false
+   },
+   {
+    "pair": [
+     "insulin glargine",
+     "insulin aspart"
+    ],
+    "rejected": true
+   },
+   {
+    "pair": [
+     "ciprofloxacin",
+     "ofloxacin"
+    ],
+    "rejected": true
+   }
+  ]
+ },
+ "threshold": 0.9,
+ "sealed_test": {
+  "threshold": 0.9,
+  "n": 366,
+  "own_label_accepted": 0.9399,
+  "random_drug_accepted": 0.0,
+  "closest_name_accepted": 0.0328,
+  "examples": [
+   [
+    "abiraterone",
+    "prasterone"
+   ],
+   [
+    "alemtuzumab",
+    "elotuzumab"
+   ],
+   [
+    "allobarbital",
+    "barbital"
+   ],
+   [
+    "anthralin",
+    "dantrolene"
+   ],
+   [
+    "barbital",
+    "allobarbital"
+   ],
+   [
+    "elotuzumab",
+    "alemtuzumab"
+   ],
+   [
+    "exenatide",
+    "lixisenatide"
+   ],
+   [
+    "isoconazole",
+    "oxiconazole"
+   ]
+  ]
+ }
+}

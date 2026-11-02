@@ -1,0 +1,18 @@
+name: Clinical review
+description: Send your answers for the blinded translation packet
+title: "Clinical review: "
+body:
+  - type: input
+    id: qualification
+    attributes:
+      label: Your qualification
+      description: For example, pharmacist or physician. No personal details are needed.
+    validations:
+      required: true
+  - type: textarea
+    id: answers
+    attributes:
+      label: Your answers
+      description: Attach or paste the answers saved from adjudication/packet.html.
+    validations:
+      required: true

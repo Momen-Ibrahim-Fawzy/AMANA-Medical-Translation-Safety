@@ -582,7 +582,7 @@
     "mean_score": {
       "ref": 1.0,
       "good": 1.0,
-      "bad_matched": 0.43919753086419755
+      "bad_matched": 0.44907407407407407
     },
     "per_type": {
       "dose": {

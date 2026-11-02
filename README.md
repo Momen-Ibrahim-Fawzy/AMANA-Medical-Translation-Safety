@@ -14,8 +14,10 @@ they were built with, and much weaker as the test moves away from it:
 | Held-out drugs (AMANA-Bench) | the drug only; same templates | recall 100%, false alarms 0% *(upper bound)* | AUROC 0.999 |
 | Unseen dosage forms | eye drops, inhalers | not applicable (rules) | AUROC 0.85–0.86; false alarms 70–100% at 0.5 |
 | Unseen error types | unit, laterality, negation | not applicable (rules) | AUROC 0.67–0.71; recall 31–36% at 0.5 |
-| Real text, controlled errors (AMANA-TICO) | the wording; errors are still injected | recall 94.7%, false alarms 13.8% *(development data)* | AUROC 0.80; false alarms 70% at 0.5 |
+| Real text, controlled errors (AMANA-TICO) | the wording; errors are still injected | recall 94.9%, false alarms 14.9% *(development data)* | AUROC 0.80; false alarms 70% at 0.5 |
 | Hand-written hold-out (n = 40) | the phrasing | 20/20 errors, 14/20 safe *(same author, not blind)* | not run |
+| Drug names from Wikidata (sealed, n = 366) | names no one here chose | accepts 94.0% of correct names, 3.3% of the most similar wrong drug | not applicable |
+| Real FDA label sentences, MT output (sealed half) | real English; **no error labels** | passes 35–39%, flags 13–17%, sends 46–49% to review | not run |
 | Naturally occurring errors, independently annotated | everything | **not done** | **not done** |
 
 AMANA-QE was not tested on the hand-written cases. Its unseen-type and unseen-form rows use two seeds each.
@@ -78,9 +80,9 @@ choose among each system's own 5-best beam candidates, with no retraining.
 
 | not passed by Guard 2 | 1-best | QE rerank (does not use the guard) | Guard 2 + QE rerank | all 5 candidates fail |
 |---|---:|---:|---:|---:|
-| NLLB-200-600M | 6.7% | 3.7% | **2.3%** | 7 / 300 |
+| NLLB-200-600M | 6.7% | 4.3% | **2.3%** | 7 / 300 |
 | OPUS-MT en-ar | 25.0% | 27.3% | 24.7% | 74 / 300 |
-| M2M100-418M | 43.0% | 42.7% | 42.0% | 126 / 300 |
+| M2M100-418M | 43.0% | 42.3% | 42.0% | 126 / 300 |
 
 The Guard 2 + QE column is partly circular, because Guard 2 both chooses and judges. It shows that
 candidates with a detected problem were avoided, not that the chosen output is safe. The QE column is
@@ -90,9 +92,39 @@ scores below 0.5, moves little after Guard 2 + QE: NLLB 13.0% → 9.7%, OPUS-MT 
 
 ![MT audit](figures/mt_audit.png)
 
+**4. On real patient text, the checker can verify far less, and it now says so.** The earlier findings use
+generated instructions. Here, three MT systems translated 600 real sentences from US FDA patient labels. Labels
+were split by hash into a development half, used to fix false alarms, and a sealed half, scored afterwards.
+
+| sealed half, n = 300 per system (95% CI) | NLLB-200-600M | M2M100-418M | OPUS-MT en-ar |
+|---|---:|---:|---:|
+| no problem detected | 34.7% (29.5–40.2) | 39.3% (34.0–45.0) | 37.3% (32.0–42.9) |
+| flagged | 16.7% (12.9–21.3) | 14.3% (10.8–18.7) | 13.3% (9.9–17.6) |
+| needs review only | 48.7% (43.1–54.3) | 46.3% (40.8–52.0) | 49.3% (43.7–55.0) |
+| a source digit missing from the output, no parser used | 39 | 15 | 24 |
+
+These are not error rates: the sentences have no error labels and no one has judged the outputs. Only 56% of the
+sealed sentences were fully covered by the rules, against every sentence on the benchmark, so that gap is the main
+result. The digit count is an upper bound, since a dual such as "جرعتين" hides its number. The flags include real errors,
+such as "20 mcg" as "20 ملغ" and metformin as "حبوب منع الحمل" (contraceptive pills), and also false alarms.
+
+**5. The checker no longer passes what it cannot check.** A probe of instructions outside the benchmark found that
+the previous version said `ok` to a wrong drug (apixaban as rivaroxaban), a swapped taper (40 then 20 mg as 20 then
+40 mg) and a dropped bleeding warning. These now give a flag or a review item, and each report says how much of the
+source was checked. No benchmark translation, hold-out case or development hard case changed its result.
+
 ## Try it
 
-The checkers use the Python standard library only.
+The checkers use the Python standard library only. Check a whole file and get a report a reviewer can work through,
+most urgent first (see [examples/report.html](examples/report.html)):
+
+```console
+$ python -m amana batch examples/translations.csv --report report.html --json results.jsonl
+8 checked: 5 mismatch, 1 for review, 2 no problem detected
+```
+
+The file needs a source column and a translation column. A batch exits with 1 if anything is flagged, so it can stop
+a pipeline. Or check one translation:
 
 ```console
 $ python -m amana "Take warfarin 3 mg once daily and aspirin 75 mg once daily." "خذ وارفارين 75 ملغ مرة واحدة يومياً وأسبرين 3 ملغ مرة واحدة يومياً."
@@ -106,8 +138,17 @@ needs_review
 ```
 
 The exit code is 0 for passes, 1 for flagged and 2 for needs review. `flag` means a detected mismatch.
-`needs_review` means the checker could not establish the meaning. It is not evidence of an error, and
-passing is not evidence of safety: the checker cannot see what it has no rule for.
+`needs_review` means the checker could not establish the meaning, and is not evidence of an error. `ok` means
+every sentence had something to compare and no mismatch was found. It is still not evidence of safety: a wrong word
+with no rule behind it, such as "breastfeed" rendered as "touch", is not detected as such.
+
+**Evaluating an MT metric?** Score it on the same 1,620 pairs as the table above:
+
+```console
+$ python -m amana benchmark my_module:my_metric
+```
+
+The function takes lists of sources, hypotheses and references, and returns one score per hypothesis.
 
 ```python
 from amana.guard2 import check
@@ -120,11 +161,13 @@ report.status, report.flags, report.review
 
 | component | what it is |
 |---|---|
-| **AMANA-Bench** | 25,258 contrastive rows from 3,180 generated English instructions: 56 drugs, 8 dosage forms, 11 critical error types including ISMP look-alike/sound-alike pairs. Split by drug. |
+| **AMANA-Bench** | 25,258 contrastive rows from 3,180 generated English instructions: 53 drugs, 8 dosage forms, 11 critical error types including ISMP look-alike/sound-alike pairs. Split by drug. |
 | **AMANA-TICO** | 703 real professional EN→AR sentences from TICO-19 with one number or negation error injected. The text is real and the errors are constructed, and it covers only these 2 of the 11 error types. |
 | **AMANA-Guard** (`amana/guard.py`) | The first rule-based checker, kept unchanged as the baseline. It compares flat slots. |
 | **AMANA-Guard 2** (`amana/guard2.py`) | Parses each side into per-drug instructions and warnings with a topic and polarity, then compares them. It separates flags from cases it needs a person to review. It is still rules and regular expressions, with a closed list of 10 warning topics. |
 | **AMANA-QE** | LaBSE cross-encoder fine-tuned on training drugs. It returns a **score for ranking, not a calibrated probability**. |
+| **Open drug names** (`amana/drugnames.py`) | 1,893 English and Arabic drug names from Wikidata (CC0), and a comparison of an English name with an Arabic word through a shared consonant spelling, so a drug outside the benchmark can be looked for in a translation. |
+| **Real-input track** (`scripts/16_real_inputs.py`) | 600 sentences from US FDA patient labels (public domain) and their MT outputs. |
 | **Adjudication packet** (`adjudication/packet.html`) | 60 pairs of MT candidates for a pharmacist or clinician to judge, blinded to system and checker. Not yet completed by anyone. |
 
 ## How far to trust each result
@@ -149,12 +192,23 @@ case, but all came after seeing the first score, and together they changed one r
 is the cleaner estimate. The 6 false alarms
 are safe paraphrases that remain flagged: another verb for a prohibition, "must not", a paraphrased
 maximum, "thrice" in words, a number word in place of a dual, and fasting wording. They were left
-untouched on purpose. Any new claim needs fresh cases written by someone else.
+untouched on purpose. Any new claim needs fresh cases written by someone else. Re-running these cases after the
+later changes gives the same counts, which shows no regression and is not new evidence.
+
+**The drug name test is independent, but narrow.** Wikidata's labels were not written for this project, one name in
+five was sealed by hash, and the threshold was chosen on the others. It tests the name comparison alone, on clean
+labels, not on MT output. At the chosen threshold it accepts 94.0% of correct names (91.1–96.0), 3.3% of the most
+similar wrong drug (1.9–5.6) and none of 366 random wrong drugs. Names that differ by little still get through, such as
+prednisone and prednisolone, which is why 8 of the 10 ISMP look-alike pairs are rejected and not all 10. A wrong drug
+whose exact label is in the table is flagged directly.
+
+**The sealed FDA half has one caveat.** After it was scored, a re-run on benchmark inputs exposed a false alarm on "even
+if", which was fixed. The sealed numbers did not change, and `results/fda_sealed_first_run.json` keeps the first run.
 
 **The TICO-19 and MT rates are development data for the guard.** False alarms on TICO-19 references and
 reading MT outputs both led to guard changes. TICO-19 remains unseen for AMANA-QE. Guard 2's TICO-19
-results (94.7%, 13.8%) are no better than the baseline's (94.9%, 13.5%), since this track has no medication
-structure for it to use.
+results (94.9%, 14.9%) are no better than the baseline's (94.9%, 13.5%), and its false alarms are slightly
+higher, since this track has little medication structure for it to use.
 
 **AMANA-QE learned the generator to a large degree.** The drop from 0.999 to 0.67–0.71 on error types left
 out of training is the clearest evidence. Calibration also fails away from the benchmark: expected
@@ -169,8 +223,10 @@ person outside development. No clinician has reviewed anything here.
 
 ## Known failures
 
-- **Closed vocabulary.** Guard 2 knows 56 drugs plus aliases and 10 warning topics. A warning on any other
-  topic is invisible unless other checks fire, and a drug outside the list cannot be verified.
+- **Most real sentences need a person.** Only 10 warning topics are understood. Any other warning goes to review, so
+  on real labels about half of all translations do. This is the honest cost of not passing what cannot be checked.
+- **Known false alarms on real text.** Words such as "Injection" and "Propionate" can be read as drug names, and
+  ingredient lists and dual forms are often misread. They were left as they are once the sealed half was scored.
 - **Garbled drug names.** A garbled name of a different drug is accepted for 2 of 2,450 ordered drug pairs
   (baseline: 15).
 - **No scope reasoning beyond simple patterns.** It handles per-drug doses, simple conditions and limits.
@@ -203,13 +259,17 @@ python scripts/10_guard2_eval.py --holdout      # re-scores the spent hold-out; 
 | `data` | builds AMANA-Bench and AMANA-TICO, downloading TICO-19 | no | AMANA-TICO only; AMANA-Bench is rebuilt from a fixed seed and a test checks its hash |
 | `audit` | scores metrics on the 1,620 contrastive pairs, with intervals | yes | yes (`metric_audit.json`, `metric_stats.json`) |
 | `qe` | trains AMANA-QE and 4 generalization runs, about 70–85 minutes per generalization run on an 8 GB GPU | yes | yes, except checkpoints |
-| `mt` | translates with 3 systems, scores candidates | yes | yes (`mt_outputs.jsonl`, `mt_audit.json`) |
-| `report` | rebuilds AMANA-Bench, then guard evaluations, error patterns, figures, manifest | no | yes (`MANIFEST.json` has file hashes) |
+| `mt` | translates with 3 systems, scores candidates | yes | yes (`mt_outputs.jsonl`, `mt_audit.json`, `fda_mt_outputs.jsonl`) |
+| `report` | rebuilds AMANA-Bench, then guard, drug name and real-input evaluations, error patterns, figures, manifest | no | yes (`MANIFEST.json` has file hashes) |
+
+The FDA sentences and Wikidata names are committed snapshots. `16_real_inputs.py fetch` and `14_build_drug_names.py`
+download fresh ones, which would change the results.
 
 Not run: NLLB-200-1.3B and CometKiwi-22, which could not be loaded. GitHub Actions runs the tests on Python 3.10–3.12.
 
 See [docs/METHOD.md](docs/METHOD.md) for the method, [docs/REVIEWER_QA.md](docs/REVIEWER_QA.md) for the
-hard questions, and [data/README.md](data/README.md) for the dataset card.
+hard questions, [data/README.md](data/README.md) for the dataset card, and [CONTRIBUTING.md](CONTRIBUTING.md) if
+you can review translations or write test cases.
 
 ## Not a medical device
 
@@ -220,10 +280,11 @@ the benchmark are **not prescribing advice**.
 
 ACES (Amrhein et al., WMT 2022) for contrastive challenge sets. Mehandru et al. (2023) on MT metrics
 missing harmful errors in clinical translation. Saadany et al. (2024) on critical errors in MT evaluation.
-TICO-19 (Anastasopoulos et al., 2020). The ISMP List of Confused Drug Names.
+TICO-19 (Anastasopoulos et al., 2020). The ISMP List of Confused Drug Names. PEACH (Al-Sabbagh, 2024), an
+English-Arabic corpus of patient leaflets, would be a natural next test. Its Mendeley record holds only metadata, so using it would mean asking its author for the sentences.
 
 ## Author
 
 **Momen Ibrahim Fawzy**
 
-Code: MIT. Data: CC BY 4.0 (TICO-19 is CC0).
+Code: MIT. Data: CC BY 4.0 (TICO-19 and Wikidata are CC0, and FDA label text from openFDA is public domain).

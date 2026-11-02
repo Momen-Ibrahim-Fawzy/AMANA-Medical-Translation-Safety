@@ -1,0 +1,20 @@
+name: Test cases
+description: Submit English and Arabic cases written without reading the checker's rules
+title: "Test cases: "
+body:
+  - type: checkboxes
+    id: blind
+    attributes:
+      label: Before you submit
+      options:
+        - label: I wrote these without reading the checker's rules or its existing test cases.
+          required: true
+        - label: They contain no patient information.
+          required: true
+  - type: textarea
+    id: cases
+    attributes:
+      label: Cases
+      description: For each case give the English, the Arabic, and whether the translation is correct. If it is wrong, say what is wrong.
+    validations:
+      required: true

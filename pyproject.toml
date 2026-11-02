@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "amana"
-version = "0.2.0"
+version = "0.3.0"
 description = "Research framework for clinical meaning preservation in English to Arabic medication translation."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -17,6 +17,9 @@ test = ["pytest>=8"]
 
 [tool.setuptools]
 packages = ["amana"]
+
+[tool.setuptools.package-data]
+amana = ["data/*.tsv"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

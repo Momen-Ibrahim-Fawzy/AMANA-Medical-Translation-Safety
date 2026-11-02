@@ -21,8 +21,8 @@
       },
       "QE rerank": {
         "critical_flag_rate": 0.02666666666666667,
-        "guard2_not_passed_rate": 0.03666666666666667,
-        "guard2_flag_rate": 0.02666666666666667,
+        "guard2_not_passed_rate": 0.043333333333333335,
+        "guard2_flag_rate": 0.03333333333333333,
         "qe_unsafe_rate": 0.09,
         "chrF": 68.69348662025534,
         "COMET-22": 0.880969449877739,
@@ -30,8 +30,8 @@
       },
       "Guard+QE rerank": {
         "critical_flag_rate": 0.016666666666666666,
-        "guard2_not_passed_rate": 0.02666666666666667,
-        "guard2_flag_rate": 0.02666666666666667,
+        "guard2_not_passed_rate": 0.03333333333333333,
+        "guard2_flag_rate": 0.03333333333333333,
         "qe_unsafe_rate": 0.09,
         "chrF": 68.73412801795084,
         "COMET-22": 0.8811984644333521,
@@ -42,8 +42,8 @@
         "guard2_not_passed_rate": 0.023333333333333334,
         "guard2_flag_rate": 0.023333333333333334,
         "qe_unsafe_rate": 0.09666666666666666,
-        "chrF": 68.6837866814269,
-        "COMET-22": 0.8809347548087438,
+        "chrF": 68.69110955525285,
+        "COMET-22": 0.8810197005669276,
         "n": 300
       }
     },
@@ -115,7 +115,7 @@
       },
       "QE rerank": {
         "critical_flag_rate": 0.14666666666666667,
-        "guard2_not_passed_rate": 0.4266666666666667,
+        "guard2_not_passed_rate": 0.42333333333333334,
         "guard2_flag_rate": 0.42333333333333334,
         "qe_unsafe_rate": 0.14,
         "chrF": 66.56695912790106,
@@ -124,7 +124,7 @@
       },
       "Guard+QE rerank": {
         "critical_flag_rate": 0.14333333333333334,
-        "guard2_not_passed_rate": 0.4266666666666667,
+        "guard2_not_passed_rate": 0.42333333333333334,
         "guard2_flag_rate": 0.42333333333333334,
         "qe_unsafe_rate": 0.14,
         "chrF": 66.58141274277354,
@@ -136,8 +136,8 @@
         "guard2_not_passed_rate": 0.42,
         "guard2_flag_rate": 0.42,
         "qe_unsafe_rate": 0.20333333333333334,
-        "chrF": 66.43254490952428,
-        "COMET-22": 0.8382896318038304,
+        "chrF": 66.43197728762617,
+        "COMET-22": 0.8382686177889506,
         "n": 300
       }
     }

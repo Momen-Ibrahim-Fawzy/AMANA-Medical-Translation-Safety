@@ -1,0 +1,103 @@
+{
+ "NLLB-200-600M": {
+  "n": 300,
+  "passed": 0.3467,
+  "flagged": 0.1667,
+  "review_only": 0.4867,
+  "mean_coverage": 0.57,
+  "fully_covered": 0.56,
+  "numbers_lost_parser_free": 39,
+  "flag_kinds": {
+   "strength": 11,
+   "negation": 11,
+   "number": 10,
+   "dose": 8,
+   "limit": 6,
+   "drug": 6,
+   "duration": 3,
+   "route": 3,
+   "condition": 3,
+   "laterality": 1,
+   "unit": 1,
+   "warning": 1,
+   "omission": 1
+  },
+  "review_kinds": {
+   "unverified": 139,
+   "drug": 31,
+   "dose": 17,
+   "action": 9,
+   "route": 6,
+   "number": 6,
+   "duration": 5,
+   "laterality": 1,
+   "timing": 1,
+   "omission": 1
+  }
+ },
+ "M2M100-418M": {
+  "n": 300,
+  "passed": 0.3933,
+  "flagged": 0.1433,
+  "review_only": 0.4633,
+  "mean_coverage": 0.57,
+  "fully_covered": 0.56,
+  "numbers_lost_parser_free": 15,
+  "flag_kinds": {
+   "negation": 12,
+   "condition": 10,
+   "drug": 9,
+   "limit": 6,
+   "dose": 5,
+   "number": 3,
+   "route": 3,
+   "laterality": 1,
+   "unit": 1
+  },
+  "review_kinds": {
+   "unverified": 139,
+   "drug": 52,
+   "action": 7,
+   "route": 5,
+   "dose": 4,
+   "frequency": 2,
+   "number": 2,
+   "omission": 2,
+   "duration": 1,
+   "laterality": 1
+  }
+ },
+ "OPUS-MT-en-ar": {
+  "n": 300,
+  "passed": 0.3733,
+  "flagged": 0.1333,
+  "review_only": 0.4933,
+  "mean_coverage": 0.57,
+  "fully_covered": 0.56,
+  "numbers_lost_parser_free": 24,
+  "flag_kinds": {
+   "dose": 21,
+   "drug": 8,
+   "negation": 7,
+   "condition": 6,
+   "limit": 6,
+   "number": 5,
+   "route": 4,
+   "strength": 4,
+   "unit": 3,
+   "omission": 1,
+   "timing": 1
+  },
+  "review_kinds": {
+   "unverified": 139,
+   "drug": 71,
+   "action": 8,
+   "duration": 5,
+   "dose": 4,
+   "number": 3,
+   "frequency": 2,
+   "laterality": 1,
+   "route": 1
+  }
+ }
+}

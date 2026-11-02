@@ -104,6 +104,20 @@ and checked by `scripts/10_guard2_eval.py --holdout`. It was written by the same
 It was scored on the first code and again after three later changes (two control-character bugs, one fuzzy matching change from development data). Both runs are reported, and it is now spent. (3) Real text
 with controlled errors, AMANA-TICO, which is development data for the guard.
 
+## 4c. What Guard 2 does when it cannot verify
+
+A probe outside the benchmark showed that "no mismatch" often meant "no rule". The checker now adds:
+
+- **Open drug names.** It looks for names from Wikidata, and for words placed or spelled like drug names, in the source.
+  Each must be found in the translation in Latin script, by exact label, or by transliteration. A different known
+  drug is a flag. Anything else is a review item.
+- **Coverage.** A source sentence with nothing to compare is a review item, and each report gives the share checked.
+- **Sequences.** Quantities on either side of "then" or "ثم" are compared in order.
+
+The name comparison reduces both sides to shared consonant classes. `scripts/15_drug_names_eval.py` chose the threshold
+on 4 in 5 Wikidata names. A false match is a silent pass and a missed match only asks for review, so it takes the
+strict end of the sweep (0.9). The sealed fifth was scored once afterwards.
+
 ## 5. AMANA-QE (learned, reference-free)
 
 A LaBSE cross-encoder fine-tuned to classify (source, translation) pairs as safe or critical.
@@ -151,6 +165,16 @@ instructions, with both Arabic versions, as correct. The author is not a clinici
 independent or blinded review has been done. Because the guard was refined on these outputs, the
 flag rates are not a held-out result.
 
+## 6b. Real inputs
+
+`scripts/16_real_inputs.py` takes sentences from the patient sections of US FDA labels through openFDA, keeping those of
+5–35 words that give an instruction or a quantity, with at most 3 per label. It samples 300 sentences for each of a
+development and a sealed set, split by label hash. Three MT systems translate them. Reading development output led to
+fixes for false alarms, and the sealed set was then scored.
+
+There are no references and no error labels, so the output is the checker's status and coverage, and one measure that uses
+no parser: whether each digit sequence in the source appears in the translation.
+
 ## 7. Limitations
 
 - The benchmark is template-based and real prescriptions are more varied. The MT audit also uses
@@ -173,5 +197,7 @@ flag rates are not a held-out result.
   measure variance well.
 - Bootstrap intervals resample pairs, and pairs from similar instructions are not fully independent.
 - There are no severity tiers, and no clinician has reviewed any result.
+- FDA labels are US English for US patients and include storage and ingredient text, so the sample is broader than dosing
+  instructions. The MT outputs in that track have no adjudicated errors.
 - Arabic only, in Modern Standard Arabic. Dialectal patient-facing Arabic is future work.
 - This is a research tool. It is not a medical device and not prescribing guidance.
