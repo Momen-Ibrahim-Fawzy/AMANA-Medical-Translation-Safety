@@ -3,7 +3,8 @@
 ## `processed/amana_bench.jsonl`: AMANA-Bench (synthetic, controlled)
 
 English medication instructions with Arabic translations. Each row pairs one instruction with one
-clinically critical error.
+clinically critical error. At 35 MB, this file is not stored in git: run `python scripts/01_build_bench.py`
+to rebuild it. `tests/test_repro.py` checks the result against the hash in `results/MANIFEST.json`.
 
 | field | meaning |
 |---|---|

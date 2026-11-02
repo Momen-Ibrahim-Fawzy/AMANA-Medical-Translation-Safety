@@ -137,11 +137,11 @@ holds 20 errors and 20 safe paraphrases, frozen by SHA-256 before Guard 2 was im
 to tune it. The same author wrote the cases and the checker, knowing its aims, so this is not a blind
 test, and 40 cases give wide intervals.
 
-| run | errors caught (95% CI) | safe accepted (95% CI) |
+| run (file in `results/`) | errors caught (95% CI) | safe accepted (95% CI) |
 |---|---:|---:|
 | AMANA-Guard (baseline) | 13 / 20 | 10 / 20 |
-| Guard 2, first run | 19 / 20 (76.4–99.1) | 14 / 20 (48.1–85.5) |
-| Guard 2, final code | 20 / 20 (83.9–100) | 14 / 20 (48.1–85.5) |
+| Guard 2, first run (`guard2_holdout_first_run.json`) | 19 / 20 (76.4–99.1) | 14 / 20 (48.1–85.5) |
+| Guard 2, final code (`guard2_holdout.json`) | 20 / 20 (83.9–100) | 14 / 20 (48.1–85.5) |
 
 Three code changes separate the runs: two literal control characters in regular expressions, and a change
 to fuzzy drug matching prompted by a false match on development data. None was made by tuning on a hold-out
@@ -193,17 +193,18 @@ pip install -r requirements.txt
 python scripts/run_all.py --list                # show every step
 python scripts/run_all.py --stages report       # no GPU: rebuilds summaries and figures
 python scripts/run_all.py                       # everything: needs a GPU and model downloads
+python scripts/run_all.py --from-step 8         # resume after a failure, using the numbers from --list
 pytest tests
 python scripts/10_guard2_eval.py --holdout      # re-scores the spent hold-out; do not tune on it
 ```
 
 | stage | what it does | GPU | results in the repository |
 |---|---|---|---|
-| `data` | builds AMANA-Bench and AMANA-TICO, downloading TICO-19 | no | yes |
+| `data` | builds AMANA-Bench and AMANA-TICO, downloading TICO-19 | no | AMANA-TICO only; AMANA-Bench is rebuilt from a fixed seed and a test checks its hash |
 | `audit` | scores metrics on the 1,620 contrastive pairs, with intervals | yes | yes (`metric_audit.json`, `metric_stats.json`) |
 | `qe` | trains AMANA-QE and 4 generalization runs, about 70–85 minutes per generalization run on an 8 GB GPU | yes | yes, except checkpoints |
 | `mt` | translates with 3 systems, scores candidates | yes | yes (`mt_outputs.jsonl`, `mt_audit.json`) |
-| `report` | guard evaluations, error patterns, figures, manifest | no | yes (`MANIFEST.json` has file hashes) |
+| `report` | rebuilds AMANA-Bench, then guard evaluations, error patterns, figures, manifest | no | yes (`MANIFEST.json` has file hashes) |
 
 Not run: NLLB-200-1.3B and CometKiwi-22, which could not be loaded. GitHub Actions runs the tests on Python 3.10–3.12.
 

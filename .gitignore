@@ -3,6 +3,7 @@ _private/
 
 # data and model artefacts
 data/raw/
+data/processed/amana_bench.jsonl
 data/cache/
 *.ckpt
 *.pt

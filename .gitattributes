@@ -1,0 +1,3 @@
+# keep data and results byte-identical on every platform; their hashes are checked
+*.jsonl text eol=lf
+results/*.json text eol=lf

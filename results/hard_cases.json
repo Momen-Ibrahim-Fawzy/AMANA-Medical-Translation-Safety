@@ -90,6 +90,10 @@
       "Guard+QE rerank": [
         0.7,
         3.8
+      ],
+      "Guard2+QE rerank": [
+        1.1,
+        4.7
       ]
     },
     "OPUS-MT-en-ar": {
@@ -108,6 +112,10 @@
       "Guard+QE rerank": [
         21.1,
         30.9
+      ],
+      "Guard2+QE rerank": [
+        23.8,
+        34.0
       ]
     },
     "M2M100-418M": {
@@ -126,6 +134,10 @@
       "Guard+QE rerank": [
         10.8,
         18.8
+      ],
+      "Guard2+QE rerank": [
+        16.2,
+        25.2
       ]
     }
   },

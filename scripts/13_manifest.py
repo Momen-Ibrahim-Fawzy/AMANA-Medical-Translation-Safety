@@ -17,11 +17,8 @@ PACKAGES = ("torch", "transformers", "unbabel-comet", "sacrebleu", "bert-score",
 
 
 def sha256(path: Path) -> str:
-    h = hashlib.sha256()
-    with path.open("rb") as f:
-        for chunk in iter(lambda: f.read(1 << 20), b""):
-            h.update(chunk)
-    return h.hexdigest()
+    # line endings are normalized so the hash does not depend on the platform that wrote the file
+    return hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
 
 
 def version(pkg: str) -> str | None:
