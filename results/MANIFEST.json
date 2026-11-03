@@ -1,5 +1,5 @@
 {
- "code_revision_before_this_commit": "58800ba1405c9500d3a7f1d0829828423fd41456",
+ "code_revision_before_this_commit": "a6183718bc52d1fde0a3d572e6cf0d9fa40af722",
  "python": "3.11.5",
  "packages": {
   "torch": "2.6.0+cu124",
@@ -42,6 +42,7 @@
   "data/processed/amana_bench.jsonl": "f18436fa4eb23e6ed62cb469fffd99c6b5bf7c78b24909ea1bc0e1a0bcdd969e",
   "data/processed/amana_tico.jsonl": "36bd1544c9ff86eaee21f08f054f774fa79226e3bbac6d38fc3cc767e357e918",
   "data/processed/fda_sentences.jsonl": "92d6d2d760a9821614964c61f226d9fe532e8169e758e19afa58bded0ee7d02b",
+  "results/adjudication.json": "ffa346f58e5a76852dd8f1eee47b354bf9d9027d0486af725ddb547a624a84e4",
   "results/amana_qe_predictions.json": "fac04c1b8ab6359b9e5d3472a7dce23fe59e83f9f48ae6e28ab03a6acbad6ff0",
   "results/amana_qe_summary.json": "c9b51363a471ee5cecba83bccf316cfc7fcdf8d2e2ac2685e9191c48cf446f35",
   "results/audit_set.jsonl": "5e1e342f2913db92762668516190ebe4f9ce57efd28bd47f38a1c3e362ffb9c6",

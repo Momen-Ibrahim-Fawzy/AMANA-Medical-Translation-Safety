@@ -19,6 +19,7 @@ they were built with, and much weaker as the test moves away from it:
 | Drug names from Wikidata (sealed, n = 366) | names no one here chose | accepts 94.0% of correct names, 3.3% of the most similar wrong drug | not applicable |
 | Real FDA label sentences, MT output (sealed half) | real English; **no error labels** | passes 35–40%, flags 11–16%, sends 47–50% to review | not run |
 | Real human leaflets, PEACH (sealed half) | real English and Arabic; errors injected | catches 95–100% of injected errors, but only about 1 in 6 flags on the published text points at a real difference | not run |
+| Blinded human review of reranking (n = 60) | a person, not the checker, judges | reranking better in 5, worse in 4, same in 51 *(qualification not recorded)* | part of the reranked pick |
 | Naturally occurring errors, independently annotated | everything | **not done** | **not done** |
 
 AMANA-QE was not tested on the hand-written cases. Its unseen-type and unseen-form rows use two seeds each.
@@ -91,6 +92,15 @@ candidates with a detected problem were avoided, not that the chosen output is s
 the fairer cross-check, and it makes OPUS-MT slightly worse. The reverse cross-check, the share AMANA-QE
 scores below 0.5, moves little after Guard 2 + QE: NLLB 13.0% → 9.7%, OPUS-MT 27.7% → 26.3%, M2M100 21.7%
 → 20.3%. Changes in chrF stay within ±1.2 and in COMET-22 within ±0.003.
+
+**A blinded human review finds no overall gain.** One reviewer judged the 60 pairs in `adjudication/packet.html`, each
+showing the 1-best and the Guard 2 + QE pick in random order, without knowing which was which. Their clinical
+qualification was not recorded, so this is not clinical validation. Reranking was judged better in 5 pairs, worse in 4,
+and the same in 51. It removed 3 errors rated clinically critical (mcg written as mg, a dropped "do not crush or chew",
+"suspension" as "stop") and added 1 ("suspension" as "stop"). All 16 OPUS-MT pairs were judged the same. The reviewer
+rated 9 OPUS-MT pairs critical in both versions because "tablet" became لوح. That word is used for tablets in some
+regions, so the rating may be strict, but it does not affect the comparison. Counts are in `results/adjudication.json`;
+per-item answers stay private so the packet remains blind for the next reviewer.
 
 ![MT audit](figures/mt_audit.png)
 
@@ -202,7 +212,7 @@ report.status, report.flags, report.review
 | **Open drug names** (`amana/drugnames.py`) | 1,893 English and Arabic drug names from Wikidata (CC0), and a comparison of an English name with an Arabic word through a shared consonant spelling, so a drug outside the benchmark can be looked for in a translation. |
 | **Real-input track** (`scripts/16_real_inputs.py`) | 600 sentences from US FDA patient labels (public domain) and their MT outputs. |
 | **Real-leaflet track** (`scripts/17_peach.py`) | Scores the checker on PEACH leaflets. The corpus is not included: download it and the script does the rest. Results hold counts and file and row references, no text. |
-| **Adjudication packet** (`adjudication/packet.html`) | 60 pairs of MT candidates for a pharmacist or clinician to judge, blinded to system and checker. Not yet completed by anyone. |
+| **Adjudication packet** (`adjudication/packet.html`) | 60 pairs of MT candidates for a pharmacist or clinician to judge, blinded to system and checker. Judged once, by a reviewer whose clinical qualification was not recorded; a pharmacist's judgement is still missing. |
 
 ## How far to trust each result
 

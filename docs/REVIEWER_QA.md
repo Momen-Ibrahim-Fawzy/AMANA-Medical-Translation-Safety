@@ -76,12 +76,14 @@ track, seed choice alone moved them from 70% to 100%. Two seeds per track also c
 ## Is there clinical validation?
 
 None. The author is a native Arabic speaker and not a clinician. `adjudication/packet.html` is ready for a
-pharmacist or clinician to judge 60 blinded pairs, and no one has completed it yet. Severity tiers also need
-clinical input.
+pharmacist or clinician to judge 60 blinded pairs. One reviewer has completed it, but their clinical qualification was
+not recorded, so it is a blinded human judgement, not clinical validation. It found reranking better in 5 pairs, worse
+in 4 and the same in 51 (`results/adjudication.json`). Severity tiers also need clinical input.
 
 ## What evidence would change the conclusions?
 
-1. A pharmacist's adjudication of the blinded packet.
+1. A pharmacist's adjudication of the blinded packet. One judgement exists from a reviewer of unrecorded qualification;
+   a second, clinical one would show whether it holds.
 2. A fresh test set written by another person.
 3. Real translated medication instructions with naturally occurring, independently annotated errors. PEACH now supplies
    real text, but nobody independent has annotated its differences. A pharmacist judging the flagged leaflet rows would help.

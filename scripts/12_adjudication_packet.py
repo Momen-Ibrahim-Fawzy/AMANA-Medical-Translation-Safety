@@ -68,18 +68,38 @@ def build(args):
     print(f"{len(items)} of {len(changed)} changed instructions -> {OUT / 'packet.html'}")
 
 
+LABELS = {"safe": "safe", "minor": "minor", "minor problem": "minor", "critical": "critical", "clinically critical": "critical"}
+RANK = {"safe": 0, "minor": 1, "critical": 2}
+
+
 def score(args):
+    """Aggregate counts only: per-item results would tell the next reviewer which version is the base."""
     key = json.loads(KEY.read_text(encoding="utf-8"))
     tally = {"base": {"safe": 0, "minor": 0, "critical": 0}, "reranked": {"safe": 0, "minor": 0, "critical": 0}}
+    paired = {"reranked better": 0, "base better": 0, "same": 0}
+    by_system = {}
+    critical = {"removed by reranking": 0, "added by reranking": 0}
     with open(args.answers, encoding="utf-8-sig", newline="") as f:
         for row in csv.DictReader(f):
             k = key[row["id"]]
             other = "B" if k["base"] == "A" else "A"
-            if row[k["base"]] and row[other]:
-                tally["base"][row[k["base"]]] += 1
-                tally["reranked"][row[other]] += 1
-    (ROOT / "results" / "adjudication.json").write_text(json.dumps(tally, indent=2), encoding="utf-8")
-    print(tally)
+            if not (row[k["base"]] and row[other]):
+                continue
+            base, reranked = LABELS[row[k["base"]].strip().lower()], LABELS[row[other].strip().lower()]
+            tally["base"][base] += 1
+            tally["reranked"][reranked] += 1
+            d = RANK[reranked] - RANK[base]
+            outcome = "reranked better" if d < 0 else "base better" if d > 0 else "same"
+            paired[outcome] += 1
+            by_system.setdefault(k["system"], {"reranked better": 0, "base better": 0, "same": 0})[outcome] += 1
+            if base == "critical" and reranked != "critical":
+                critical["removed by reranking"] += 1
+            if reranked == "critical" and base != "critical":
+                critical["added by reranking"] += 1
+    out = {"reviewer": args.reviewer, "strategy": STRATEGY, "judged": sum(paired.values()), "labels": tally,
+           "paired": paired, "critical": critical, "by_system": by_system}
+    (ROOT / "results" / "adjudication.json").write_text(json.dumps(out, indent=1), encoding="utf-8")
+    print(json.dumps(out, indent=1))
 
 
 def main():
@@ -90,6 +110,7 @@ def main():
     b.add_argument("--seed", type=int, default=31)
     s = sub.add_parser("score")
     s.add_argument("answers")
+    s.add_argument("--reviewer", default="not stated", help="who judged, as they want it described")
     args = ap.parse_args()
     {"build": build, "score": score}[args.cmd](args)
 

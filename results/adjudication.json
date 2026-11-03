@@ -1,0 +1,43 @@
+{
+ "reviewer": "one human reviewer; clinical qualification not recorded",
+ "strategy": "Guard2+QE rerank",
+ "judged": 60,
+ "labels": {
+  "base": {
+   "safe": 42,
+   "minor": 6,
+   "critical": 12
+  },
+  "reranked": {
+   "safe": 41,
+   "minor": 9,
+   "critical": 10
+  }
+ },
+ "paired": {
+  "reranked better": 5,
+  "base better": 4,
+  "same": 51
+ },
+ "critical": {
+  "removed by reranking": 3,
+  "added by reranking": 1
+ },
+ "by_system": {
+  "M2M100-418M": {
+   "reranked better": 1,
+   "base better": 1,
+   "same": 15
+  },
+  "NLLB-200-600M": {
+   "reranked better": 4,
+   "base better": 3,
+   "same": 20
+  },
+  "OPUS-MT-en-ar": {
+   "reranked better": 0,
+   "base better": 0,
+   "same": 16
+  }
+ }
+}
