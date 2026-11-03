@@ -27,5 +27,5 @@ share, with identifying details removed, please open an issue and describe the s
 
 - Run `pytest tests` before opening a pull request.
 - New rules need a test for what they catch and a test for what they must not flag.
-- Never tune on sealed data: `data/hard_cases_holdout.jsonl`, the sealed drug names or the sealed FDA labels.
+- Never tune on sealed data: `data/hard_cases_holdout.jsonl`, the sealed drug names, the sealed FDA labels or the sealed PEACH leaflets.
 - Report numbers from a run you can reproduce, and say which data shaped the change.

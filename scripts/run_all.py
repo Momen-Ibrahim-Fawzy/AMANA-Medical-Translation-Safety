@@ -20,6 +20,7 @@ STAGES = {
            "05_train_qe.py --exclude-types unit laterality negation --tag types",
            "05_train_qe.py --exclude-forms eye_drop inhaler --tag forms"],
     "mt": ["06_mt_audit.py translate --n 300", "06_mt_audit.py evaluate", "16_real_inputs.py translate"],
+    "peach": ["17_peach.py evaluate", "17_peach.py evaluate --sealed"],
     "report": ["01_build_bench.py", "04_guard_eval.py", "08_error_patterns.py", "09_hard_cases.py", "10_guard2_eval.py",
                "15_drug_names_eval.py", "15_drug_names_eval.py --test", "16_real_inputs.py evaluate",
                "16_real_inputs.py evaluate --sealed", "07_figures.py", "13_manifest.py"],

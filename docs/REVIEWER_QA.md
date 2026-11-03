@@ -31,15 +31,20 @@ word that no rule looks at can still pass within a sentence that has other check
 
 ## How does it do on real text?
 
-On sealed FDA label sentences, each system passes 35–39%, and about half go to review. Only 56% of sentences are fully
+On sealed FDA label sentences, each system passes 35–40%, and about half go to review. Only 56% of sentences are fully
 covered by the rules. No error labels exist for this text, so these are not accuracy figures. They show how much of the
 work still falls to a person.
+
+On real human leaflets (PEACH, sealed half), it passes 57.4% and flags 14.3%. In a sample of 60 flags, 10 pointed at a real
+difference, so most flags on sound text are false alarms. It stops passing 95–100% of injected number, negation and unit
+errors, about the same as the first checker. That reading was not clinical and not independently checked.
 
 ## How independent is the hold-out?
 
 Not very. The cases were frozen by hash before implementation and not tuned on, but the same author wrote
 them and knew what Guard 2 was meant to fix. Both runs are reported: 19/20 errors on the first run, 20/20
-after three code changes made after seeing that score, and 14/20 safe in both. The set is now spent. The next test has to be written by someone
+after three code changes made after seeing that score, and 14/20 safe in both. Later fixes from real leaflets moved safe
+cases to 15/20, which is not new evidence. The set is now spent. The next test has to be written by someone
 else, without seeing the code.
 
 ## Why not lead with hold-out recall?
@@ -78,8 +83,8 @@ clinical input.
 
 1. A pharmacist's adjudication of the blinded packet.
 2. A fresh test set written by another person.
-3. Real translated medication instructions with naturally occurring, independently annotated errors. The PEACH
-   corpus of English-Arabic patient leaflets is a candidate if its author can share the sentences.
+3. Real translated medication instructions with naturally occurring, independently annotated errors. PEACH now supplies
+   real text, but nobody independent has annotated its differences. A pharmacist judging the flagged leaflet rows would help.
 
 ## Why no MLflow, DVC, a config framework or a web service?
 

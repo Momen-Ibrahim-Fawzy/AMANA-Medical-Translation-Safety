@@ -8,6 +8,8 @@ WEST_TO_INDIC = str.maketrans("0123456789", "٠١٢٣٤٥٦٧٨٩")
 INDIC_TO_WEST = str.maketrans("٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹", "01234567890123456789")
 
 DIACRITICS = re.compile(r"[ً-ْٰـ]")  # harakat, dagger alif, tatweel
+# letters from other Arabic-script alphabets, common in real leaflets (ھذا, تاریخ, ڤالسارتان)
+VARIANT_LETTERS = str.maketrans({"ھ": "ه", "ہ": "ه", "ە": "ه", "ی": "ي", "ک": "ك", "ڤ": "ف", "پ": "ب", "گ": "ج"})
 
 
 def to_indic(text: str) -> str:
@@ -30,7 +32,7 @@ def strip_hamza(text: str) -> str:
 def normalize(text: str) -> str:
     """Canonical form used for matching only (never for rendering)."""
     text = to_western(text)
-    text = DIACRITICS.sub("", text)
+    text = DIACRITICS.sub("", text).translate(VARIANT_LETTERS)
     text = strip_hamza(text)
     text = text.replace("ى", "ي").replace("ة", "ه")
     return re.sub(r"\s+", " ", text).strip()
@@ -91,7 +93,8 @@ _ORDER_WORDS = {"مره": 1, "مرتين": 2, "مرتان": 2}
 # known dual nouns -> the number 2 is implicit in the noun
 DUAL_STEMS = (
     "قرصين", "قرصان", "حبتين", "حبتان", "كبسولتين", "قطرتين", "نقطتين", "بختين", "ملعقتين",
-    "وحدتين", "يومين", "يومان", "اسبوعين", "شهرين", "ساعتين", "مرتين", "مرتان", "جرعتين",
+    "وحدتين", "يومين", "يومان", "اسبوعين", "اسبوعان", "شهرين", "شهران", "ساعتين", "ساعتان", "مرتين", "مرتان", "جرعتين",
+    "عامين", "عامان", "سنتين", "سنتان",
 )
 
 

@@ -14,10 +14,11 @@ they were built with, and much weaker as the test moves away from it:
 | Held-out drugs (AMANA-Bench) | the drug only; same templates | recall 100%, false alarms 0% *(upper bound)* | AUROC 0.999 |
 | Unseen dosage forms | eye drops, inhalers | not applicable (rules) | AUROC 0.85–0.86; false alarms 70–100% at 0.5 |
 | Unseen error types | unit, laterality, negation | not applicable (rules) | AUROC 0.67–0.71; recall 31–36% at 0.5 |
-| Real text, controlled errors (AMANA-TICO) | the wording; errors are still injected | recall 94.9%, false alarms 14.9% *(development data)* | AUROC 0.80; false alarms 70% at 0.5 |
-| Hand-written hold-out (n = 40) | the phrasing | 20/20 errors, 14/20 safe *(same author, not blind)* | not run |
+| Real text, controlled errors (AMANA-TICO) | the wording; errors are still injected | recall 94.6%, false alarms 14.7% *(development data)* | AUROC 0.80; false alarms 70% at 0.5 |
+| Hand-written hold-out (n = 40) | the phrasing | 20/20 errors, 15/20 safe *(same author, not blind; first run 19/20, 14/20)* | not run |
 | Drug names from Wikidata (sealed, n = 366) | names no one here chose | accepts 94.0% of correct names, 3.3% of the most similar wrong drug | not applicable |
-| Real FDA label sentences, MT output (sealed half) | real English; **no error labels** | passes 35–39%, flags 13–17%, sends 46–49% to review | not run |
+| Real FDA label sentences, MT output (sealed half) | real English; **no error labels** | passes 35–40%, flags 11–16%, sends 47–50% to review | not run |
+| Real human leaflets, PEACH (sealed half) | real English and Arabic; errors injected | catches 95–100% of injected errors, but only about 1 in 6 flags on the published text points at a real difference | not run |
 | Naturally occurring errors, independently annotated | everything | **not done** | **not done** |
 
 AMANA-QE was not tested on the hand-written cases. Its unseen-type and unseen-form rows use two seeds each.
@@ -61,8 +62,8 @@ exploratory audit, not an estimate of how often these models err on clinical tex
 | | OPUS-MT en-ar | NLLB-200-600M | M2M100-418M |
 |---|---:|---:|---:|
 | chrF / COMET-22 | **74.4** / 0.862 | 67.5 / **0.878** | 66.2 / 0.839 |
-| not passed by AMANA-Guard 2 (95% CI) | 25.0% (20.4–30.2) | **6.7%** (4.4–10.1) | 43.0% (37.5–48.7) |
-| of which flagged / needs review only | 9.7% / 15.3% | 6.7% / 0% | 43.0% / 0% |
+| not passed by AMANA-Guard 2 (95% CI) | 24.7% (20.1–29.8) | **6.7%** (4.4–10.1) | 43.0% (37.5–48.7) |
+| of which flagged / needs review only | 9.3% / 15.3% | 6.7% / 0% | 43.0% / 0% |
 | "mcg" doses written as "mg" (1000×) | **18 / 18** | 0 / 18 | 2 / 18 |
 | "rash" warning → "البراز" ("stool") | 0 / 46 | 0 / 46 | **40 / 46** |
 | safety warnings silently dropped | 2 / 109 | 19 / 109 | **57 / 109** |
@@ -84,7 +85,8 @@ choose among each system's own 5-best beam candidates, with no retraining.
 | OPUS-MT en-ar | 25.0% | 27.3% | 24.7% | 74 / 300 |
 | M2M100-418M | 43.0% | 42.3% | 42.0% | 126 / 300 |
 
-The Guard 2 + QE column is partly circular, because Guard 2 both chooses and judges. It shows that
+These runs need a GPU and were not repeated after the leaflet fixes in finding 6, which moved OPUS-MT's 1-best from 25.0% to
+24.7%. The Guard 2 + QE column is partly circular, because Guard 2 both chooses and judges. It shows that
 candidates with a detected problem were avoided, not that the chosen output is safe. The QE column is
 the fairer cross-check, and it makes OPUS-MT slightly worse. The reverse cross-check, the share AMANA-QE
 scores below 0.5, moves little after Guard 2 + QE: NLLB 13.0% → 9.7%, OPUS-MT 27.7% → 26.3%, M2M100 21.7%
@@ -98,9 +100,9 @@ were split by hash into a development half, used to fix false alarms, and a seal
 
 | sealed half, n = 300 per system (95% CI) | NLLB-200-600M | M2M100-418M | OPUS-MT en-ar |
 |---|---:|---:|---:|
-| no problem detected | 34.7% (29.5–40.2) | 39.3% (34.0–45.0) | 37.3% (32.0–42.9) |
-| flagged | 16.7% (12.9–21.3) | 14.3% (10.8–18.7) | 13.3% (9.9–17.6) |
-| needs review only | 48.7% (43.1–54.3) | 46.3% (40.8–52.0) | 49.3% (43.7–55.0) |
+| no problem detected | 35.3% (30.1–40.9) | 40.3% (34.9–46.0) | 39.7% (34.3–45.3) |
+| flagged | 15.7% (12.0–20.2) | 12.3% (9.1–16.5) | 10.7% (7.7–14.7) |
+| needs review only | 49.0% (43.4–54.6) | 47.3% (41.8–53.0) | 49.7% (44.0–55.3) |
 | a source digit missing from the output, no parser used | 39 | 15 | 24 |
 
 These are not error rates: the sentences have no error labels and no one has judged the outputs. Only 56% of the
@@ -112,6 +114,37 @@ such as "20 mcg" as "20 ملغ" and metformin as "حبوب منع الحمل" (c
 the previous version said `ok` to a wrong drug (apixaban as rivaroxaban), a swapped taper (40 then 20 mg as 20 then
 40 mg) and a dropped bleeding warning. These now give a flag or a review item, and each report says how much of the
 source was checked. No benchmark translation, hold-out case or development hard case changed its result.
+
+**6. On real human leaflets, most flags are the checker's fault, and reading them exposed a dangerous gap.**
+[PEACH](https://data.mendeley.com/datasets/5k6yrrhng7/1) (Al-Sabbagh, 2024) aligns English and Arabic patient leaflets.
+We used the sentences about taking a medicine, split by leaflet into a development half, used to fix the checker, and a
+sealed half, scored once.
+
+| sealed half: 1,732 sentences, 131 leaflets | share (95% CI, resampling leaflets) |
+|---|---:|
+| no problem detected | 57.4% (54.4–60.7) |
+| flagged | 14.3% (12.2–16.4) |
+| needs review only | 28.3% (25.5–30.9) |
+| every sentence covered by the rules | 77.1% (74.6–79.7) |
+
+These translations were published, so most should be sound. We read a fixed random sample of 60 sealed flags: **10 pointed
+at a real difference in meaning or a dropped part (16.7%, 9.3–28.0), and the rest were the checker's errors.** That
+reading was not done by a clinician or checked independently, and a difference is not proof of a wrong leaflet, since the
+two language versions may not match by design and the alignment can be off. The real ones include "250 mg three times a
+day" written as three capsules daily, and "40 mg to 90 mg" written as 90 to 70 mg (`results/peach_sealed_flags_read.json`).
+
+To measure catching errors, one error was injected into each sentence that passed when clean:
+
+| injected error, sealed half | sentences | stopped passing (95% CI) | flagged |
+|---|---:|---:|---:|
+| one number changed | 612 | 95.1% (93.3–97.0) | 84.2% |
+| one negation removed | 240 | 95.0% (91.5–97.9) | 92.5% |
+| mg changed to mcg | 331 | 100% | 100% |
+
+The first checker catches about as many (98.2%, 97.3%, 100%), so Guard 2 adds no catching power here, and these are only
+3 of the 11 error types. Reading development misses found the dangerous part: "Do not take more than 8 tablets", with its
+negation removed, still passed. That is now flagged. The leaflets also forced support for spelling the benchmark never had,
+such as Persian-style letters and digits (`ھذا`, `۲۰`) and attached units (`٤غم`).
 
 ## Try it
 
@@ -163,11 +196,12 @@ report.status, report.flags, report.review
 |---|---|
 | **AMANA-Bench** | 25,258 contrastive rows from 3,180 generated English instructions: 53 drugs, 8 dosage forms, 11 critical error types including ISMP look-alike/sound-alike pairs. Split by drug. |
 | **AMANA-TICO** | 703 real professional EN→AR sentences from TICO-19 with one number or negation error injected. The text is real and the errors are constructed, and it covers only these 2 of the 11 error types. |
-| **AMANA-Guard** (`amana/guard.py`) | The first rule-based checker, kept unchanged as the baseline. It compares flat slots. |
+| **AMANA-Guard** (`amana/guard.py`) | The first rule-based checker, kept as the baseline. It compares flat slots. It shares spelling and unit handling with Guard 2, and later additions there did not change its benchmark, TICO-19 or hold-out scores. |
 | **AMANA-Guard 2** (`amana/guard2.py`) | Parses each side into per-drug instructions and warnings with a topic and polarity, then compares them. It separates flags from cases it needs a person to review. It is still rules and regular expressions, with a closed list of 10 warning topics. |
 | **AMANA-QE** | LaBSE cross-encoder fine-tuned on training drugs. It returns a **score for ranking, not a calibrated probability**. |
 | **Open drug names** (`amana/drugnames.py`) | 1,893 English and Arabic drug names from Wikidata (CC0), and a comparison of an English name with an Arabic word through a shared consonant spelling, so a drug outside the benchmark can be looked for in a translation. |
 | **Real-input track** (`scripts/16_real_inputs.py`) | 600 sentences from US FDA patient labels (public domain) and their MT outputs. |
+| **Real-leaflet track** (`scripts/17_peach.py`) | Scores the checker on PEACH leaflets. The corpus is not included: download it and the script does the rest. Results hold counts and file and row references, no text. |
 | **Adjudication packet** (`adjudication/packet.html`) | 60 pairs of MT candidates for a pharmacist or clinician to judge, blinded to system and checker. Not yet completed by anyone. |
 
 ## How far to trust each result
@@ -184,16 +218,16 @@ test, and 40 cases give wide intervals.
 |---|---:|---:|
 | AMANA-Guard (baseline) | 13 / 20 | 10 / 20 |
 | Guard 2, first run (`guard2_holdout_first_run.json`) | 19 / 20 (76.4–99.1) | 14 / 20 (48.1–85.5) |
-| Guard 2, final code (`guard2_holdout.json`) | 20 / 20 (83.9–100) | 14 / 20 (48.1–85.5) |
+| Guard 2, before the leaflet fixes | 20 / 20 (83.9–100) | 14 / 20 (48.1–85.5) |
+| Guard 2, current code (`guard2_holdout.json`) | 20 / 20 (83.9–100) | 15 / 20 (53.1–88.8) |
 
 Three code changes separate the runs: two literal control characters in regular expressions, and a change
 to fuzzy drug matching prompted by a false match on development data. None was made by tuning on a hold-out
 case, but all came after seeing the first score, and together they changed one result (h10). The first run
-is the cleaner estimate. The 6 false alarms
-are safe paraphrases that remain flagged: another verb for a prohibition, "must not", a paraphrased
-maximum, "thrice" in words, a number word in place of a dual, and fasting wording. They were left
-untouched on purpose. Any new claim needs fresh cases written by someone else. Re-running these cases after the
-later changes gives the same counts, which shows no regression and is not new evidence.
+is the cleaner estimate. The 5 remaining false alarms are safe paraphrases: another verb for a prohibition, a paraphrased
+maximum, "thrice" in words, a number word in place of a dual, and fasting wording. They were left untouched on purpose.
+The leaflet fixes also accepted "must not" (s06), which shows a change from other data reaching this set, not new
+evidence. Any new claim needs fresh cases written by someone else.
 
 **The drug name test is independent, but narrow.** Wikidata's labels were not written for this project, one name in
 five was sealed by hash, and the threshold was chosen on the others. It tests the name comparison alone, on clean
@@ -202,12 +236,19 @@ similar wrong drug (1.9–5.6) and none of 366 random wrong drugs. Names that di
 prednisone and prednisolone, which is why 8 of the 10 ISMP look-alike pairs are rejected and not all 10. A wrong drug
 whose exact label is in the table is flagged directly.
 
-**The sealed FDA half has one caveat.** After it was scored, a re-run on benchmark inputs exposed a false alarm on "even
-if", which was fixed. The sealed numbers did not change, and `results/fda_sealed_first_run.json` keeps the first run.
+**The sealed FDA half is no longer a clean estimate.** It was never tuned on, but the table above uses current code, which
+changed after it was first scored: an "even if" fix, then the leaflet fixes. `results/fda_sealed_first_run.json` keeps the
+first run (passes 35–39%).
+
+**The PEACH half is sealed once, and its leaflets are not a random sample of practice.** `results/peach_sealed_first_run.json`
+keeps that run. Injected errors are constructed, and development reading shaped the checker that was tested. Before the fixes,
+6 of 60 development flags pointed at a real difference. The English side is often a UK or EU leaflet and the Arabic a regional
+version. The corpus licence needs care: its Mendeley page says CC BY 4.0, its arXiv page shows CC BY-NC-SA 4.0, and the leaflets
+come from their manufacturers, so this repository redistributes none of the text.
 
 **The TICO-19 and MT rates are development data for the guard.** False alarms on TICO-19 references and
 reading MT outputs both led to guard changes. TICO-19 remains unseen for AMANA-QE. Guard 2's TICO-19
-results (94.9%, 14.9%) are no better than the baseline's (94.9%, 13.5%), and its false alarms are slightly
+results (94.6%, 14.7%) are no better than the baseline's (94.9%, 13.5%), and its false alarms are slightly
 higher, since this track has little medication structure for it to use.
 
 **AMANA-QE learned the generator to a large degree.** The drop from 0.999 to 0.67–0.71 on error types left
@@ -219,14 +260,17 @@ seed on unseen forms. It should not be used as a pass/fail gate.
 **Human review so far is limited.** The author, a native Arabic speaker but not a clinician, judged 12
 flags from the first guard and 20 benchmark instructions. All 20 instructions were judged correct, and
 4 of the 12 flags were false alarms, which were then fixed. Guard 2's flags have not been judged by a
-person outside development. No clinician has reviewed anything here.
+person outside development. The PEACH flag reading above is not clinical either. No clinician has reviewed anything here.
 
 ## Known failures
 
 - **Most real sentences need a person.** Only 10 warning topics are understood. Any other warning goes to review, so
   on real labels about half of all translations do. This is the honest cost of not passing what cannot be checked.
+- **Most flags on sound text are false.** About 5 in 6 on published leaflets. A flag is a request to look, not a finding.
 - **Known false alarms on real text.** Words such as "Injection" and "Propionate" can be read as drug names, and
-  ingredient lists and dual forms are often misread. They were left as they are once the sealed half was scored.
+  ingredient lists and dual forms are often misread. The sealed leaflets also showed `ويجب ألا`, decimal commas read as
+  thousands (`3,542`), "methylprednisolone" read as prednisolone and pack counts read as doses. All were left as they are
+  once the sealed half was scored.
 - **Garbled drug names.** A garbled name of a different drug is accepted for 2 of 2,450 ordered drug pairs
   (baseline: 15).
 - **No scope reasoning beyond simple patterns.** It handles per-drug doses, simple conditions and limits.
@@ -260,6 +304,7 @@ python scripts/10_guard2_eval.py --holdout      # re-scores the spent hold-out; 
 | `audit` | scores metrics on the 1,620 contrastive pairs, with intervals | yes | yes (`metric_audit.json`, `metric_stats.json`) |
 | `qe` | trains AMANA-QE and 4 generalization runs, about 70–85 minutes per generalization run on an 8 GB GPU | yes | yes, except checkpoints |
 | `mt` | translates with 3 systems, scores candidates | yes | yes (`mt_outputs.jsonl`, `mt_audit.json`, `fda_mt_outputs.jsonl`) |
+| `peach` | scores the leaflet track; skips itself if `data/raw/peach/peach.zip` is absent, keeping the committed results | no | counts only (`peach_*.json`) |
 | `report` | rebuilds AMANA-Bench, then guard, drug name and real-input evaluations, error patterns, figures, manifest | no | yes (`MANIFEST.json` has file hashes) |
 
 The FDA sentences and Wikidata names are committed snapshots. `16_real_inputs.py fetch` and `14_build_drug_names.py`
@@ -280,11 +325,10 @@ the benchmark are **not prescribing advice**.
 
 ACES (Amrhein et al., WMT 2022) for contrastive challenge sets. Mehandru et al. (2023) on MT metrics
 missing harmful errors in clinical translation. Saadany et al. (2024) on critical errors in MT evaluation.
-TICO-19 (Anastasopoulos et al., 2020). The ISMP List of Confused Drug Names. PEACH (Al-Sabbagh, 2024), an
-English-Arabic corpus of patient leaflets, would be a natural next test. Its Mendeley record holds only metadata, so using it would mean asking its author for the sentences.
+TICO-19 (Anastasopoulos et al., 2020). The ISMP List of Confused Drug Names. PEACH (Al-Sabbagh, 2024), the English-Arabic corpus of patient leaflets used in finding 6.
 
 ## Author
 
 **Momen Ibrahim Fawzy**
 
-Code: MIT. Data: CC BY 4.0 (TICO-19 and Wikidata are CC0, and FDA label text from openFDA is public domain).
+Code: MIT. Data: CC BY 4.0 (TICO-19 and Wikidata are CC0, and FDA label text from openFDA is public domain). PEACH is not redistributed here.

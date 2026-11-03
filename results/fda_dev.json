@@ -1,57 +1,58 @@
 {
  "NLLB-200-600M": {
   "n": 300,
-  "passed": 0.38,
-  "flagged": 0.1133,
-  "review_only": 0.5067,
+  "passed": 0.3667,
+  "flagged": 0.15,
+  "review_only": 0.4833,
   "mean_coverage": 0.5261,
   "fully_covered": 0.5133,
   "numbers_lost_parser_free": 28,
   "flag_kinds": {
-   "drug": 11,
-   "condition": 7,
+   "condition": 16,
+   "negation": 8,
+   "drug": 7,
    "strength": 6,
-   "negation": 6,
-   "limit": 4,
    "route": 4,
+   "limit": 3,
    "number": 3,
-   "dose": 1,
-   "omission": 1
+   "omission": 2,
+   "dose": 1
   },
   "review_kinds": {
    "unverified": 155,
-   "drug": 41,
+   "drug": 45,
    "dose": 13,
    "action": 7,
    "number": 7,
    "duration": 4,
    "route": 4,
-   "omission": 2
+   "omission": 2,
+   "negation": 2
   }
  },
  "M2M100-418M": {
   "n": 300,
-  "passed": 0.4,
-  "flagged": 0.1233,
-  "review_only": 0.4767,
+  "passed": 0.3933,
+  "flagged": 0.1133,
+  "review_only": 0.4933,
   "mean_coverage": 0.5261,
   "fully_covered": 0.5133,
   "numbers_lost_parser_free": 17,
   "flag_kinds": {
-   "condition": 11,
-   "drug": 10,
-   "limit": 8,
-   "negation": 6,
-   "omission": 4,
+   "drug": 9,
+   "condition": 9,
+   "negation": 8,
+   "limit": 7,
+   "omission": 5,
    "number": 2,
-   "dose": 1,
    "unit": 1,
    "warning": 1
   },
   "review_kinds": {
    "unverified": 155,
-   "drug": 66,
+   "drug": 67,
    "action": 5,
+   "negation": 4,
    "number": 4,
    "omission": 3,
    "route": 1,
@@ -61,32 +62,32 @@
  },
  "OPUS-MT-en-ar": {
   "n": 300,
-  "passed": 0.38,
-  "flagged": 0.0967,
-  "review_only": 0.5233,
+  "passed": 0.3667,
+  "flagged": 0.1167,
+  "review_only": 0.5167,
   "mean_coverage": 0.5261,
   "fully_covered": 0.5133,
   "numbers_lost_parser_free": 25,
   "flag_kinds": {
-   "drug": 11,
-   "negation": 6,
-   "condition": 5,
+   "condition": 11,
+   "negation": 8,
+   "drug": 7,
    "limit": 4,
    "number": 3,
-   "strength": 3,
-   "dose": 1,
+   "omission": 2,
    "unit": 1,
-   "omission": 1
+   "strength": 1
   },
   "review_kinds": {
    "unverified": 155,
-   "drug": 62,
+   "drug": 65,
    "action": 7,
    "number": 5,
    "duration": 4,
-   "dose": 3,
+   "negation": 3,
    "omission": 1,
-   "route": 1
+   "route": 1,
+   "dose": 1
   }
  }
 }

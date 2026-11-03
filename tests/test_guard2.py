@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from amana import guard2 as G2
+from amana.arabic import normalize
 from amana import lexicon as L
 from amana.rx import ERROR_TYPES, Style, applicable_errors, inject_error, render_ar, render_en, sample_rx
 
@@ -136,3 +137,59 @@ def test_regex_sources_have_no_doubled_backslashes():
 def test_report_serializes_for_batch_use():
     d = G2.check("Take 1 tablet of warfarin 3 mg once daily.", "خذ قرصا واحدا من وارفارين 3 ملغ مرة واحدة يوميا.").to_dict()
     assert d["status"] == "ok" and d["coverage"] == 1 and d["flags"] == []
+
+
+def test_real_leaflet_wording_is_read():
+    """Each of these wrongly raised a flag on development leaflets."""
+    for src, hyp in [
+        ("Methotrexate must not be injected into the spine.", "يجب ألا تُستخدم حقن ميثوتريكسات داخل العمود الفقري."),
+        ("Never take only part of a tablet.", "لايجوز أن تتناول جزء من القرص فقط."),
+        ("Each tablet contains either 100 mg or 300 mg of allopurinol.", "كل قرص يحتوي على 100 أو 300 مجم ألوبيورينول."),
+        ("The usual total daily dose is 1 g to 4 g a day.", "إجمالي الجرعة اليومية المعتادة هي 1 إلى 4 غرام يوميا."),
+        ("Take your tablet unless your doctor tells you not to.", "خذ قرصك ما لم يخبرك طبيبك بغير ذلك."),
+    ]:
+        assert not G2.check(src, hyp).flags, src
+
+
+def test_other_alphabet_letters_are_normalized():
+    assert normalize("ھذا تاریخ ڤالسارتان") == "هذا تاريخ فالسارتان"
+
+
+def test_brand_translated_as_generic_goes_to_review_but_known_drugs_still_conflict():
+    brand = G2.check("Starting doses of 200 mg of Lasix can be taken.", "يمكن إعطاء جرعة 200 ملغ من الفوروسيميد.")
+    assert not [f for f in brand.flags if f.kind == "drug"] and [f for f in brand.review if f.kind == "drug"]
+    assert G2.check("Take apixaban 5 mg twice daily.", "تناول ريفاروكسابان 5 ملغ مرتين يوميا.").flags
+
+
+def test_real_number_conflict_is_still_flagged():
+    report = G2.check("Treatment should not last more than 5 days.", "لا يجب أن تزيد مدة العلاج عن 7 أيام.")
+    assert not report.ok
+
+
+def test_latin_name_starting_like_a_negation_is_not_a_prohibition():
+    assert G2.check("Instill 2 drops of latanoprost into the left eye once daily.",
+                    "ضع قطرتين من لاتانوبروست في العين اليسرى مرة واحدة يومياً.").ok
+
+
+def test_text_without_a_dosing_instruction_uses_the_wider_prohibition_wording():
+    assert G2.check("Do not store above 30 degrees.", "لا ينبغي حفظه فوق 30 درجة.").ok
+    assert not G2.check("Do not use Optichlor Eye Drops after the expiry date.",
+                        "لا تستخدم أوبتيكلور قطرة بعد انتهاء تاريخ الصلاحية.").flags
+    assert G2.check("Do not store above 30 degrees.", "احفظه فوق 30 درجة.").flags
+
+
+def test_limit_prohibition_that_loses_its_negation_is_flagged():
+    assert G2.check("Do not take more than 8 tablets in 24 hours.", "تتناول أكثر من 8 أقراص خلال 24 ساعة.").flags
+    assert not G2.check("Do not take more than 8 tablets in 24 hours.", "لا تتناول أكثر من 8 أقراص خلال 24 ساعة.").flags
+
+
+def test_a_second_negation_going_missing_needs_a_person():
+    report = G2.check("If your liver is not working, the dose should not exceed 40 mg once daily.",
+                      "إذا يعمل الكبد، يجب ألا تتجاوز الجرعة 40 مجم مرة واحدة يوميا.")
+    assert not report.ok
+
+
+def test_prohibition_right_after_a_period_with_no_space_is_read():
+    assert not [f for f in G2.check("Take 1 tablet of omeprazole 20 mg by mouth once daily. Do not drink alcohol.",
+                                    "خذ قرصا واحدا من أوميبرازول 20 ملغ عن طريق الفم مرة واحدة يوميا.لا تشرب الكحول.").flags
+                if f.kind == "negation"]

@@ -167,6 +167,12 @@ flag rates are not a held-out result.
 
 ## 6b. Real inputs
 
+`scripts/17_peach.py` uses the patient information leaflets in PEACH (Al-Sabbagh, 2024). It keeps sentences of 5 to 35 words
+that give an instruction or a quantity, each English sentence once. Leaflets are split by hash, and a sentence in both halves
+goes to sealed. It reports the checker's output on the published Arabic, then injects one number, negation or unit error into
+each sentence and counts only sentences that passed when clean, so text already flagged cannot inflate the catch rate.
+Intervals resample leaflets. The corpus is not redistributed.
+
 `scripts/16_real_inputs.py` takes sentences from the patient sections of US FDA labels through openFDA, keeping those of
 5–35 words that give an instruction or a quantity, with at most 3 per label. It samples 300 sentences for each of a
 development and a sealed set, split by label hash. Three MT systems translate them. Reading development output led to
@@ -197,6 +203,8 @@ no parser: whether each digit sequence in the source appears in the translation.
   measure variance well.
 - Bootstrap intervals resample pairs, and pairs from similar instructions are not fully independent.
 - There are no severity tiers, and no clinician has reviewed any result.
+- PEACH leaflets were published, not adjudicated, and may differ between language versions by design. The flag reading is
+  non-clinical, and injected errors cover 3 of the 11 error types.
 - FDA labels are US English for US patients and include storage and ingredient text, so the sample is broader than dosing
   instructions. The MT outputs in that track have no adjudicated errors.
 - Arabic only, in Modern Standard Arabic. Dialectal patient-facing Arabic is future work.

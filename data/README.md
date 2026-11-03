@@ -51,6 +51,13 @@ now spent. Do not edit it or tune on it.
 300 development and 300 sealed, split by label hash. English only, with no error labels. FDA does not endorse this
 project. Built by `scripts/16_real_inputs.py fetch`, and the file is a snapshot.
 
+## PEACH: not included
+
+[PEACH](https://data.mendeley.com/datasets/5k6yrrhng7/1) (Al-Sabbagh, 2024) holds about 52,000 aligned English and Arabic
+rows from patient leaflets and educational materials. Its Mendeley page says CC BY 4.0, its arXiv page shows CC BY-NC-SA 4.0,
+and the leaflets come from their manufacturers, so no text is committed here. To reproduce, save the zip as
+`data/raw/peach/peach.zip` and run `scripts/17_peach.py`.
+
 ## `amana/data/drug_names.tsv`: drug names
 
 1,893 English and Arabic names of items with an ATC code on [Wikidata](https://www.wikidata.org/) (CC0). These are

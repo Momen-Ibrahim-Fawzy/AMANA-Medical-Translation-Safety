@@ -68,7 +68,7 @@ EN_TIMING = {"before_meals": r"before (?:meals|food|eating)", "after_meals": r"a
              "bedtime": r"bedtime"}
 EN_SITE = {"oral": r"by mouth|orally", "sublingual": r"under the tongue", "rectal": r"rectal",
            "eye": r"\beyes?\b", "ear": r"\bears?\b", "subcut": r"under the skin|subcutaneous",
-           "iv": r"\bvein\b|intravenous", "im": r"muscle|intramuscular", "inhaled": r"inhal",
+           "iv": r"\bvein\b|intravenous|\biv\b", "im": r"muscle|intramuscular|\bim\b", "inhaled": r"inhal",
            "topical": r"affected area|skin\b(?! *\.)"}
 EN_SIDE = {"left": r"\bleft\b", "right": r"\bright\b", "both": r"\bboth\b"}
 # imperative prohibitions only ('Do not drive'), not descriptive negation ('it does not contain')
@@ -79,10 +79,10 @@ EN_NEG = re.compile(r"\bnot\b|n't\b|\bno\b|\bnever\b|\bnone\b|\bnor\b|\bneither\
 # all patterns run on normalize()d text: no hamza, ة->ه, ى->ي, western digits
 
 AR_UNITS = {
-    "mg": r"(?i:mg|milligrams?)|ملغ|مجم|ملغم|مليغراما|ملليغراما|مليغرامات|مليغرام|ملليغرام|ملي غرام|ملجم|مغ|ملليجرام|مليجرام|ميلليغرام",
+    "mg": r"(?i:mg|milligrams?)|ملغ|مجم|ملغم|مليغراما|ملليغراما|مليغرامات|مليغرام|ملليغرام|ملي غرام|ملجم|مغ|ملليجرام|مليجرام|ميلليغرام|ميليغرام",
     "mcg": r"(?i:mcg|µg|micrograms?)|ميكروغراما|ميكروغرامات|ميكروغرام|ميكروجراما|ميكروغ|مكروغرام|ميكروجرام|مكغ|ميكرو غرام|مكجم",
-    "g": r"(?i:grams?|g)|غراما|غرام|غرامات|جرام|جم|غ",
-    "ml": r"(?i:ml|millilitres?|milliliters?)|مل|ملل|ملليلتر|مليلتر|ميليلتر|مللتر|ملليلترات",
+    "g": r"(?i:grams?|g)|غراما|غرام|غرامات|جرام|جم|غم|غ",
+    "ml": r"(?i:ml|millilitres?|milliliters?)|مل|ملل|ملليلتر|مليلتر|ميليلتر|مللتر|ملليلترات|مللي لتر",
     "unit": r"وحده|وحدات",
     "tablet": r"قرص|اقراص|قرصا|حبه|حبات|حبوب|لوحا|لوح|الواح",
     "capsule": r"كبسوله|كبسولات",
@@ -151,8 +151,8 @@ AR_TIMING = {"before_meals": r"قبل (?:الاكل|الطعام|الوجبات|
              "empty_stomach": r"معده فارغه|بطن فارغ|معده خاويه|الريق", "morning": r"الصباح|صباحا",
              "evening": r"المساء|مساء", "bedtime": r"النوم"}
 AR_SITE = {"oral": r"الفم|بالفم|فمويا|عن طريق الفم", "sublingual": r"تحت اللسان",
-           "rectal": r"الشرج|المستقيم|شرجيا", "eye": r"العين|العينين|عينيك|عينك",
-           "ear": r"الاذن|الاذنين|اذنك|اذنيك", "subcut": r"تحت الجلد",
+           "rectal": r"الشرج|المستقيم|شرجيا", "eye": r"العين|للعين|العينين|عينيك|عينك",
+           "ear": r"الاذن|للاذن|الاذنين|اذنك|اذنيك", "subcut": r"تحت الجلد",
            "iv": r"الوريد|وريدي", "im": r"العضل", "inhaled": r"استنشاق|استنشق",
            "topical": r"المنطقه المصابه|المكان المصاب|الجلد المصاب"}
 AR_SIDE = {"left": r"اليسري|اليسار|الايسر", "right": r"اليمني|اليمين|الايمن", "both": r"كلتا|كلا|العينين|الاذنين"}

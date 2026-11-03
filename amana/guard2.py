@@ -132,8 +132,9 @@ TOPICS = {  # topic: (English pattern, Arabic pattern on normalize()d text)
     "rinse": (r"\brinse\b", r"شطف|اشطف|تشطف"),
 }
 EN_IMPERATIVE = re.compile(r"\s*(?:do not|don't|never|avoid|stop|keep|continue|rinse|see)\b")
-EN_PRO = re.compile(r"\b(?:do not|don't|never|avoid|must not|should not)\b")
-AR_PRO = re.compile(r"(?:^|\s|،)(?<!كنت )(?:لا\s+[تي](?!زال)|تجنب|ابتعد عن|يجب عدم|يمنع|ممنوع|اياك)")
+EN_PRO = re.compile(r"\b(?:do not|don't|never|(?<!to )avoid|must not|should not|(?:is|are) not recommended)\b")
+AR_PRO = re.compile(r"(?:^|[\s،.؛:])(?<!كنت )(?:و?لا\s+[تي](?!زال|حدث|وجد)|لايجوز|ت?تجنب|يتجنب|ابتعد عن|(?:يجب|ينبغي) (?:عدم|الا)|يمنع|"
+                    r"ممنوع|يحظر|اياك|(?:ينصح|يوصي) بعدم|موانع|تفاد|لا داعي)")
 EN_STOP, EN_GO = r"\bstop\b", r"\bkeep\b|\bcontinue\b"
 AR_STOP, AR_GO = r"توقف|اوقف|ايقاف", r"استمر|واصل|تابع"
 
@@ -149,10 +150,12 @@ def _sign(topic: str, sentence: str, prohibited: bool, stop: str, go: str) -> in
 
 # ------------------------------------------------------------------------------ conditions, limits
 
-EN_COND = r"as needed|when needed|if needed|only if|only when|(?<!even )\bif\b|\bunless\b|when you have"
-AR_COND = r"كما هو مطلوب|عند الحاجه|عند اللزوم|حسب الحاجه|عند الضروره|فقط|في حال(?!ه)|عند الشعور|(?<![ء-ي])[و]?اذا(?![ء-ي])|(?<!حتي )(?<![ء-ي])لو(?![ء-ي])"
-EN_MAX, EN_MIN = r"\bmore\b[^.,;]*\bthan\b|exceed|maximum|at most|up to", r"less than|fewer than|at least|minimum"
-AR_MAX, AR_MIN = r"اكثر مما|اكثر من(?! \d+ دقيق)|تتجاوز|يتجاوز|لا تزيد|لا يزيد|اقصي", r"اقل من|ادني|علي الاقل|لا تقل عن"
+EN_COND = r"as needed|when needed|if needed|\bonly\b|(?<!even )\bif\b|\bunless\b|when you have|\bin case\b"
+AR_COND = r"كما هو مطلوب|عند الحاجه|عند اللزوم|حسب الحاجه|عند الضروره|فقط|في حال(?!ات)|ما لم|ان امكن|عند الشعور|(?<![ء-ي])[و]?اذا(?![ء-ي])|(?<!حتي )(?<![ء-ي])لو(?![ء-ي])"
+EN_MAX, EN_MIN = (r"\bmore\b[^.,;]*\bthan\b|exceed|maximum|at most|(?<!make )up to|beyond",
+                  r"less than|fewer than|at least|minimum|\bbelow\b")
+AR_MAX, AR_MIN = (r"اكثر مما|اكثر من(?! \d+ دقيق)|اكبر من|اطول من|تتجاوز|يتجاوز|لا تزيد|لا يزيد|اقصي|قصوي|لغايه|تصل الي|لا يتعدي|حتي \d",
+                  r"اقل من|ادني|علي الاقل|لا تقل عن")
 EN_WITHOUT = r"without (?:food|meals|eating)"
 AR_WITHOUT = r"بدون (?:ال)?(?:طعام|اكل)|دون (?:ال)?(?:طعام|اكل)|من غير (?:ال)?(?:طعام|اكل)"
 EN_VERB = r"\b(?:take|instill|apply|inhale|inject|use|give)\b"
@@ -350,7 +353,9 @@ _NOT_A_NAME = {"take", "dose", "doses", "total", "about", "than", "least", "most
 
 def _open_names(src_en: str) -> set:
     """Drug names in the source outside the benchmark's lexicon: known to Wikidata, or placed like a name."""
-    names = {m.group(1).lower() for m in _NAME_BEFORE_QTY.finditer(src_en)}
+    # a lowercase word before a quantity ("usually 1 mg") is a name only if it is a known drug
+    names = {m.group(1).lower() for m in _NAME_BEFORE_QTY.finditer(src_en)
+             if m.group(1)[0].isupper() or m.group(1) in D.known_english()}
     names |= {m.group(1).lower() for m in _NAME_AFTER_FORM.finditer(src_en)}
     names |= {m.group().lower() for m in _BRAND.finditer(src_en)}
     names |= {m.group().lower() for m in _TITLE_NAME.finditer(src_en)}
@@ -370,7 +375,9 @@ def _check_open_names(src_en: str, hyp_ar: str, flags: list, review: list):
         if score >= D.MATCH_THRESHOLD:
             continue
         others = D.other_drugs_in_arabic(name, hyp_ar) - {x for x in _open_names(src_en)}
-        if others:
+        # an unknown source name may be a brand translated as its generic (Lasix, furosemide), so only a known
+        # name against another known name is a mismatch
+        if others and name in D.known_english():
             flags.append(Flag("drug", f"{name} in source vs {sorted(others)[0]} in translation"))
         else:
             review.append(Flag("drug", f"could not verify '{name}' in translation"))
@@ -449,7 +456,7 @@ class Report2:
                 "review": [str(f) for f in self.review], "unverified": self.unverified}
 
 
-def _quantities(src: G.Slots, hyp: G.Slots, tag: str, flags: list, review: list):
+def _quantities(src: G.Slots, hyp: G.Slots, tag: str, flags: list, review: list, src_numbers: set, hyp_numbers: set):
     left = list(hyp.qty.elements())
     for q in src.qty.elements():
         hit = next((h for h in left if G._q_close(q, h)), None)
@@ -461,6 +468,8 @@ def _quantities(src: G.Slots, hyp: G.Slots, tag: str, flags: list, review: list)
         if same_val:
             left.remove(same_val)
             flags.append(Flag("unit", f"{tag}{fmt_num(q[0])} {q[1]} rendered as {fmt_num(same_val[0])} {same_val[1]}"))
+        elif same_unit and q[0] in hyp_numbers and any(G._q_close(x, same_unit) for x in src.qty):
+            continue  # a list or range the parser read as one quantity: "100 or 300 mg", "1 to 4 g"
         elif same_unit:
             left.remove(same_unit)
             kind = "strength" if q[1] in ("mg", "mcg", "g") else "dose"
@@ -468,8 +477,10 @@ def _quantities(src: G.Slots, hyp: G.Slots, tag: str, flags: list, review: list)
         else:
             review.append(Flag("dose", f"{tag}{fmt_num(q[0])} {q[1]} not found in translation"))
     for h in left:
-        if h[0] == 1 and h[1] in ("tablet", "capsule", "drop", "puff", "sachet"):
+        if h[0] == 1 and h[1] in ("tablet", "capsule", "drop", "puff", "sachet", "ml", "unit"):
             continue  # "كل قرص" names the form; it does not add a dose
+        if h[0] in src_numbers:
+            continue  # the source has this number with wording the parser did not read: "6 sprays", "two 30 mg capsules"
         if not any(G._q_close(q, h) for q in src.qty):
             flags.append(Flag("dose", f"{tag}unexpected quantity {fmt_num(h[0])} {h[1]} in translation"))
 
@@ -480,10 +491,12 @@ def _same_freq(a, b) -> bool:
     return abs(float(a) - float(b)) < 1e-6
 
 
-def _compare_instruction(a: Instruction, b: Instruction, hyp_doc: Document, flags: list, review: list):
+def _compare_instruction(a: Instruction, b: Instruction, src_doc: Document, hyp_doc: Document, flags: list, review: list):
     tag = f"{a.drug}: " if a.drug else ""
     src, hyp = a.slots, b.slots
-    _quantities(src, hyp, tag, flags, review)
+    src_numbers = {float(x) for x in re.findall(G.NUM, src_doc.text)}
+    src_numbers |= {float(v) for w, v in _WORDNUM.items() if w not in ("a", "an") and re.search(rf"\b{w}\b", src_doc.text)}
+    _quantities(src, hyp, tag, flags, review, src_numbers, hyp_doc.numbers)
     if src.freq is not None:
         if hyp.freq is None:
             review.append(Flag("frequency", f"{tag}{src.freq}/day not found in translation"))
@@ -545,6 +558,9 @@ def _leftover_numbers(src_text: str, doc: Document) -> set:
     return {n for n in nums - used if n != 1}
 
 
+_AR_NEGATIONS = re.compile(G.AR_NEG.pattern + r"|(?<![ء-ي])(?:[وب]?عدم|[وب]?غير|دون|الا|ما لم|موانع)(?![ء-ي])")
+
+
 def compare(src: Document, hyp: Document) -> tuple[list, list]:
     flags: list[Flag] = []
     review: list[Flag] = []
@@ -580,21 +596,45 @@ def compare(src: Document, hyp: Document) -> tuple[list, list]:
         if hyp_left:
             pairs.append((ins, hyp_left.pop(next(iter(hyp_left)))))
     for a, b in pairs:
-        _compare_instruction(a, b, hyp, flags, review)
+        _compare_instruction(a, b, src, hyp, flags, review)
     _compare_warnings(src, hyp, flags, review)
     if src.has_verb and not hyp.has_verb:
         review.append(Flag("action", "no dosing verb recognized in translation"))
+    # limits and food rules are exempt from the prohibition count above, so "do not take more than 8" losing its
+    # negation would otherwise pass as "take more than 8"
+    if EN_PRO.search(src.text) and not AR_PRO.search(" " + hyp.text):
+        if not any(f.kind in ("negation", "omission") for f in flags):
+            flags.append(Flag("negation", "source prohibits something, translation has no prohibition"))
+    elif len(G.EN_NEG.findall(src.text)) > len(_AR_NEGATIONS.findall(hyp.text)):
+        review.append(Flag("negation", "fewer negation words in translation than in source"))
     missing = _leftover_numbers(src.text, src) - hyp.numbers
     if missing and not flags:
         review.append(Flag("number", f"{', '.join(fmt_num(n) for n in sorted(missing))} not found in translation"))
     return flags, review
 
 
+def _general(src_en: str, hyp_ar: str) -> tuple[list, list]:
+    """Text with no dosing instruction: the baseline's comparison, using the wider prohibition wording. Packaging
+    and storage lines say "Eye Drops" without giving a route or a count, so those differences are not flags."""
+    a, b = G.extract_en(src_en), G.extract_ar(hyp_ar)
+    wider = len(AR_PRO.findall(" " + AR.pre(hyp_ar)))
+    if a.prohibitions and wider:  # credit only: "لا يمكن" is not a prohibition unless the source has one
+        b.prohibitions = max(b.prohibitions, min(wider, a.prohibitions))
+        b.negated = True
+    flags, review = [], []
+    for f in G.compare(a, b):
+        if f.kind == "route":
+            review.append(f)
+        elif not (f.kind == "dose" and f.detail.startswith("unexpected quantity 1 ")):
+            flags.append(f)
+    return flags, review
+
+
 def check(src_en: str, hyp_ar: str) -> Report2:
     s, h = parse(src_en, EN), parse(hyp_ar, AR)
     if not _is_medication(s):
-        baseline = G.check(src_en, hyp_ar)
-        return Report2(baseline.flags, [], s, h)
+        flags, review = _general(src_en, hyp_ar)
+        return Report2(flags, review, s, h)
     flags, review = compare(s, h)
     _check_open_names(src_en, hyp_ar, flags, review)
     _check_sequence(src_en, hyp_ar, flags, review)

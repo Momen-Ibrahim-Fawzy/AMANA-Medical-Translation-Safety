@@ -1,0 +1,20 @@
+{
+ "what": "A fixed random sample (random.Random(2026), 60 of 247) of sealed PEACH rows the checker flagged, read after the sealed run. Nothing here changed the code.",
+ "reading": "A non-clinical reading of English against Arabic, not independently checked. real_difference means the flag points at a difference in meaning or a dropped part. It does not mean the leaflet is wrong: an Arabic leaflet may be written for a different product or market, or the alignment may be off.",
+ "sampled": 60,
+ "real_difference": 10,
+ "share": 0.1667,
+ "wilson_95": [0.0931, 0.2803],
+ "rows_with_real_difference": [
+  {"doc": "11396", "row": 66, "what": "'at least' dropped"},
+  {"doc": "372", "row": 71, "what": "different content: limit stated instead of the increase"},
+  {"doc": "870", "row": 224, "what": "the 'more than 12 hours late' condition is absent"},
+  {"doc": "256", "row": 28, "what": "the prohibition is absent from the aligned Arabic"},
+  {"doc": "284", "row": 49, "what": "'three times a day' written as three capsules daily"},
+  {"doc": "11396", "row": 41, "what": "'at least' dropped"},
+  {"doc": "284", "row": 67, "what": "'40 to 90 mg' written as 90 to 70 mg"},
+  {"doc": "770", "row": 8, "what": "the 3% strength is absent"},
+  {"doc": "557", "row": 53, "what": "the drug name is absent"},
+  {"doc": "374", "row": 20, "what": "'in excess of' is absent"}
+ ]
+}

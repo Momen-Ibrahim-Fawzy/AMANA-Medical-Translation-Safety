@@ -36,13 +36,12 @@
       20
     ],
     "safe_accepted": [
-      14,
+      15,
       20
     ],
     "missed_errors": [],
     "false_alarms": [
       "s05",
-      "s06",
       "s08",
       "s09",
       "s10",

@@ -1,0 +1,163 @@
+{
+ "sentences": 1732,
+ "leaflets": 131,
+ "clean": {
+  "passed": {
+   "n": 1732,
+   "rate": 0.5745,
+   "ci95_by_leaflet": [
+    0.5438,
+    0.6073
+   ]
+  },
+  "flagged": {
+   "n": 1732,
+   "rate": 0.1426,
+   "ci95_by_leaflet": [
+    0.1218,
+    0.1636
+   ]
+  },
+  "review_only": {
+   "n": 1732,
+   "rate": 0.2829,
+   "ci95_by_leaflet": [
+    0.2549,
+    0.3092
+   ]
+  },
+  "fully_covered": {
+   "n": 1732,
+   "rate": 0.7714,
+   "ci95_by_leaflet": [
+    0.7461,
+    0.7966
+   ]
+  },
+  "mean_coverage": 0.7797,
+  "baseline_passed": {
+   "n": 1732,
+   "rate": 0.7148,
+   "ci95_by_leaflet": [
+    0.6798,
+    0.7463
+   ]
+  },
+  "flag_kinds": {
+   "negation": 75,
+   "condition": 43,
+   "limit": 43,
+   "strength": 25,
+   "frequency": 21,
+   "dose": 15,
+   "omission": 14,
+   "duration": 13,
+   "number": 10,
+   "unit": 9,
+   "warning": 7,
+   "timing": 7,
+   "drug": 5,
+   "route": 5
+  },
+  "review_kinds": {
+   "unverified": 412,
+   "drug": 119,
+   "dose": 92,
+   "action": 78,
+   "frequency": 18,
+   "negation": 14,
+   "route": 13,
+   "number": 10,
+   "duration": 9,
+   "omission": 7,
+   "timing": 2,
+   "sequence": 1
+  }
+ },
+ "injected": {
+  "number": {
+   "applied": 951,
+   "passed_when_clean": 612,
+   "stopped_passing": {
+    "n": 612,
+    "rate": 0.951,
+    "ci95_by_leaflet": [
+     0.9333,
+     0.9702
+    ]
+   },
+   "flagged": {
+    "n": 612,
+    "rate": 0.8415,
+    "ci95_by_leaflet": [
+     0.8104,
+     0.8744
+    ]
+   },
+   "baseline_stopped_passing": {
+    "n": 618,
+    "rate": 0.9822,
+    "ci95_by_leaflet": [
+     0.9684,
+     0.993
+    ]
+   }
+  },
+  "negation": {
+   "applied": 485,
+   "passed_when_clean": 240,
+   "stopped_passing": {
+    "n": 240,
+    "rate": 0.95,
+    "ci95_by_leaflet": [
+     0.9151,
+     0.9793
+    ]
+   },
+   "flagged": {
+    "n": 240,
+    "rate": 0.925,
+    "ci95_by_leaflet": [
+     0.8848,
+     0.96
+    ]
+   },
+   "baseline_stopped_passing": {
+    "n": 408,
+    "rate": 0.973,
+    "ci95_by_leaflet": [
+     0.9584,
+     0.9875
+    ]
+   }
+  },
+  "unit": {
+   "applied": 470,
+   "passed_when_clean": 331,
+   "stopped_passing": {
+    "n": 331,
+    "rate": 1.0,
+    "ci95_by_leaflet": [
+     1.0,
+     1.0
+    ]
+   },
+   "flagged": {
+    "n": 331,
+    "rate": 1.0,
+    "ci95_by_leaflet": [
+     1.0,
+     1.0
+    ]
+   },
+   "baseline_stopped_passing": {
+    "n": 283,
+    "rate": 1.0,
+    "ci95_by_leaflet": [
+     1.0,
+     1.0
+    ]
+   }
+  }
+ }
+}
