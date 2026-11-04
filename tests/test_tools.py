@@ -63,3 +63,14 @@ def test_benchmark_runs_on_the_shipped_pairs():
     done = amana("benchmark", "examples.my_metric:char_overlap")
     assert done.returncode == 0, done.stderr
     assert json.loads(done.stdout)["n"] == 1620
+
+
+def test_sealed_runs_are_logged(tmp_path, monkeypatch):
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import sealed_log
+    monkeypatch.setattr(sealed_log, "LOG", tmp_path / "sealed_runs.jsonl")
+    result = tmp_path / "r.json"
+    result.write_text("{}", encoding="utf-8")
+    sealed_log.record("a sealed set", result)
+    line = json.loads((tmp_path / "sealed_runs.jsonl").read_text(encoding="utf-8"))
+    assert line["what"] == "a sealed set" and len(line["result_sha256"]) == 64

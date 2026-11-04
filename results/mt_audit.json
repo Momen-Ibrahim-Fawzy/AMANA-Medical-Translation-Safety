@@ -50,8 +50,8 @@
     "OPUS-MT-en-ar": {
       "1-best": {
         "critical_flag_rate": 0.2733333333333333,
-        "guard2_not_passed_rate": 0.25,
-        "guard2_flag_rate": 0.09666666666666666,
+        "guard2_not_passed_rate": 0.24666666666666667,
+        "guard2_flag_rate": 0.09333333333333334,
         "qe_unsafe_rate": 0.27666666666666667,
         "chrF": 74.43046868104153,
         "COMET-22": 0.8615507558981578,
@@ -68,8 +68,8 @@
       },
       "QE rerank": {
         "critical_flag_rate": 0.31333333333333335,
-        "guard2_not_passed_rate": 0.2733333333333333,
-        "guard2_flag_rate": 0.08666666666666667,
+        "guard2_not_passed_rate": 0.27,
+        "guard2_flag_rate": 0.08333333333333333,
         "qe_unsafe_rate": 0.24666666666666667,
         "chrF": 73.80873998586331,
         "COMET-22": 0.8600451664129893,
@@ -85,12 +85,12 @@
         "n": 300
       },
       "Guard2+QE rerank": {
-        "critical_flag_rate": 0.2866666666666667,
+        "critical_flag_rate": 0.29,
         "guard2_not_passed_rate": 0.24666666666666667,
         "guard2_flag_rate": 0.09333333333333334,
         "qe_unsafe_rate": 0.2633333333333333,
-        "chrF": 74.17043409186999,
-        "COMET-22": 0.8587194279829661,
+        "chrF": 74.16556834010558,
+        "COMET-22": 0.8587209665775299,
         "n": 300
       }
     },

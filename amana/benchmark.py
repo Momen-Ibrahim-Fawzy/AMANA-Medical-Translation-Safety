@@ -1,6 +1,9 @@
 """Score your own metric on the AMANA contrastive pairs.
 
     python -m amana benchmark my_module:my_metric
+    python -m amana benchmark my_module:my_metric --pairs path/to/audit_set.jsonl   # outside a clone
+
+The pairs ship with the repository (results/audit_set.jsonl), not with the installed package.
 
 The function takes lists of sources, hypotheses and references, and returns one score per hypothesis, where
 higher means better. The two numbers to read are the same two as the README: how often the metric prefers
@@ -39,6 +42,10 @@ def run(args) -> int:
     module, _, name = args.metric.partition(":")
     if not name:
         raise SystemExit("name the function as module:function, for example my_metric:score")
+    pairs = Path(args.pairs) if args.pairs else PAIRS
+    if not pairs.exists():
+        raise SystemExit(f"pairs file not found: {pairs}. Run from a clone of the repository, or pass --pairs with the "
+                         "path to results/audit_set.jsonl")
     sys.path.insert(0, str(Path.cwd()))
-    print(json.dumps(score(getattr(importlib.import_module(module), name)), indent=1))
+    print(json.dumps(score(getattr(importlib.import_module(module), name), pairs), indent=1))
     return 0

@@ -19,11 +19,12 @@ the same metrics reach 93–99%. Both come with bootstrap intervals, ties and ma
 `results/metric_stats.json`. COMET-22's 46.7% (44.3–49.0) is below chance by a small margin, so the fair
 reading is "about a coin flip", not "COMET-22 prefers errors".
 
-Part of the surface-metric result is a preprocessing artefact. With standard Arabic normalisation, BLEU's reworded
-score rises from 23.3% to 40.1% and chrF's from 35.7% to 51.6%; on rewordings that change only spelling, both reach
-100%. On genuine word changes they still prefer the error 58–70% of the time. The intervals resample pairs from only
-608 instructions and 13 drugs, so they are too narrow, and the very small p-values in `metric_stats.json` should be read
-as "< 0.001".
+Much of the raw result is a preprocessing artefact. With standard Arabic normalisation, BLEU's reworded score rises
+from 23.3% to 40.1%, chrF's from 35.7% to 51.6%, BERTScore's from 30.7% to 45.4% and COMET-22's from 46.7% to 59.2%. On
+rewordings that change only spelling, every surface metric reaches 100%. On genuine word changes they still prefer the
+error 58–70% of the time. The README intervals now resample the 13 drugs, not the pairs, which widens BLEU's from
+21.3–25.3% to 19.9–27.2%. COMET-22's raw 46.7% (42.9–50.5) is then not distinguishable from chance. The very small
+p-values in `metric_stats.json` assume independent pairs and should be read as "< 0.001".
 
 ## Does AMANA-Guard 2 understand instructions?
 
@@ -75,7 +76,7 @@ ignored or switched off.
 ## Is reranking evidence of improved safety?
 
 Only weakly. When the guard both chooses and judges, the drop is partly circular. Cross-judging is less
-flattering: QE-only reranking moves Guard 2's rate from 25.0% to 27.3% on OPUS-MT, and Guard 2 + QE moves
+flattering: QE-only reranking moves Guard 2's rate from 24.7% to 27.0% on OPUS-MT, and Guard 2 + QE moves
 QE's unsafe share only from 21.7% to 20.3% on M2M100. Reranking also cannot fix systematic errors. All 5
 candidates fail for 74 of 300 OPUS-MT and 126 of 300 M2M100 instructions. One human rater judged 60 changed picks:
 better in 5, worse in 4, the same in 51 (sign test p = 1.0). That is no evidence either way, and the packet could be
@@ -97,9 +98,10 @@ author's next rule change, which is why each first score is kept in a `*_first_r
 labelled as no longer clean (see `results/README.md`). Once published, a sealed set is spent, and the next one has to
 be new. AMANA-QE is trained only on training drugs; its held-out drugs and TICO-19 never enter training.
 
-Two weaknesses remain. The code does not enforce the seal: every `report` run re-scores the sealed sets. And the
-history cannot prove the order: the hold-out first appears in the same commit as Guard 2. A future sealed set should
-have its hash published externally, with a timestamp, before it is scored.
+Until 0.5, every routine `report` run re-scored the sealed sets. They now run only as a separate `sealed` stage, and
+each scoring is appended to `results/sealed_runs.jsonl` with the code revision. That makes re-scoring visible, but it
+cannot prevent it. The history also cannot prove the order: the hold-out first appears in the same commit as Guard 2.
+A future sealed set should have its hash published externally, with a timestamp, before it is scored.
 
 ## Why are there two checkers, `guard.py` and `guard2.py`?
 
@@ -113,7 +115,7 @@ No. It covers written medication instructions: generated ones, FDA patient label
 cover conversation, interpreting, colloquial or dialect speech, or handwritten prescriptions. Those need different data
 and probably a different method.
 
-## Are the 43.0% and 25.0% real error rates?
+## Are the 43.0% and 24.7% real error rates?
 
 No. They are checker output on generated inputs. Some flags will be false alarms, some real errors are
 invisible to the checker, and no independent person has judged them. The exact pattern counts, such as

@@ -50,6 +50,7 @@ def main() -> int:
     if argv[:1] == ["benchmark"]:
         ap = argparse.ArgumentParser(prog="python -m amana benchmark", description=benchmark.__doc__.splitlines()[0])
         ap.add_argument("metric", help="module:function")
+        ap.add_argument("--pairs", help="path to audit_set.jsonl, if not running from a clone of the repository")
         return benchmark.run(ap.parse_args(argv[1:]))
     return _single(argv)
 

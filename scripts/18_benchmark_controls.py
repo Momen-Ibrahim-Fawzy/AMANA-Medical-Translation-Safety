@@ -7,10 +7,12 @@
    same pairs after amana.arabic.normalize (digits, hamza, letter variants), broken down by the kind of benign
    change: orthographic only, lexical only, or both.
 
-    python scripts/18_benchmark_controls.py      # CPU; needs data/processed/amana_bench.jsonl and results/audit_set.jsonl
+    python scripts/18_benchmark_controls.py              # CPU; needs data/processed/amana_bench.jsonl and results/audit_set.jsonl
+    python scripts/18_benchmark_controls.py --learned    # also BERTScore, COMET-22, CometKiwi-22 and LaBSE, normalised; GPU
 """
 from __future__ import annotations
 
+import argparse
 import json
 import re
 import sys
@@ -94,11 +96,42 @@ def normalised_metrics(rows: list[dict]) -> dict:
     return out
 
 
+LEARNED = ("BERTScore", "COMET-22", "CometKiwi-22 (QE)", "LaBSE-ref", "LaBSE-QE")
+
+
+def learned_metrics(rows: list[dict]) -> dict:
+    """The learned metrics on raw and normalised text, both scored here so they share one environment. GPU."""
+    from amana.metrics import METRICS
+    cols = ("ref_ar", "good_ar", "bad_ar", "bad_matched_ar")
+    out = {}
+    for name in LEARNED:
+        res = {}
+        for label, f in (("raw", lambda x: x), ("normalised", normalize)):
+            texts = [(r["src_en"], f(r[c]), f(r["ref_ar"])) for r in rows for c in cols]
+            src, hyp, ref = map(list, zip(*texts))
+            s = np.array(METRICS[name](src, hyp, ref)).reshape(len(rows), len(cols))
+            good, bad, badm = s[:, 1], s[:, 2], s[:, 3]
+            pref = lambda a, b: float(((a > b) + 0.5 * (a == b)).mean())  # noqa: E731
+            res[label] = {"reworded": round(pref(good, bad), 4), "same_wording": round(pref(good, badm), 4)}
+        out[name] = res
+        print(name, res, flush=True)
+    return out
+
+
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--learned", action="store_true", help="also score the learned metrics on normalised text (GPU)")
+    args = ap.parse_args()
+    path = ROOT / "results" / "benchmark_controls.json"
     bench = [json.loads(x) for x in (ROOT / "data" / "processed" / "amana_bench.jsonl").read_text(encoding="utf-8").splitlines()]
     audit = [json.loads(x) for x in (ROOT / "results" / "audit_set.jsonl").read_text(encoding="utf-8").splitlines()]
+    old = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
     out = {"source_blind": source_blind(bench), "normalised_metrics": normalised_metrics(audit)}
-    (ROOT / "results" / "benchmark_controls.json").write_text(json.dumps(out, indent=1), encoding="utf-8")
+    if args.learned:
+        out["normalised_learned_metrics"] = learned_metrics(audit)
+    elif "normalised_learned_metrics" in old:
+        out["normalised_learned_metrics"] = old["normalised_learned_metrics"]  # keep the GPU results
+    path.write_text(json.dumps(out, indent=1), encoding="utf-8")
     print(json.dumps(out, indent=1))
 
 

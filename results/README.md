@@ -38,4 +38,5 @@ that result is no longer a clean estimate, because whoever changed the code had 
 | `fda_mt_outputs.jsonl`, `fda_dev.json`, `fda_sealed.json` | `16_real_inputs.py` | MT of FDA patient label sentences and Guard 2 on them |
 | `peach_dev.json`, `peach_sealed.json` | `17_peach.py` | Guard 2 on human-translated leaflets; counts and row references only, no corpus text |
 | `peach_sealed_flags_read.json` | by hand | a sample of 60 sealed flags, read after the sealed run |
+| `sealed_runs.jsonl` | `scripts/sealed_log.py`, called by every sealed scoring | one line per scoring of a sealed set: time, code revision, result hash; starts at 0.5 |
 | `MANIFEST.json` | `13_manifest.py` | hashes of data and results, code revision, package versions |

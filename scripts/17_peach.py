@@ -193,6 +193,9 @@ def main():
     print(json.dumps(result, indent=1))
     path = ROOT / "results" / ("peach_sealed.json" if args.sealed else "peach_dev.json")
     path.write_text(json.dumps(result, indent=1), encoding="utf-8", newline="\n")
+    if args.sealed:
+        from sealed_log import record
+        record("PEACH leaflets, sealed half", path)
     if args.dump:
         with args.dump.open("w", encoding="utf-8", newline="\n") as f:
             for row in dump:

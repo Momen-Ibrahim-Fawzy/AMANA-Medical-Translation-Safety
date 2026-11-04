@@ -90,6 +90,9 @@ def main():
         cases = [(r["id"], r["should_pass"], r["src_en"], r["hyp_ar"]) for r in rows]
         out = {n: case_scores(cases, c) for n, c in CHECKERS.items()}
         (ROOT / "results" / out_name).write_text(json.dumps(out, indent=2), encoding="utf-8")
+        if args.holdout:
+            from sealed_log import record
+            record("hand-written hold-out", ROOT / "results" / out_name)
         print(json.dumps(out, indent=1))
         return
     spec = importlib.util.spec_from_file_location("hard_cases", ROOT / "scripts" / "09_hard_cases.py")

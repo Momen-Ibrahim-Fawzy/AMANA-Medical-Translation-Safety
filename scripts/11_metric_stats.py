@@ -33,15 +33,27 @@ def block(good: np.ndarray, bad: np.ndarray, rng: np.random.Generator) -> dict:
             "iqr_margin": [round(float(x), 4) for x in np.percentile(margin, [25, 75])], "n": int(len(pref))}
 
 
+def by_drug(good: np.ndarray, bad: np.ndarray, drugs: np.ndarray, rng: np.random.Generator) -> list:
+    """Pairs from one drug share templates, so resample the 13 held-out drugs, not the pairs."""
+    pref = (good > bad) + 0.5 * (good == bad)
+    groups = [pref[drugs == d] for d in np.unique(drugs)]
+    boot = [np.concatenate([groups[i] for i in rng.integers(0, len(groups), len(groups))]).mean() for _ in range(N_BOOT)]
+    return [round(float(x), 4) for x in np.percentile(boot, [2.5, 97.5])]
+
+
 def main():
     df = pd.read_json(RES / "audit_set.jsonl", lines=True)
     rng = np.random.default_rng(7)
+    rng_drug = np.random.default_rng(11)  # separate, so the pair-level intervals stay as they were
     out = {}
     for name, fname in METRICS.items():
         cache = json.loads((RES / "cache" / f"{fname}.json").read_text(encoding="utf-8"))
         get = lambda col: np.array([cache["\t".join((r.src_en, getattr(r, col), r.ref_ar))] for r in df.itertuples()])  # noqa: E731
         good, bad, badm = get("good_ar"), get("bad_ar"), get("bad_matched_ar")
         out[name] = {"reworded": block(good, bad, rng), "same_wording": block(good, badm, rng), "per_type": {}}
+        drugs = df.drug.to_numpy()
+        out[name]["reworded"]["ci95_by_drug"] = by_drug(good, bad, drugs, rng_drug)
+        out[name]["same_wording"]["ci95_by_drug"] = by_drug(good, badm, drugs, rng_drug)
         for t, idx in df.groupby("error_type").groups.items():
             idx = np.asarray(idx)
             out[name]["per_type"][t] = {"reworded": block(good[idx], bad[idx], rng),
@@ -49,7 +61,7 @@ def main():
     (RES / "metric_stats.json").write_text(json.dumps(out, indent=1), encoding="utf-8")
     for name, v in out.items():
         a, b = v["reworded"], v["same_wording"]
-        print(f"{name:10s} reworded {a['safe_preferred']:.3f} {a['ci95']} ties {a['ties']:.3f} p={a['p_vs_chance']:.1e} "
+        print(f"{name:10s} reworded {a['safe_preferred']:.3f} {a['ci95']} by drug {a['ci95_by_drug']} ties {a['ties']:.3f} p={a['p_vs_chance']:.1e} "
               f"| same wording {b['safe_preferred']:.3f} {b['ci95']} ties {b['ties']:.3f}")
 
 

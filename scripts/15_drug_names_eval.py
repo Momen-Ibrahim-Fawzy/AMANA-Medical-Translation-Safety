@@ -92,6 +92,9 @@ def main():
             print({k: v for k, v in r.items() if k != "examples"})
         print(json.dumps(out["lasa_pairs"], ensure_ascii=False)[:900])
     out_path.write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8", newline="\n")
+    if args.test:
+        from sealed_log import record
+        record("drug names, sealed fifth", out_path)
 
 
 if __name__ == "__main__":

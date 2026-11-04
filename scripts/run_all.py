@@ -4,6 +4,7 @@
     python scripts/run_all.py --stages report        # no GPU, uses the committed results
     python scripts/run_all.py                        # everything: needs a GPU and model downloads
     python scripts/run_all.py --from-step 8          # resume after a failure, using the numbers from --list
+    python scripts/run_all.py --stages sealed        # scores the sealed sets; only once the checker is frozen
 """
 from __future__ import annotations
 
@@ -20,16 +21,20 @@ STAGES = {
            "05_train_qe.py --exclude-types unit laterality negation --tag types",
            "05_train_qe.py --exclude-forms eye_drop inhaler --tag forms"],
     "mt": ["06_mt_audit.py translate --n 300", "06_mt_audit.py evaluate", "16_real_inputs.py translate"],
-    "peach": ["17_peach.py evaluate", "17_peach.py evaluate --sealed"],
+    "peach": ["17_peach.py evaluate"],
     "report": ["01_build_bench.py", "04_guard_eval.py", "08_error_patterns.py", "09_hard_cases.py", "10_guard2_eval.py",
-               "10_guard2_eval.py --probes", "18_benchmark_controls.py", "15_drug_names_eval.py", "15_drug_names_eval.py --test", "16_real_inputs.py evaluate",
-               "16_real_inputs.py evaluate --sealed", "07_figures.py", "13_manifest.py"],
+               "10_guard2_eval.py --probes", "18_benchmark_controls.py", "15_drug_names_eval.py", "16_real_inputs.py evaluate",
+               "07_figures.py", "13_manifest.py"],
+    # never part of a default run; each scoring of a sealed set is logged in results/sealed_runs.jsonl
+    "sealed": ["10_guard2_eval.py --holdout", "15_drug_names_eval.py --test", "16_real_inputs.py evaluate --sealed",
+               "17_peach.py evaluate --sealed"],
 }
+DEFAULT = [s for s in STAGES if s != "sealed"]
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--stages", nargs="*", default=list(STAGES), choices=list(STAGES))
+    ap.add_argument("--stages", nargs="*", default=DEFAULT, choices=list(STAGES))
     ap.add_argument("--from-step", type=int, default=1, help="resume at this step number, as shown by --list")
     ap.add_argument("--list", action="store_true")
     args = ap.parse_args()

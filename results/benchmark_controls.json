@@ -182,5 +182,57 @@
     }
    }
   }
+ },
+ "normalised_learned_metrics": {
+  "BERTScore": {
+   "raw": {
+    "reworded": 0.3074,
+    "same_wording": 0.9556
+   },
+   "normalised": {
+    "reworded": 0.4543,
+    "same_wording": 0.9741
+   }
+  },
+  "COMET-22": {
+   "raw": {
+    "reworded": 0.4673,
+    "same_wording": 0.9463
+   },
+   "normalised": {
+    "reworded": 0.592,
+    "same_wording": 0.9525
+   }
+  },
+  "CometKiwi-22 (QE)": {
+   "raw": {
+    "reworded": 0.821,
+    "same_wording": 0.9037
+   },
+   "normalised": {
+    "reworded": 0.8154,
+    "same_wording": 0.9031
+   }
+  },
+  "LaBSE-ref": {
+   "raw": {
+    "reworded": 0.829,
+    "same_wording": 0.9969
+   },
+   "normalised": {
+    "reworded": 0.8778,
+    "same_wording": 0.9994
+   }
+  },
+  "LaBSE-QE": {
+   "raw": {
+    "reworded": 0.816,
+    "same_wording": 0.9722
+   },
+   "normalised": {
+    "reworded": 0.8457,
+    "same_wording": 0.9451
+   }
+  }
  }
 }

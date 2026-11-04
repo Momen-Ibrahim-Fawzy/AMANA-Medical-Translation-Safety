@@ -128,6 +128,9 @@ def evaluate(is_sealed: bool):
         print(system, {k: v for k, v in out[system].items()}, flush=True)
     path = ROOT / "results" / ("fda_sealed.json" if is_sealed else "fda_dev.json")
     path.write_text(json.dumps(out, indent=1), encoding="utf-8", newline="\n")
+    if is_sealed:
+        from sealed_log import record
+        record("FDA label sentences, sealed half", path)
 
 
 def main():

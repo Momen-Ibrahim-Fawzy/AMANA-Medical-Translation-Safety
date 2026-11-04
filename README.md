@@ -38,46 +38,46 @@ Each point is addressed below, with the numbers before and after.
 ## Key findings
 
 **1. When a safe translation is worded differently from the reference, standard metrics often prefer
-a one-word clinical error, though part of the gap below comes from scoring unnormalised Arabic.** The "reworded" test pairs a safe rewording with the reference plus one
-clinical error. The "same wording" test applies the error to the safe rewording itself. There are
-1,620 pairs on 13 held-out drugs, covering 11 error types. Intervals are 95% bootstrap intervals over
-pairs, and pairs built from similar instructions are not fully independent.
+a one-word clinical error, though much of the raw gap comes from scoring unnormalised Arabic.** The "reworded"
+test pairs a safe rewording with the reference plus one clinical error. The "same wording" test applies the error to
+the safe rewording itself. There are 1,620 pairs on 13 held-out drugs, covering 11 error types. Intervals resample the
+13 drugs, since pairs from one drug share templates.
 
-| metric | safe preferred: reworded (95% CI) | reworded, 10× strength errors only | safe preferred: same wording (95% CI) |
-|---|---:|---:|---:|
-| BLEU | 23.3% (21.3–25.3) | 9% | 94.2% (93.4–95.0) |
-| TER | 26.2% (24.3–28.0) | 7% | 93.3% (92.4–94.2) |
-| BERTScore | 30.7% (28.6–33.0) | 3% | 95.6% (94.5–96.5) |
-| chrF++ | 32.9% (30.5–35.1) | 2% | 98.6% (97.9–99.1) |
-| chrF | 35.7% (33.3–38.0) | 2% | 98.6% (98.0–99.1) |
-| COMET-22 | 46.7% (44.3–49.0) | **1%** | 94.6% (93.5–95.7) |
-| LaBSE, reference | 82.9% (81.1–84.7) | 99% | 99.7% (99.4–99.9) |
-| LaBSE, source only | 81.6% (79.8–83.4) | 98% | 97.2% (96.4–98.0) |
-| CometKiwi-22, source only | 82.1% (80.2–83.9) | 74% | 90.4% (88.9–91.7) |
+| metric | safe preferred: reworded, raw (95% CI) | reworded, Arabic normalised | reworded, 10× strength errors only (raw) | safe preferred: same wording, raw (95% CI) |
+|---|---:|---:|---:|---:|
+| BLEU | 23.3% (19.9–27.2) | 40.1% | 9% | 94.2% (93.1–95.3) |
+| TER | 26.2% (23.7–28.6) | 39.6% | 7% | 93.3% (92.1–94.6) |
+| BERTScore | 30.7% (27.8–34.5) | 45.4% | 3% | 95.6% (94.3–96.9) |
+| chrF++ | 32.9% (29.4–37.0) | 49.9% | 2% | 98.6% (97.9–99.2) |
+| chrF | 35.7% (31.5–40.3) | 51.6% | 2% | 98.6% (97.9–99.2) |
+| COMET-22 | 46.7% (42.9–50.5) | 59.2% | **1%** | 94.6% (93.7–95.7) |
+| LaBSE, reference | 82.9% (79.1–86.7) | 87.8% | 99% | 99.7% (99.3–100) |
+| LaBSE, source only | 81.6% (77.8–85.8) | 84.6% | 98% | 97.2% (94.9–98.9) |
+| CometKiwi-22, source only | 82.1% (76.5–86.8) | 81.5% | 74% | 90.4% (87.6–93.1) |
 
 Ties count as half. They matter only for BLEU (5.4%) and TER (16.5%). So these metrics can see the
 error: with the wording held equal, they catch it at least 90% of the time. The failure is one of
 weighting, since a harmless rewording can cost more score than a tenfold dose change. The reworded
 test is built to expose this, because the erroneous sentence is one word from the reference. It does
-not estimate how metrics behave on natural MT output. Margins, ties and per-type results are in
-`results/metric_stats.json`.
+not estimate how metrics behave on natural MT output. Margins, ties, pair-level intervals and per-type results are in
+`results/metric_stats.json`; the normalised scores are in `results/benchmark_controls.json`.
 
-**The surface-metric figures above are inflated.** Of the 1,620 safe rewordings, 730 change only or partly
-the spelling, such as Arabic-Indic digits or hamza-free spelling, and 159 change nothing else. Arabic MT evaluation
-usually normalises these first, and the table above did not. Re-scored after `amana.arabic.normalize`
-(`scripts/18_benchmark_controls.py`):
+**The raw figures are inflated by a missing preprocessing step.** Of the 1,620 safe rewordings, 730 change the
+spelling, such as Arabic-Indic digits or hamza-free spelling, and 159 change nothing else. Arabic MT evaluation usually
+normalises these first, and the raw column does not. After `amana.arabic.normalize` (`scripts/18_benchmark_controls.py`),
+every surface metric prefers the safe version in all 159 spelling-only pairs. On the 890 pairs that change only words,
+BLEU, TER, chrF and chrF++ still prefer the error 58–70% of the time:
 
-| safe preferred, reworded | raw (table above) | normalised | normalised, spelling-only changes (n = 159) | normalised, word changes only (n = 890) |
-|---|---:|---:|---:|---:|
-| BLEU | 23.3% | 40.1% | 100% | 30.3% |
-| TER | 26.2% | 39.6% | 100% | 30.3% |
-| chrF++ | 32.9% | 49.9% | 100% | 40.1% |
-| chrF | 35.7% | 51.6% | 100% | 42.0% |
+| safe preferred, normalised | spelling-only changes (n = 159) | word changes only (n = 890) |
+|---|---:|---:|
+| BLEU | 100% | 30.3% |
+| TER | 100% | 30.3% |
+| chrF++ | 100% | 40.1% |
+| chrF | 100% | 42.0% |
 
-The weighting problem is real for genuine rewording, where these metrics still prefer the error 58–70% of the time,
-but it is smaller than the raw table suggests. BERTScore, COMET-22 and the other learned metrics were not re-scored on
-normalised text; that needs a GPU. The intervals above also resample pairs, which come from only 608 instructions
-and 13 drugs, so they are too narrow.
+The weighting problem is real for genuine rewording, but smaller than the raw table suggests. COMET-22 moves from a coin
+flip to 59%. CometKiwi-22 does not move, since it never sees the reference. The learned metrics were scored raw and
+normalised in one run, and that run reproduced every raw figure in the table exactly.
 
 CometKiwi-22, the standard reference-free quality estimator, is among the least affected by rewording but the weakest
 when the wording is held equal. Its blind spots are by error type: for a left/right eye swap it prefers the safe
@@ -120,11 +120,11 @@ choose among each system's own 5-best beam candidates, with no retraining.
 | not passed by Guard 2 | 1-best | QE rerank (does not use the guard) | Guard 2 + QE rerank | all 5 candidates fail |
 |---|---:|---:|---:|---:|
 | NLLB-200-600M | 6.7% | 4.3% | **2.3%** | 7 / 300 |
-| OPUS-MT en-ar | 25.0% | 27.3% | 24.7% | 74 / 300 |
+| OPUS-MT en-ar | 24.7% | 27.0% | 24.7% | 74 / 300 |
 | M2M100-418M | 43.0% | 42.3% | 42.0% | 126 / 300 |
 
-These runs need a GPU and were not repeated after the leaflet fixes in finding 6, which moved OPUS-MT's 1-best from 25.0% to
-24.7%. The Guard 2 + QE column is partly circular, because Guard 2 both chooses and judges. It shows that
+Re-run with the 0.5 checker; only OPUS-MT's first two cells moved (from 25.0% and 27.3%), and 1 of 900 picks changed.
+The Guard 2 + QE column is partly circular, because Guard 2 both chooses and judges. It shows that
 candidates with a detected problem were avoided, not that the chosen output is safe. The QE column is
 the fairer cross-check, and it makes OPUS-MT slightly worse. The reverse cross-check, the share AMANA-QE
 scores below 0.5, moves little after Guard 2 + QE: NLLB 13.0% → 9.7%, OPUS-MT 27.7% → 26.3%, M2M100 21.7%
@@ -136,8 +136,10 @@ showing the 1-best and the Guard 2 + QE pick in random order. The packet is not 
 recorded, and there was one rater, so no agreement can be measured. Reranking was judged better in 5 pairs, worse in 4
 and the same in 51 (two-sided sign test p = 1.0). It removed 3 errors rated clinically critical and added 1. The
 reviewer rated 9 OPUS-MT pairs critical in both versions because "tablet" became لوح, a word used for tablets in some
-regions. Counts are in `results/adjudication.json`. A valid review needs a packet built from a private seed and sent
-outside the repository, at least two qualified raters, and control pairs with known errors.
+regions. Counts are in `results/adjudication.json`. The packet was built from the 0.4 picks (the `mt_picks.jsonl` of
+commit 4412319). The one pick that changed in 0.5 is packet item 21: there, reranking now keeps the 1-best. The reviewer
+had judged the two versions the same, so the totals do not change. A valid review needs a packet built from a private
+seed and sent outside the repository, at least two qualified raters, and control pairs with known errors.
 
 ![MT audit](figures/mt_audit.png)
 
@@ -260,7 +262,8 @@ review, but its content is not checked.
 $ python -m amana benchmark my_module:my_metric
 ```
 
-The function takes lists of sources, hypotheses and references, and returns one score per hypothesis.
+The function takes lists of sources, hypotheses and references, and returns one score per hypothesis. The pairs file
+ships with the repository, not the installed package, so outside a clone pass `--pairs path/to/audit_set.jsonl`.
 
 ```python
 from amana.guard2 import check
@@ -332,9 +335,10 @@ whose exact label is in the table is flagged directly.
 
 **The sealed FDA half is no longer a clean estimate.** It was never tuned on, but the table above uses current code, which
 changed after it was first scored: an "even if" fix, the leaflet fixes, then the 0.5 fixes. `results/fda_sealed_first_run.json`
-keeps the first run (passes 35–39%). Every `report` run re-scores the sealed sets, so "scored once" depends on discipline,
-not on the code. The hold-out and its hash were also first committed together with Guard 2, so "frozen before
-implementation" rests on the author's word.
+keeps the first run (passes 35–39%). Until 0.5, every routine `report` run also re-scored the sealed sets. They now sit in a
+separate `sealed` stage that never runs by default, and each scoring appends a line to `results/sealed_runs.jsonl`.
+That log starts at 0.5. Earlier scorings are known only from the first-run files and the commit history. The hold-out
+and its hash were also first committed together with Guard 2, so "frozen before implementation" rests on the author's word.
 
 **The PEACH half was first sealed once, and its leaflets are not a random sample of practice.** `results/peach_sealed_first_run.json`
 keeps that run; the table above is the third scoring. Injected errors are constructed, and development reading shaped the checker that was tested. Before the fixes,
@@ -398,10 +402,11 @@ python scripts/run_all.py --list                # show every step
 python scripts/run_all.py --stages report       # no GPU: rebuilds summaries and figures
 python scripts/run_all.py                       # everything: needs a GPU and model downloads
 python scripts/run_all.py --from-step 8         # resume after a failure, using the numbers from --list
+python scripts/run_all.py --stages sealed       # scores the sealed sets and logs it; only once the checker is frozen
 pytest tests
-python scripts/10_guard2_eval.py --holdout      # re-scores the spent hold-out; do not tune on it
 python scripts/10_guard2_eval.py --probes       # re-scores the outside probes
 python scripts/18_benchmark_controls.py         # source-blind baseline and normalised metrics, CPU
+python scripts/18_benchmark_controls.py --learned   # the same for BERTScore, COMET-22, CometKiwi-22 and LaBSE, GPU
 ```
 
 | stage | what it does | GPU | results in the repository |
@@ -410,7 +415,8 @@ python scripts/18_benchmark_controls.py         # source-blind baseline and norm
 | `audit` | scores metrics on the 1,620 contrastive pairs, with intervals | yes | yes (`metric_audit.json`, `metric_stats.json`) |
 | `qe` | trains AMANA-QE and 4 generalization runs, about 70–85 minutes per generalization run on an 8 GB GPU | yes | yes, except checkpoints |
 | `mt` | translates with 3 systems, scores candidates | yes | yes (`mt_outputs.jsonl`, `mt_audit.json`, `fda_mt_outputs.jsonl`) |
-| `peach` | scores the leaflet track; skips itself if `data/raw/peach/peach.zip` is absent, keeping the committed results | no | counts only (`peach_*.json`) |
+| `peach` | scores the leaflet track's development half; skips itself if `data/raw/peach/peach.zip` is absent, keeping the committed results | no | counts only (`peach_*.json`) |
+| `sealed` | scores the hold-out, the sealed drug names, FDA and PEACH halves, and logs each run; never part of a default run | no | yes (`sealed_runs.jsonl`) |
 | `report` | rebuilds AMANA-Bench, then guard, drug name and real-input evaluations, error patterns, figures, manifest | no | yes (`MANIFEST.json` has file hashes) |
 
 The FDA sentences and Wikidata names are committed snapshots. `16_real_inputs.py fetch` and `14_build_drug_names.py`
