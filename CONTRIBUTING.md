@@ -7,7 +7,9 @@ The checker's weakest evidence is that one author wrote most of its tests. These
 Open `adjudication/packet.html` in a browser. It shows pairs of Arabic translations for the same instruction, with
 the system and checker hidden. Judge each one and save your answers, then send them through a
 [clinical review issue](https://github.com/Momen-Ibrahim-Fawzy/AMANA-Medical-Translation-Safety/issues/new/choose).
-Please say what your qualification is. You don't need to know anything about the code.
+Please say what your qualification is. You don't need to know anything about the code. Please don't look in the
+`results/` folder first: which version is the system's normal output can be found there, which would unblind the packet.
+If you can review more seriously, open an issue and a packet will be built for you from a private seed.
 
 ## Write test cases without reading the code
 

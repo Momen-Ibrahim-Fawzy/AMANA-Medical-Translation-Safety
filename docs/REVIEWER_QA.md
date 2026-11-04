@@ -7,7 +7,9 @@ Short answers to the hard questions, with the evidence or the gap for each.
 Mostly its own generator. AMANA-Bench is a controlled instrument. It can show that a metric prefers a
 one-word error, because the labels are exact by construction. It cannot show that a checker is safe, and
 its 100% is reported as an upper bound. The evidence for generator learning is direct: AMANA-QE falls
-from AUROC 0.999 to 0.67–0.71 on error types left out of training.
+from AUROC 0.999 to 0.67–0.71 on error types left out of training. The labels also leak through the Arabic alone: a
+classifier that never sees the English reaches AUROC 0.711 on held-out drugs, and 0.94 for unit, route and negation
+errors, because correct instructions never use some words that errors use.
 
 ## Why trust the metric finding, if the test is built to make metrics fail?
 
@@ -17,27 +19,44 @@ the same metrics reach 93–99%. Both come with bootstrap intervals, ties and ma
 `results/metric_stats.json`. COMET-22's 46.7% (44.3–49.0) is below chance by a small margin, so the fair
 reading is "about a coin flip", not "COMET-22 prefers errors".
 
+Part of the surface-metric result is a preprocessing artefact. With standard Arabic normalisation, BLEU's reworded
+score rises from 23.3% to 40.1% and chrF's from 35.7% to 51.6%; on rewordings that change only spelling, both reach
+100%. On genuine word changes they still prefer the error 58–70% of the time. The intervals resample pairs from only
+608 instructions and 13 drugs, so they are too narrow, and the very small p-values in `metric_stats.json` should be read
+as "< 0.001".
+
 ## Does AMANA-Guard 2 understand instructions?
 
 No. It parses them with rules into per-drug records, which fixes the swapped-dose failure of a flat slot
-comparison. It has no general semantics. It understands 10 warning topics, and it returns `needs_review` when it
+comparison. It has no general semantics. It understands 11 warning topics, and it returns `needs_review` when it
 cannot establish meaning, including for any sentence that gave it nothing to compare.
 
 ## Does `ok` mean the translation is right?
 
-No. It means every source sentence had something to compare and no mismatch was found. An earlier version also said
-`ok` when it simply had no rule, which was the most serious flaw found in this project. That is fixed, but a wrong
-word that no rule looks at can still pass within a sentence that has other checkable content.
+No. It means no mismatch was found in what the rules compared. Twice an earlier version said `ok` for things it had
+not checked. First, it had no rule for them. Then, in 0.4, sentences with no dosing instruction went to a fallback
+comparison but were still counted as fully covered. An outside review found the second problem, along with 20 dangerous
+translations that passed. Both are fixed. A wrong word that no rule looks at can still pass within a sentence that has
+other checkable content. For a sentence with no dosing instruction, a pass means only that its numbers, negations and
+drug names matched.
 
 ## How does it do on real text?
 
-On sealed FDA label sentences, each system passes 35–40%, and about half go to review. Only 56% of sentences are fully
-covered by the rules. No error labels exist for this text, so these are not accuracy figures. They show how much of the
-work still falls to a person.
+On sealed FDA label sentences, each system passes 30–33%, and more than half go to review. Only 51% of sentences are
+fully covered by the rules, and 31% have no dosing instruction, so only a narrower check runs on them. No error labels
+exist for this text, so these are not accuracy figures. They show how much of the work still falls to a person.
 
-On real human leaflets (PEACH, sealed half), it passes 57.4% and flags 14.3%. In a sample of 60 flags, 10 pointed at a real
-difference, so most flags on sound text are false alarms. It stops passing 95–100% of injected number, negation and unit
-errors, about the same as the first checker. That reading was not clinical and not independently checked.
+On real human leaflets (PEACH, sealed half), it passes 47.5% and flags 14.4%. In a sample of 60 flags, read before the 0.5
+fixes, 10 pointed at a real difference, so most flags on sound text are false alarms. No one has read the passed rows,
+so misses are unknown. It stops passing 95–100% of injected number, negation and unit errors, about the same as the
+first checker. That reading was not clinical and not independently checked.
+
+## Were the outside probes a fair test?
+
+They were the first cases not written by the author: 30 dangerous and 11 faithful translations. They were frozen when
+received and scored once on unchanged code. Guard 2 caught 10 of 30 and accepted 8 of 11. The reviewer had read the
+code, so the probes target its weak points: a fair adversarial test, but not a blind one. All 30 are now caught. That
+was done by fixing exactly what they exposed, so they are regression tests now, not evidence.
 
 ## How independent is the hold-out?
 
@@ -58,14 +77,48 @@ ignored or switched off.
 Only weakly. When the guard both chooses and judges, the drop is partly circular. Cross-judging is less
 flattering: QE-only reranking moves Guard 2's rate from 25.0% to 27.3% on OPUS-MT, and Guard 2 + QE moves
 QE's unsafe share only from 21.7% to 20.3% on M2M100. Reranking also cannot fix systematic errors. All 5
-candidates fail for 74 of 300 OPUS-MT and 126 of 300 M2M100 instructions.
+candidates fail for 74 of 300 OPUS-MT and 126 of 300 M2M100 instructions. One human rater judged 60 changed picks:
+better in 5, worse in 4, the same in 51 (sign test p = 1.0). That is no evidence either way, and the packet could be
+unblinded from public results.
+
+## Isn't this one fragile model checking another?
+
+The checker that decides is not a model. AMANA-Guard 2 is deterministic rules: the same input always gives the same
+result, and every flag names the slot that differs. It cannot hallucinate, but it can miss what its rules do not cover,
+which is why it reports `needs_review` instead of `ok` when it has nothing to compare. AMANA-QE is a learned model and is
+used only to rank candidates, never to pass a translation. Neither one makes MT safe to use unreviewed. Their job is to
+send the risky part of the output to a person.
+
+## How can a sealed set be sealed if it is public?
+
+"Sealed" here means the set was split off by hash before the code was written against it, then scored once with the
+code frozen. The checker has no trained weights, so publishing the set cannot leak into a model. It can leak into the
+author's next rule change, which is why each first score is kept in a `*_first_run.json` file and later scores are
+labelled as no longer clean (see `results/README.md`). Once published, a sealed set is spent, and the next one has to
+be new. AMANA-QE is trained only on training drugs; its held-out drugs and TICO-19 never enter training.
+
+Two weaknesses remain. The code does not enforce the seal: every `report` run re-scores the sealed sets. And the
+history cannot prove the order: the hold-out first appears in the same commit as Guard 2. A future sealed set should
+have its hash published externally, with a timestamp, before it is scored.
+
+## Why are there two checkers, `guard.py` and `guard2.py`?
+
+`guard.py` is the first design, a flat comparison of slots, kept as the baseline that Guard 2 is measured against.
+Guard 2 replaced its design, not just its rules: it parses each instruction into per-drug records and can abstain.
+Deleting the baseline would remove the comparison. Each has its own tests (`test_guard.py`, `test_guard2.py`).
+
+## Does this cover what patients and clinicians actually say?
+
+No. It covers written medication instructions: generated ones, FDA patient labels and published leaflets. It does not
+cover conversation, interpreting, colloquial or dialect speech, or handwritten prescriptions. Those need different data
+and probably a different method.
 
 ## Are the 43.0% and 25.0% real error rates?
 
 No. They are checker output on generated inputs. Some flags will be false alarms, some real errors are
 invisible to the checker, and no independent person has judged them. The exact pattern counts, such as
 "mcg" written as "mg" in 18 of 18 cases, are firmer because each is a specific, inspectable string
-pattern.
+pattern. They are still not independent: all 18 are levothyroxine, and the 46 "rash" rows share one sentence.
 
 ## What is the AMANA-QE score?
 
@@ -75,18 +128,19 @@ track, seed choice alone moved them from 70% to 100%. Two seeds per track also c
 
 ## Is there clinical validation?
 
-None. The author is a native Arabic speaker and not a clinician. `adjudication/packet.html` is ready for a
-pharmacist or clinician to judge 60 blinded pairs. One reviewer has completed it, but their clinical qualification was
-not recorded, so it is a blinded human judgement, not clinical validation. It found reranking better in 5 pairs, worse
-in 4 and the same in 51 (`results/adjudication.json`). Severity tiers also need clinical input.
+None. The author is a native Arabic speaker and not a clinician. One reviewer, whose clinical qualification was not
+recorded, judged the 60 pairs in `adjudication/packet.html`. The 1-best of each pair can be found in public results,
+so the packet is not blind for anyone who reads the repository. "Critical" in the benchmark is also the author's
+construct: any one-slot change counts, with no severity. Severity tiers need clinical input.
 
 ## What evidence would change the conclusions?
 
-1. A pharmacist's adjudication of the blinded packet. One judgement exists from a reviewer of unrecorded qualification;
-   a second, clinical one would show whether it holds.
-2. A fresh test set written by another person.
+1. Two pharmacists rating a random sample of benchmark rows and the FDA MT outputs on an agreed severity scale, with
+   their agreement reported, from a packet built and sent outside this repository.
+2. A fresh test set written by someone who has not seen the rules, with its hash published before scoring.
 3. Real translated medication instructions with naturally occurring, independently annotated errors. PEACH now supplies
-   real text, but nobody independent has annotated its differences. A pharmacist judging the flagged leaflet rows would help.
+   real text, but nobody independent has annotated its differences, and no one has read the rows that passed.
+4. Current MT systems, including commercial ones and LLMs, and current metrics such as xCOMET and MetricX-24.
 
 ## Why no MLflow, DVC, a config framework or a web service?
 

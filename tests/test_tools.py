@@ -25,6 +25,14 @@ def test_batch_writes_report_and_json_and_signals_flags(tmp_path):
     assert "does not mean safe" in page and 'dir="rtl"' in page
 
 
+def test_batch_fails_closed_when_rows_need_review(tmp_path):
+    # an untranslated copy of the English has nothing the checker can confirm
+    path = tmp_path / "t.csv"
+    path.write_text("source,translation\nShake the bottle well before use.,Shake the bottle well before use.\n", encoding="utf-8")
+    assert amana("batch", str(path)).returncode == 2
+    assert amana("batch", str(path), "--allow-review").returncode == 0
+
+
 def test_batch_escapes_html_in_translations():
     rows = batch.check_rows([{"source": "Take 1 tablet.", "translation": "<script>alert(1)</script>"}], Path("x.csv"))
     assert "<script>alert" not in batch.render_html(rows, "t")

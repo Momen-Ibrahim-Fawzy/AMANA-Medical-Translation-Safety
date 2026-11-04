@@ -7,7 +7,7 @@ Both are produced from the same structure, so every label is exact by constructi
 from __future__ import annotations
 
 import random
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, replace
 
 from . import lexicon as L
 from .arabic import Noun, count_phrase, fmt_num, strip_hamza, to_indic

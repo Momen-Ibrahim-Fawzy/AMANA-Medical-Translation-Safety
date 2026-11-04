@@ -62,7 +62,7 @@ for test. The metric audit and every reported number use the test drugs only.
 - BERTScore (mBERT)
 - LaBSE cosine to the reference, and LaBSE source-translation cosine (reference-free)
 - COMET-22 (Unbabel/wmt22-comet-da)
-- CometKiwi-22 (reference-free) could not be loaded and is not in the reported run
+- CometKiwi-22 (Unbabel/wmt22-cometkiwi-da, reference-free; a gated model under CC BY-NC-SA 4.0, used for scoring only)
 
 Reported per metric:
 
@@ -90,13 +90,14 @@ and negation polarity.
 
 `amana/guard.py` stays unchanged as the baseline. `amana/guard2.py` parses each side into a document of
 per-drug instructions (quantities, frequency, timing, route, duration, condition, limit) and warnings
-stored as (topic, polarity) over a closed list of 10 topics, and compares them. It reports two levels:
+stored as (topic, polarity) over a closed list of 11 topics, and compares them. It reports two levels:
 
 - **flag**: a detected mismatch, such as `[strength] warfarin: 3 mg rendered as 75 mg`
 - **needs review**: the checker could not establish the meaning, such as no recognized dosing verb
 
 A translation passes only with neither. Text that is not a medication instruction falls back to the
-baseline's number and negation checks, so Guard 2 adds nothing on AMANA-TICO.
+baseline's number and negation checks, plus known drug names and brands in capitals. A sentence there with no number
+and no negation counts as not checked; before 0.5 it was counted as covered.
 
 **Evaluation tracks.** (1) Held-out drugs on AMANA-Bench, an upper bound. (2) A linguistic hold-out,
 `data/hard_cases_holdout.jsonl`: 20 errors and 20 safe paraphrases, frozen by SHA-256 before implementation
@@ -113,6 +114,25 @@ A probe outside the benchmark showed that "no mismatch" often meant "no rule". T
   drug is a flag. Anything else is a review item.
 - **Coverage.** A source sentence with nothing to compare is a review item, and each report gives the share checked.
 - **Sequences.** Quantities on either side of "then" or "ثم" are compared in order.
+- **Whole-text checks (0.5).** These cover what the per-drug slots miss:
+    - percentages;
+    - a per-kilogram or per-square-metre basis;
+    - the time unit of an interval or a limit (hours against minutes);
+    - before or after a named meal;
+    - night against morning;
+    - doses tied to morning and evening;
+    - the liquid to take it with;
+    - two kinds of added instruction (change the dose, stop other medicines);
+    - a translation with more sentences than the source.
+
+  Preprocessing also reads:
+    - ".5", `ug` and `µg`;
+    - "one and a half";
+    - Arabic compound and hundreds number words (خمسة وعشرين, خمسمائة);
+    - counts per week or per N weeks.
+
+  All of these came from an outside reviewer's 41 probes (`data/review_probes.jsonl`). Those probes were scored once
+  before any change (`results/review_probes_first_run.json`).
 
 The name comparison reduces both sides to shared consonant classes. `scripts/15_drug_names_eval.py` chose the threshold
 on 4 in 5 Wikidata names. A false match is a silent pass and a missed match only asks for review, so it takes the
@@ -158,11 +178,11 @@ reported. The
 review found guard false alarms (Latin-script drug names, transliteration variants, the
 nominative dual قطرتان, "على بطن فارغ", and, from the author's native-speaker check of 12 flags (4 were false alarms), "لوح" for
 tablet and "السمبرازول" for esomeprazole); these were fixed and added as regression tests in
-`tests/test_amana.py`. It also confirmed real errors: safety warnings silently dropped
+`tests/test_guard.py`. It also confirmed real errors: safety warnings silently dropped
 ("Do not crush or chew the tablets"), "25 mcg" rendered as "25 مليغراماً" (a 1000× overdose),
 and "Instill" rendered as "لا تزال" ("still"). The author also judged 20 sampled benchmark
-instructions, with both Arabic versions, as correct. The author is not a clinician, and no
-independent or blinded review has been done. Because the guard was refined on these outputs, the
+instructions, with both Arabic versions, as correct. The author is not a clinician. One later reviewer judged the
+60-pair packet, which is not truly blind (see the README). Because the guard was refined on these outputs, the
 flag rates are not a held-out result.
 
 ## 6b. Real inputs

@@ -1,0 +1,82 @@
+{
+  "baseline": {
+    "errors_caught": [
+      6,
+      30
+    ],
+    "safe_accepted": [
+      6,
+      11
+    ],
+    "missed_errors": [
+      "naked-decimal",
+      "mg-per-kg",
+      "percent",
+      "mtx-weekly-x3",
+      "hours-to-minutes",
+      "max-24h-to-minutes",
+      "before-to-after-breakfast",
+      "night-to-morning",
+      "bedtime-to-morning",
+      "compound-number-word",
+      "side-added",
+      "morning-evening-swap",
+      "added-double-dose",
+      "added-stop-other",
+      "swallow-whole-to-chew",
+      "water-to-milk",
+      "ismp-chlorpromazine",
+      "ismp-vinblastine",
+      "ismp-hydromorphone",
+      "ismp-tiagabine",
+      "ismp-sitagliptin",
+      "ismp-carbamazepine",
+      "ismp-garbled",
+      "breastfeed-touch"
+    ],
+    "false_alarms": [
+      "dialect-gulf",
+      "safe-25-words",
+      "safe-1.5-tablets",
+      "safe-500-words",
+      "safe-q12h-words"
+    ]
+  },
+  "guard2": {
+    "errors_caught": [
+      10,
+      30
+    ],
+    "safe_accepted": [
+      8,
+      11
+    ],
+    "missed_errors": [
+      "naked-decimal",
+      "ug",
+      "mg-per-kg",
+      "percent",
+      "biweekly-to-daily",
+      "mtx-weekly-x3",
+      "hours-to-minutes",
+      "max-24h-to-minutes",
+      "before-to-after-breakfast",
+      "night-to-morning",
+      "bedtime-to-morning",
+      "compound-number-word",
+      "one-and-half-to-half",
+      "side-added",
+      "morning-evening-swap",
+      "added-double-dose",
+      "added-stop-other",
+      "water-to-milk",
+      "ismp-garbled",
+      "breastfeed-touch"
+    ],
+    "false_alarms": [
+      "safe-25-words",
+      "safe-1.5-tablets",
+      "safe-500-words"
+    ]
+  }
+}

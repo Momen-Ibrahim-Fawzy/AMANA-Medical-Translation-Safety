@@ -4,8 +4,9 @@
     python -m amana batch translations.csv --report report.html
     python -m amana benchmark my_module:my_metric
 
-Exit code for a check: 0 passes, 1 flagged, 2 needs review. For a batch: 1 if anything is flagged, otherwise 0,
-or 2 with --strict if anything needs review.
+Exit code for a check: 0 passes, 1 flagged, 2 needs review. For a batch: 1 if anything is flagged, otherwise 2 if
+anything needs review, otherwise 0. --allow-review exits 0 when nothing is flagged; use it only if every review
+item is read by a person.
 """
 from __future__ import annotations
 
@@ -44,7 +45,7 @@ def main() -> int:
         ap.add_argument("input")
         ap.add_argument("--report", help="write a reviewer's HTML report here")
         ap.add_argument("--json", help="write one JSON result per line here")
-        ap.add_argument("--strict", action="store_true", help="exit 2 if anything needs review")
+        ap.add_argument("--allow-review", action="store_true", help="exit 0 when rows need review but none is flagged")
         return batch.run(ap.parse_args(argv[1:]))
     if argv[:1] == ["benchmark"]:
         ap = argparse.ArgumentParser(prog="python -m amana benchmark", description=benchmark.__doc__.splitlines()[0])

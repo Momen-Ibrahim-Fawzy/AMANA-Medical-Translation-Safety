@@ -33,6 +33,7 @@ PATTERNS = {
 def main():
     rows = [json.loads(l) for l in (ROOT / "results" / "mt_outputs.jsonl").read_text(encoding="utf-8").splitlines()]
     out = {}
+    distinct: dict = {}  # the 300 sources reuse a few drugs and warning sentences, so counts are not independent
     for r in rows:
         rep = check(r["src_en"], r["cands"][0])
         for name, (applies, error) in PATTERNS.items():
@@ -40,8 +41,16 @@ def main():
             if applies(r, rep):
                 d["applicable"] += 1
                 d["errors"] += error(r, rep)
+                seen = distinct.setdefault(name, {"drugs": set(), "warning_sentences": set()})
+                seen["drugs"].add(r["drug"])
+                seen["warning_sentences"] |= set(re.split(r"(?<=\.)\s+", r["src_en"])[1:])
+    out["_distinct"] = {k: {"drugs": len(v["drugs"]), "warning_sentences": len(v["warning_sentences"])}
+                        for k, v in distinct.items()}
     (ROOT / "results" / "mt_error_patterns.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
     for system, d in out.items():
+        if system.startswith("_"):
+            print(system, d)
+            continue
         print(system, {k: f"{v['errors']}/{v['applicable']}" for k, v in d.items()})
 
 

@@ -631,5 +631,62 @@
       }
     },
     "critical_vs_benign_drop": 499999999.99999994
+  },
+  "CometKiwi-22 (QE)": {
+    "contrastive_minimal": 0.8209876543209876,
+    "contrastive_matched": 0.9037037037037037,
+    "auroc": 0.7351663237311385,
+    "mean_score": {
+      "ref": 0.8367050387241223,
+      "good": 0.8336720609002644,
+      "bad_matched": 0.7908826981061771
+    },
+    "per_type": {
+      "dose": {
+        "minimal": 0.72,
+        "matched": 0.7933333333333333
+      },
+      "drug": {
+        "minimal": 0.8866666666666667,
+        "matched": 0.98
+      },
+      "duration": {
+        "minimal": 0.8133333333333334,
+        "matched": 0.96
+      },
+      "frequency": {
+        "minimal": 0.72,
+        "matched": 0.8
+      },
+      "laterality": {
+        "minimal": 0.48333333333333334,
+        "matched": 0.725
+      },
+      "negation": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "omission": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "route": {
+        "minimal": 0.8933333333333333,
+        "matched": 0.9666666666666667
+      },
+      "strength": {
+        "minimal": 0.74,
+        "matched": 0.8533333333333334
+      },
+      "timing": {
+        "minimal": 0.84,
+        "matched": 0.8733333333333333
+      },
+      "unit": {
+        "minimal": 0.8666666666666667,
+        "matched": 0.9533333333333334
+      }
+    },
+    "critical_vs_benign_drop": 36.532135858915744
   }
 }

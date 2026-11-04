@@ -150,6 +150,8 @@ def evaluate(rows: list[dict]) -> tuple[dict, list[dict]]:
                      "flagged": rate([(r["doc"], bool(x.flags)) for r, x in zip(rows, reports)]),
                      "review_only": rate([(r["doc"], not x.flags and bool(x.review)) for r, x in zip(rows, reports)]),
                      "fully_covered": rate([(r["doc"], not x.unverified) for r, x in zip(rows, reports)]),
+                     "general_path": rate([(r["doc"], x.general) for r, x in zip(rows, reports)]),
+                     "passed_on_general_path": rate([(r["doc"], x.ok and x.general) for r, x in zip(rows, reports)]),
                      "mean_coverage": round(sum(x.coverage for x in reports) / len(rows), 4),
                      "baseline_passed": rate([(r["doc"], x.ok) for r, x in zip(rows, baseline)]),
                      "flag_kinds": dict(Counter(f.kind for x in reports for f in x.flags).most_common()),

@@ -1,0 +1,186 @@
+{
+ "source_blind": {
+  "auroc_heldout_drugs": 0.711,
+  "n": 14082,
+  "auroc_by_error_type": {
+   "dose": 0.768,
+   "drug": 0.304,
+   "duration": 0.752,
+   "frequency": 0.665,
+   "laterality": 0.729,
+   "negation": 0.938,
+   "omission": 0.657,
+   "route": 0.941,
+   "strength": 0.511,
+   "timing": 0.53,
+   "unit": 0.941
+  },
+  "critical_with_a_word_no_safe_text_has": {
+   "dose": 0.537,
+   "drug": 0.0,
+   "duration": 0.392,
+   "frequency": 0.0,
+   "laterality": 0.0,
+   "negation": 0.894,
+   "omission": 0.0,
+   "route": 0.872,
+   "strength": 0.173,
+   "timing": 0.171,
+   "unit": 0.884
+  }
+ },
+ "normalised_metrics": {
+  "BLEU": {
+   "raw": {
+    "reworded": 0.233,
+    "same_wording": 0.942,
+    "reworded_by_change": {
+     "both": {
+      "rate": 0.0771,
+      "n": 571
+     },
+     "lexical only": {
+      "rate": 0.3034,
+      "n": 890
+     },
+     "orthographic only": {
+      "rate": 0.3994,
+      "n": 159
+     }
+    }
+   },
+   "normalised": {
+    "reworded": 0.4009,
+    "same_wording": 0.9617,
+    "reworded_by_change": {
+     "both": {
+      "rate": 0.3862,
+      "n": 571
+     },
+     "lexical only": {
+      "rate": 0.3034,
+      "n": 890
+     },
+     "orthographic only": {
+      "rate": 1.0,
+      "n": 159
+     }
+    }
+   }
+  },
+  "chrF": {
+   "raw": {
+    "reworded": 0.3571,
+    "same_wording": 0.9855,
+    "reworded_by_change": {
+     "both": {
+      "rate": 0.2049,
+      "n": 571
+     },
+     "lexical only": {
+      "rate": 0.4124,
+      "n": 890
+     },
+     "orthographic only": {
+      "rate": 0.5943,
+      "n": 159
+     }
+    }
+   },
+   "normalised": {
+    "reworded": 0.516,
+    "same_wording": 1.0,
+    "reworded_by_change": {
+     "both": {
+      "rate": 0.5306,
+      "n": 571
+     },
+     "lexical only": {
+      "rate": 0.4202,
+      "n": 890
+     },
+     "orthographic only": {
+      "rate": 1.0,
+      "n": 159
+     }
+    }
+   }
+  },
+  "chrF++": {
+   "raw": {
+    "reworded": 0.3287,
+    "same_wording": 0.9855,
+    "reworded_by_change": {
+     "both": {
+      "rate": 0.1646,
+      "n": 571
+     },
+     "lexical only": {
+      "rate": 0.3921,
+      "n": 890
+     },
+     "orthographic only": {
+      "rate": 0.5629,
+      "n": 159
+     }
+    }
+   },
+   "normalised": {
+    "reworded": 0.4994,
+    "same_wording": 1.0,
+    "reworded_by_change": {
+     "both": {
+      "rate": 0.5131,
+      "n": 571
+     },
+     "lexical only": {
+      "rate": 0.4011,
+      "n": 890
+     },
+     "orthographic only": {
+      "rate": 1.0,
+      "n": 159
+     }
+    }
+   }
+  },
+  "TER": {
+   "raw": {
+    "reworded": 0.262,
+    "same_wording": 0.933,
+    "reworded_by_change": {
+     "both": {
+      "rate": 0.1313,
+      "n": 571
+     },
+     "lexical only": {
+      "rate": 0.3028,
+      "n": 890
+     },
+     "orthographic only": {
+      "rate": 0.5031,
+      "n": 159
+     }
+    }
+   },
+   "normalised": {
+    "reworded": 0.396,
+    "same_wording": 0.9528,
+    "reworded_by_change": {
+     "both": {
+      "rate": 0.373,
+      "n": 571
+     },
+     "lexical only": {
+      "rate": 0.3028,
+      "n": 890
+     },
+     "orthographic only": {
+      "rate": 1.0,
+      "n": 159
+     }
+    }
+   }
+  }
+ }
+}

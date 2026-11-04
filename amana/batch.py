@@ -94,4 +94,4 @@ def run(args) -> int:
         print(f"results -> {args.json}")
     if counts.get("flag"):
         return 1
-    return 2 if counts.get("needs_review") and args.strict else 0
+    return 2 if counts.get("needs_review") and not args.allow_review else 0  # fail closed: unchecked is not a pass

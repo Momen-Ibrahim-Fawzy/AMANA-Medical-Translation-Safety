@@ -121,6 +121,8 @@ def evaluate(is_sealed: bool):
                        "review_only": round(sum(not x.flags and bool(x.review) for x in reports) / n, 4),
                        "mean_coverage": round(sum(x.coverage for x in reports) / n, 4),
                        "fully_covered": round(sum(not x.unverified for x in reports) / n, 4),
+                       "general_path": round(sum(x.general for x in reports) / n, 4),
+                       "passed_on_general_path": round(sum(x.ok and x.general for x in reports) / n, 4),
                        "numbers_lost_parser_free": sum(numbers_lost(r["src_en"], r["hyp_ar"]) for r in part),
                        "flag_kinds": dict(kinds.most_common()), "review_kinds": dict(review.most_common())}
         print(system, {k: v for k, v in out[system].items()}, flush=True)

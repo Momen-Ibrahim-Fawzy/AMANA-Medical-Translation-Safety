@@ -64,5 +64,27 @@
       "errors": 0,
       "applicable": 44
     }
+  },
+  "_distinct": {
+    "safety_warning_dropped": {
+      "drugs": 13,
+      "warning_sentences": 6
+    },
+    "instill_as_still": {
+      "drugs": 2,
+      "warning_sentences": 2
+    },
+    "glimepiride_as_contraceptive": {
+      "drugs": 1,
+      "warning_sentences": 5
+    },
+    "rash_as_stool": {
+      "drugs": 13,
+      "warning_sentences": 1
+    },
+    "mcg_rendered_as_mg": {
+      "drugs": 1,
+      "warning_sentences": 5
+    }
   }
 }

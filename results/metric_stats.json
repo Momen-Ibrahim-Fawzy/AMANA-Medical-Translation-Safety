@@ -3086,5 +3086,391 @@
     }
    }
   }
+ },
+ "CometKiwi-22": {
+  "reworded": {
+   "safe_preferred": 0.821,
+   "ci95": [
+    0.8019,
+    0.8389
+   ],
+   "ties": 0.0,
+   "p_vs_chance": 5.593172054328527e-159,
+   "median_margin": 0.0124,
+   "iqr_margin": [
+    0.0034,
+    0.0344
+   ],
+   "n": 1620
+  },
+  "same_wording": {
+   "safe_preferred": 0.9037,
+   "ci95": [
+    0.8889,
+    0.9173
+   ],
+   "ties": 0.0,
+   "p_vs_chance": 1.3872081272708705e-266,
+   "median_margin": 0.0125,
+   "iqr_margin": [
+    0.0041,
+    0.0395
+   ],
+   "n": 1620
+  },
+  "per_type": {
+   "dose": {
+    "reworded": {
+     "safe_preferred": 0.72,
+     "ci95": [
+      0.6467,
+      0.7933
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 6.915618314188355e-08,
+     "median_margin": 0.0078,
+     "iqr_margin": [
+      -0.0006,
+      0.0191
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 0.7933,
+     "ci95": [
+      0.7333,
+      0.8533
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 2.3439580458997407e-13,
+     "median_margin": 0.0068,
+     "iqr_margin": [
+      0.0009,
+      0.0187
+     ],
+     "n": 150
+    }
+   },
+   "drug": {
+    "reworded": {
+     "safe_preferred": 0.8867,
+     "ci95": [
+      0.8333,
+      0.94
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 1.7309935519822625e-23,
+     "median_margin": 0.02,
+     "iqr_margin": [
+      0.006,
+      0.0373
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 0.98,
+     "ci95": [
+      0.9533,
+      1.0
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 7.884069497892145e-40,
+     "median_margin": 0.0241,
+     "iqr_margin": [
+      0.0049,
+      0.0401
+     ],
+     "n": 150
+    }
+   },
+   "duration": {
+    "reworded": {
+     "safe_preferred": 0.8133,
+     "ci95": [
+      0.7467,
+      0.8733
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 3.4304080655717806e-15,
+     "median_margin": 0.0093,
+     "iqr_margin": [
+      0.0041,
+      0.0191
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 0.96,
+     "ci95": [
+      0.9267,
+      0.9867
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 2.08925524731209e-35,
+     "median_margin": 0.0103,
+     "iqr_margin": [
+      0.005,
+      0.0221
+     ],
+     "n": 150
+    }
+   },
+   "frequency": {
+    "reworded": {
+     "safe_preferred": 0.72,
+     "ci95": [
+      0.6467,
+      0.7868
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 6.915618314188355e-08,
+     "median_margin": 0.0058,
+     "iqr_margin": [
+      -0.001,
+      0.0162
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 0.8,
+     "ci95": [
+      0.7398,
+      0.86
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 5.973732026445346e-14,
+     "median_margin": 0.0056,
+     "iqr_margin": [
+      0.0006,
+      0.014
+     ],
+     "n": 150
+    }
+   },
+   "laterality": {
+    "reworded": {
+     "safe_preferred": 0.4833,
+     "ci95": [
+      0.3917,
+      0.575
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 0.7843281773322764,
+     "median_margin": -0.0005,
+     "iqr_margin": [
+      -0.0144,
+      0.0074
+     ],
+     "n": 120
+    },
+    "same_wording": {
+     "safe_preferred": 0.725,
+     "ci95": [
+      0.6417,
+      0.8
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 8.680495331686947e-07,
+     "median_margin": 0.0052,
+     "iqr_margin": [
+      -0.0014,
+      0.0132
+     ],
+     "n": 120
+    }
+   },
+   "negation": {
+    "reworded": {
+     "safe_preferred": 1.0,
+     "ci95": [
+      1.0,
+      1.0
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 1.401298464324817e-45,
+     "median_margin": 0.1248,
+     "iqr_margin": [
+      0.104,
+      0.1527
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 1.0,
+     "ci95": [
+      1.0,
+      1.0
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 1.401298464324817e-45,
+     "median_margin": 0.1288,
+     "iqr_margin": [
+      0.1094,
+      0.1575
+     ],
+     "n": 150
+    }
+   },
+   "omission": {
+    "reworded": {
+     "safe_preferred": 1.0,
+     "ci95": [
+      1.0,
+      1.0
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 1.401298464324817e-45,
+     "median_margin": 0.2098,
+     "iqr_margin": [
+      0.1821,
+      0.2383
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 1.0,
+     "ci95": [
+      1.0,
+      1.0
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 1.401298464324817e-45,
+     "median_margin": 0.2137,
+     "iqr_margin": [
+      0.182,
+      0.2396
+     ],
+     "n": 150
+    }
+   },
+   "route": {
+    "reworded": {
+     "safe_preferred": 0.8933,
+     "ci95": [
+      0.84,
+      0.94
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 2.1755247260990872e-24,
+     "median_margin": 0.0134,
+     "iqr_margin": [
+      0.0059,
+      0.0227
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 0.9667,
+     "ci95": [
+      0.9333,
+      0.9933
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 8.581873127276034e-37,
+     "median_margin": 0.015,
+     "iqr_margin": [
+      0.0089,
+      0.0237
+     ],
+     "n": 150
+    }
+   },
+   "strength": {
+    "reworded": {
+     "safe_preferred": 0.74,
+     "ci95": [
+      0.6667,
+      0.8133
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 3.3846378857556043e-09,
+     "median_margin": 0.0061,
+     "iqr_margin": [
+      -0.0001,
+      0.0099
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 0.8533,
+     "ci95": [
+      0.7933,
+      0.9067
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 2.2220912616069364e-19,
+     "median_margin": 0.004,
+     "iqr_margin": [
+      0.0019,
+      0.0076
+     ],
+     "n": 150
+    }
+   },
+   "timing": {
+    "reworded": {
+     "safe_preferred": 0.84,
+     "ci95": [
+      0.78,
+      0.8933
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 6.68983977234623e-18,
+     "median_margin": 0.0108,
+     "iqr_margin": [
+      0.0027,
+      0.0269
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 0.8733,
+     "ci95": [
+      0.82,
+      0.9202
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 9.06036169351255e-22,
+     "median_margin": 0.0129,
+     "iqr_margin": [
+      0.002,
+      0.0335
+     ],
+     "n": 150
+    }
+   },
+   "unit": {
+    "reworded": {
+     "safe_preferred": 0.8667,
+     "ci95": [
+      0.8133,
+      0.92
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 5.9947295585608996e-21,
+     "median_margin": 0.0109,
+     "iqr_margin": [
+      0.006,
+      0.0151
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 0.9533,
+     "ci95": [
+      0.9133,
+      0.98
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 4.330280643440687e-34,
+     "median_margin": 0.0103,
+     "iqr_margin": [
+      0.0074,
+      0.0133
+     ],
+     "n": 150
+    }
+   }
+  }
  }
 }

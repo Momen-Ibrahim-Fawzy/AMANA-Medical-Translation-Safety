@@ -3,6 +3,7 @@ review item.
 
     python scripts/10_guard2_eval.py             # development data
     python scripts/10_guard2_eval.py --holdout   # frozen hard cases; report once, do not tune on it
+    python scripts/10_guard2_eval.py --probes    # an outside reviewer's probes, frozen when received
 """
 from __future__ import annotations
 
@@ -24,6 +25,8 @@ from amana import guard as G, guard2 as G2  # noqa: E402
 
 HOLDOUT = ROOT / "data" / "hard_cases_holdout.jsonl"
 HOLDOUT_SHA256 = "db6ebbab36d5a48ec437171a20e458f45467925e1a1012def551c503502de80e"
+PROBES = ROOT / "data" / "review_probes.jsonl"
+PROBES_SHA256 = "a2c0e8ad919abd81eaf93bf20b339d92c534c06d783fff6e672ea57bebd5a3fb"
 CHECKERS = {"baseline": G.check, "guard2": G2.check}
 
 
@@ -77,14 +80,16 @@ def mt_rates(chk) -> dict:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--holdout", action="store_true")
+    ap.add_argument("--probes", action="store_true")
     args = ap.parse_args()
-    if args.holdout:
-        digest = hashlib.sha256(HOLDOUT.read_bytes()).hexdigest()
-        assert digest == HOLDOUT_SHA256, "hold-out file changed since it was frozen"
-        rows = [json.loads(l) for l in HOLDOUT.read_text(encoding="utf-8").splitlines()]
+    if args.holdout or args.probes:
+        path, sha, out_name = ((HOLDOUT, HOLDOUT_SHA256, "guard2_holdout.json") if args.holdout
+                               else (PROBES, PROBES_SHA256, "review_probes.json"))
+        assert hashlib.sha256(path.read_bytes()).hexdigest() == sha, f"{path.name} changed since it was frozen"
+        rows = [json.loads(l) for l in path.read_text(encoding="utf-8").splitlines()]
         cases = [(r["id"], r["should_pass"], r["src_en"], r["hyp_ar"]) for r in rows]
         out = {n: case_scores(cases, c) for n, c in CHECKERS.items()}
-        (ROOT / "results" / "guard2_holdout.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
+        (ROOT / "results" / out_name).write_text(json.dumps(out, indent=2), encoding="utf-8")
         print(json.dumps(out, indent=1))
         return
     spec = importlib.util.spec_from_file_location("hard_cases", ROOT / "scripts" / "09_hard_cases.py")

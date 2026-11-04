@@ -45,6 +45,13 @@ text with controlled errors, not a test on natural errors.
 `scripts/10_guard2_eval.py`) before AMANA-Guard 2 was implemented. Same author as the checker, not blind, and
 now spent. Do not edit it or tune on it.
 
+## `review_probes.jsonl`: an outside reviewer's probes
+
+41 cases written by an outside reviewer who had read the code: 30 dangerous translations (`should_pass` false) and 11
+faithful ones. They were frozen by SHA-256 (recorded in `scripts/10_guard2_eval.py`) when received and scored once
+before any fix, in `results/review_probes_first_run.json`. The checker was then fixed against them, so they are now
+regression tests (`tests/test_review_probes.py`), not evidence.
+
 ## `processed/fda_sentences.jsonl`: real English inputs
 
 600 sentences from the patient sections of US FDA drug labels, from [openFDA](https://open.fda.gov/) (public domain):

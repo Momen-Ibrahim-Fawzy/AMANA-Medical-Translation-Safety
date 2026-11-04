@@ -130,6 +130,7 @@ TOPICS = {  # topic: (English pattern, Arabic pattern on normalize()d text)
     "rash": (r"\brash\b", r"طفح"),
     "feel_better": (r"feel better", r"تحسن"),
     "rinse": (r"\brinse\b", r"شطف|اشطف|تشطف"),
+    "breastfeeding": (r"breast-?feed|\bnursing\b", r"رضاع|ترضع|مرضع"),
 }
 EN_IMPERATIVE = re.compile(r"\s*(?:do not|don't|never|avoid|stop|keep|continue|rinse|see)\b")
 EN_PRO = re.compile(r"\b(?:do not|don't|never|(?<!to )avoid|must not|should not|(?:is|are) not recommended)\b")
@@ -152,7 +153,7 @@ def _sign(topic: str, sentence: str, prohibited: bool, stop: str, go: str) -> in
 
 EN_COND = r"as needed|when needed|if needed|\bonly\b|(?<!even )\bif\b|\bunless\b|when you have|\bin case\b"
 AR_COND = r"كما هو مطلوب|عند الحاجه|عند اللزوم|حسب الحاجه|عند الضروره|فقط|في حال(?!ات)|ما لم|ان امكن|عند الشعور|(?<![ء-ي])[و]?اذا(?![ء-ي])|(?<!حتي )(?<![ء-ي])لو(?![ء-ي])"
-EN_MAX, EN_MIN = (r"\bmore\b[^.,;]*\bthan\b|exceed|maximum|at most|(?<!make )up to|beyond",
+EN_MAX, EN_MIN = (r"\bmore\b[^.,;]*\bthan\b|exceed|maximum|at most|(?<!make )up to|(?<!and )beyond",
                   r"less than|fewer than|at least|minimum|\bbelow\b")
 AR_MAX, AR_MIN = (r"اكثر مما|اكثر من(?! \d+ دقيق)|اكبر من|اطول من|تتجاوز|يتجاوز|لا تزيد|لا يزيد|اقصي|قصوي|لغايه|تصل الي|لا يتعدي|حتي \d",
                   r"اقل من|ادني|علي الاقل|لا تقل عن")
@@ -167,21 +168,93 @@ _COUNTED = r"tablets?|capsules?|drops?|puffs?|tablespoons?|teaspoons?|units?"
 
 def _en_pre(text: str) -> str:
     t = re.sub(r"(?<=\d),(?=\d{3}(?!\d))", "", text.lower())
+    t = re.sub(r"(?<![\w.…])\.(\d)", r"0.\1", t)  # ".5 mg" is 0.5 mg; "…….15 mg" is a dot leader
+    t = re.sub(r"(\d)\s*(?:ug|µg|μg)\b", r"\1 mcg", t)
+    t = re.sub(rf"\b(one|two|three|a|an|\d+) and a half ({_COUNTED})\b",
+               lambda m: f"{fmt_num((_WORDNUM.get(m.group(1)) or float(m.group(1))) + 0.5)} {m.group(2)}", t)
     t = re.sub(rf"\bhalf (?:of )?(?:a |an |one )?({_COUNTED})\b", r"0.5 \1", t)
     t = re.sub(rf"\b(one|two|three|four|five|six|seven|eight|a|an) ({_COUNTED})\b",
                lambda m: f"{_WORDNUM[m.group(1)]} {m.group(2)}", t)
     return re.sub(r"\btwo times\b", "2 times", t)
 
 
+_AR_UNITS_W = {"واحد": 1, "احد": 1, "اثنان": 2, "اثنين": 2, "ثلاث": 3, "ثلاثه": 3, "اربع": 4, "اربعه": 4, "خمس": 5,
+               "خمسه": 5, "ست": 6, "سته": 6, "سبع": 7, "سبعه": 7, "ثمان": 8, "ثماني": 8, "ثمانيه": 8, "تسع": 9, "تسعه": 9}
+_AR_TENS_W = {"عشرون": 20, "عشرين": 20, "ثلاثون": 30, "ثلاثين": 30, "اربعون": 40, "اربعين": 40, "خمسون": 50,
+              "خمسين": 50, "ستون": 60, "ستين": 60, "سبعون": 70, "سبعين": 70, "ثمانون": 80, "ثمانين": 80,
+              "تسعون": 90, "تسعين": 90}
+_AR_HUNDREDS_W = {"مائه": 100, "مئه": 100, "مائتان": 200, "مائتين": 200, "مئتان": 200, "مئتين": 200,
+                  **{f"{w}{h}": v * 100 for w, v in (("ثلاث", 3), ("اربع", 4), ("خمس", 5), ("ست", 6), ("سبع", 7),
+                                                     ("ثمان", 8), ("تسع", 9)) for h in ("مائه", "مئه", " مائه", " مئه")}}
+_FORM_AR = r"قرص|حبه|كبسوله"
+
+
+def _ar_compound_numbers(t: str) -> str:
+    """'خمسة وعشرين' is 25 and 'خمسمائة' is 500; number_words_to_digits reads them as 5 and 20, or not at all."""
+    for w, v in sorted(_AR_HUNDREDS_W.items(), key=lambda x: -len(x[0])):
+        t = re.sub(rf"(?<![ء-ي]){w}(?![ء-ي])", str(v), t)
+    units = "|".join(sorted(_AR_UNITS_W, key=len, reverse=True))
+    tens = "|".join(sorted(_AR_TENS_W, key=len, reverse=True))
+    t = re.sub(rf"(?<![ء-ي])({units})\s+و\s?({tens})(?![ء-ي])",
+               lambda m: str(_AR_UNITS_W[m.group(1)] + _AR_TENS_W[m.group(2)]), t)
+    # "قرصا ونصف القرص", "حبه ونصف": one and a half
+    return re.sub(rf"(?<![ء-ي\d.])(?:ال)?({_FORM_AR})(?:ا|ه)?\s+و\s?نصف(?:\s+(?:ال)?(?:{_FORM_AR}))?(?![ء-ي])", r"1.5 \1", t)
+
+
 def _ar_pre(text: str) -> str:
-    t = number_words_to_digits(normalize(text))
+    t = number_words_to_digits(_ar_compound_numbers(normalize(text)))
+    t = re.sub(r"(?<=\d)\. (?=\d)", ".", t)  # MT output writes "0. 05%"
+    t = re.sub(r"(?<![\d.])\.(?=\d)", "0.", t)  # ".08" is 0.08
     t = re.sub(r"اثنتي 10|اثني 10|اثنتا 10|اثنا 10", "12", t)
     t = re.sub(r"(?<![ء-ي])ملغما(?![ء-ي])", "ملغم", t)
     t = re.sub(r"(?<![ء-ي])و?ل(اسبوعين|يومين|شهرين|ساعتين)(?![ء-ي])", r"لمده \1", t)
     return re.sub(r"(قبل|بعد) تناول (?=(?:ال)?وجب)", r"\1 ", t)
 
 
+def _per_period(days: int, count: float) -> str:
+    return f"{fmt_num(count)} per {days} days"
+
+
+_EN_COUNT = {"once": 1, "one time": 1, "twice": 2, "two times": 2, "three times": 3, "four times": 4}
+
+
+def _en_weekly(t: str):
+    m = re.search(r"every\s+(\d+|two|three|four)\s+weeks?", t)
+    if m:
+        n = int(m.group(1)) if m.group(1).isdigit() else _WORDNUM[m.group(1)]
+        return _per_period(7 * n, 1)
+    if re.search(r"every other week", t):
+        return _per_period(14, 1)
+    m = re.search(r"\b(once|one time|twice|two times|three times|four times|\d+ times)\s+(?:a |per |each |every )?week(?:ly)?\b", t)
+    if m:
+        w = m.group(1)
+        return _per_period(7, _EN_COUNT.get(w) or float(w.split()[0]))
+    if re.search(r"\bweekly\b|\bevery week\b|\ba week\b", t):
+        return _per_period(7, 1)
+    return None
+
+
+def _ar_weekly(t: str):
+    m = re.search(r"كل\s+(\d+)\s+اسابيع", t)
+    if m:
+        return _per_period(7 * int(m.group(1)), 1)
+    if re.search(r"كل اسبوعين", t):
+        return _per_period(14, 1)
+    week = r"(?:\s+(?:في|كل)\s+(?:ال)?اسبوع|\s+اسبوعيا|\s+بالاسبوع)"
+    m = re.search(r"(\d+)\s+مرات" + week, t)
+    if m:
+        return _per_period(7, float(m.group(1)))
+    if re.search(r"مرت(?:ين|ان)" + week, t):
+        return _per_period(7, 2)
+    if re.search(r"اسبوعيا|كل اسبوع|في الاسبوع|بالاسبوع", t):
+        return _per_period(7, 1)
+    return None
+
+
 def _en_freq(t: str):
+    weekly = _en_weekly(t)
+    if weekly:
+        return weekly
     if re.search(r"every other day", t):
         return 0.5
     if re.search(r"morning and (?:in the )?evening", t):
@@ -190,6 +263,9 @@ def _en_freq(t: str):
 
 
 def _ar_freq(t: str):
+    weekly = _ar_weekly(t)
+    if weekly:
+        return weekly
     if re.search(r"كل يومين|يوم بعد يوم", t):
         return 0.5
     if re.search(r"صباحا و(?:في )?مساء|الصباح و(?:في )?المساء|مساء و(?:في )?صباحا|المساء و(?:في )?الصباح", t):
@@ -277,7 +353,9 @@ def parse(text: str, lang: _Lang) -> Document:
         prohibited = bool(lang.pro.search(sentence))
         topics = [k for k, pats in TOPICS.items() if re.search(pats[lang.topic_idx], sentence)]
         if lang is EN and not EN_IMPERATIVE.match(sentence):
-            topics = []  # 'alcohol-based hand sanitizer' is not a warning about alcohol
+            # 'alcohol-based hand sanitizer' is not a warning about alcohol; 'not recommended if you are
+            # breast-feeding' is a warning about breastfeeding
+            topics = [k for k in topics if k == "breastfeeding" and prohibited]
         for k in topics:
             doc.warnings[k] = _sign(k, sentence, prohibited, lang.stop, lang.go)
         extract = lang.extract(sentence)
@@ -367,12 +445,19 @@ def _open_names(src_en: str) -> set:
     return {n for n in names if n not in _NOT_A_NAME and n not in lexicon and n not in parts}
 
 
-def _check_open_names(src_en: str, hyp_ar: str, flags: list, review: list):
-    for name in sorted(_open_names(src_en)):
+def _check_open_names(src_en: str, hyp_ar: str, flags: list, review: list, general: bool = False):
+    names = _open_names(src_en)
+    if general:  # in text with no dosing instruction, a capitalised word is usually not a drug
+        names = {n for n in names if n in D.known_english()
+                 or (n.isalpha() and len(n) >= 5 and re.search(rf"\b{n.upper()}\b", src_en))}  # GENVOYA, not ECDC
+    for name in sorted(names):
         if re.search(rf"\b{re.escape(name)}\b", hyp_ar, re.I):
             continue  # left in Latin script, which is a common and acceptable rendering
-        score, _ = D.find_in_arabic(name, hyp_ar)
+        score, word = D.find_in_arabic(name, hyp_ar)
         if score >= D.MATCH_THRESHOLD:
+            if score < 1.0 and name in D.known_english():
+                # close to the name but not its Arabic label: may be a spelling variant or a hybrid of two drugs
+                review.append(Flag("drug", f"'{word}' is close to {name} but is not its known Arabic name"))
             continue
         others = D.other_drugs_in_arabic(name, hyp_ar) - {x for x in _open_names(src_en)}
         # an unknown source name may be a brand translated as its generic (Lasix, furosemide), so only a known
@@ -433,6 +518,7 @@ class Report2:
     hyp: object = None
     unverified: list = field(default_factory=list)  # source sentences no rule could check
     sentences: int = 0
+    general: bool = False  # no dosing instruction found: only numbers, negation, drug names and the text checks ran
 
     @property
     def ok(self) -> bool:
@@ -485,6 +571,10 @@ def _quantities(src: G.Slots, hyp: G.Slots, tag: str, flags: list, review: list,
             flags.append(Flag("dose", f"{tag}unexpected quantity {fmt_num(h[0])} {h[1]} in translation"))
 
 
+def _freq_str(f) -> str:
+    return f if isinstance(f, str) else f"{fmt_num(float(f))}/day"
+
+
 def _same_freq(a, b) -> bool:
     if isinstance(a, str) or isinstance(b, str):
         return a == b
@@ -499,9 +589,9 @@ def _compare_instruction(a: Instruction, b: Instruction, src_doc: Document, hyp_
     _quantities(src, hyp, tag, flags, review, src_numbers, hyp_doc.numbers)
     if src.freq is not None:
         if hyp.freq is None:
-            review.append(Flag("frequency", f"{tag}{src.freq}/day not found in translation"))
+            review.append(Flag("frequency", f"{tag}{_freq_str(src.freq)} not found in translation"))
         elif not _same_freq(src.freq, hyp.freq):
-            flags.append(Flag("frequency", f"{tag}{src.freq}/day in source vs {hyp.freq} in translation"))
+            flags.append(Flag("frequency", f"{tag}{_freq_str(src.freq)} in source vs {_freq_str(hyp.freq)} in translation"))
     if src.duration is not None:
         if hyp.duration is None:
             review.append(Flag("duration", f"{tag}{fmt_num(src.duration)} days not found in translation"))
@@ -525,6 +615,8 @@ def _compare_instruction(a: Instruction, b: Instruction, src_doc: Document, hyp_
         review.append(Flag("route", f"{tag}{sorted(s_src)} not found in translation"))
     elif src.side and s_src <= s_hyp and G._SIDE_SET(src) != G._SIDE_SET(hyp):
         (flags if hyp.side else review).append(Flag("laterality", f"{tag}{sorted(src.side)} vs {sorted(hyp.side)}"))
+    elif not src.side and hyp.side & {"left", "right"}:
+        flags.append(Flag("laterality", f"{tag}translation names the {sorted(hyp.side)[0]} side, the source names none"))
     if a.conditions != b.conditions:
         side = "translation adds a condition" if b.conditions else "condition in source is missing"
         flags.append(Flag("condition", f"{tag}{side}"))
@@ -630,15 +722,122 @@ def _general(src_en: str, hyp_ar: str) -> tuple[list, list]:
     return flags, review
 
 
+# ------------------------------------------------------------------------------ checks across the whole text
+
+_N = r"(\d+(?:\.\d+)?)"
+_EN_PCT = re.compile(_N + r"\s*(?:%|percent\b)")
+_AR_PCT = re.compile(_N + r"\s*(?:%|٪|بال?مئه|بال?مائه|في ال?مئه|في ال?مائه|في 100(?![\d.]))")
+_EN_BASIS = re.compile(r"/\s*kg\b|\bper (?:kg|kilogram)\b|/\s*m2\b|per square met")
+_AR_BASIS = re.compile(r"كغ|كجم|كلجم|كلغ|كيلو ?غرام|كيلو ?جرام|لكل كيلو|متر مربع|م2")
+_EN_TIME = {"hour": r"hours?|hrs?", "minute": r"minutes?|mins?", "day": r"days?", "week": r"weeks?", "month": r"months?"}
+_AR_TIME = {"hour": r"ساعه|ساعات", "minute": r"دقيقه|دقائق", "day": r"يوما|يوم|ايام", "week": r"اسبوعا|اسبوع|اسابيع",
+            "month": r"شهرا|شهر|اشهر|شهور"}
+_MEALS = {"breakfast": (r"breakfast", r"(?:ال)?(?:افطار|فطور)"), "lunch": (r"lunch", r"(?:ال)?(?:غداء|غذاء)"),
+          "dinner": (r"dinner|supper|evening meal", r"(?:ال)?عشاء")}
+# when to take it, not a mention: "before your evening meal" and "4 hours before bedtime" are not night-time doses
+_EN_NIGHT = re.compile(r"\b(?:at night|at bedtime|nightly|every night|in the evening)\b")
+_AR_NIGHT = re.compile(r"(?<![ء-ي])(?:ليلا|في الليل|في المساء|مساء)(?![ء-ي])|(?:عند|وقت) النوم")
+_EN_MORNING, _AR_MORNING = re.compile(r"\b(?:in the|every) morning\b"), re.compile(r"(?<![ء-ي])(?:في الصباح|صباحا)(?![ء-ي])")
+_EN_AT_TIME = re.compile(_N + r"\s*(?:units?|mg|mcg|tablets?|capsules?|puffs?|drops?)\b[^.;,]*?\b(morning|evening|night|bedtime)\b")
+_AR_AT_TIME = re.compile(_N + r"\s*(?:وحد[ء-ي]*|ملغ[ء-ي]*|مجم|ميكروغرام|اقراص|قرص[ء-ي]*|حب[ء-ي]*|بخ[ء-ي]*|قطر[ء-ي]*)"
+                         r"[^.،؛]*?(الصباح|صباحا|المساء|مساء|الليل|ليلا|النوم)")
+_LIQUID = {"water": (r"water", r"ماء|مياه"), "milk": (r"milk", r"حليب|لبن"), "juice": (r"juice", r"عصير")}
+_EN_WITH_LIQUID = r"\bwith (?:a |an )?(?:full |large )?(?:glass |cup )?(?:of )?(?:{})\b"
+_AR_WITH_LIQUID = r"مع\s+(?:كوب\s+|كاس\s+)?(?:كامل\s+)?(?:من\s+)?(?:ال)?(?:{})(?![ء-ي])"
+_AR_ADDED = re.compile(r"(?<![ء-ي])ضاعف(?![ء-ي])|يمكنك (?:ان )?(?:تضاعف|مضاعفه)|(?<![ء-ي])(?:زد|ارفع) (?:ال)?جرعه|"
+                       r"توقف عن (?:تناول )?(?:جميع )?(?:ادويتك|ادويه اخري|الادويه الاخري)")
+_EN_ADDED = re.compile(r"\bdouble\b|increase (?:the|your) dose|stop (?:taking )?(?:all )?(?:of )?(?:your )?other")
+
+
+def _time_pairs(text: str, units: dict, joiner: str) -> set:
+    unit = "|".join(f"(?P<{k}>{v})" for k, v in units.items())
+    out = set()
+    for m in re.finditer(_N + rf"(?:\s*(?:{joiner})\s*{_N})?\s*(?:{unit})(?![ء-ي\w])", text):
+        kind = next(k for k in units if m.group(k))
+        out |= {(float(x), kind) for x in m.groups()[:2] if x}
+    return out
+
+
+def _at_times(pattern: re.Pattern, text: str) -> dict:
+    out: dict = {}
+    for m in pattern.finditer(text):
+        when = "am" if m.group(2) in ("morning", "الصباح", "صباحا") else "pm"
+        out.setdefault(when, set()).add(float(m.group(1)))
+    return out
+
+
+def _check_text(src_en: str, hyp_ar: str, flags: list, review: list):
+    """What sits outside the per-drug slots: strengths in percent, a per-weight basis, the time unit of an interval
+    or a limit, which meal, night or morning, quantities tied to times of day, the liquid, and added instructions."""
+    en, ar = EN.pre(src_en), AR.pre(hyp_ar)
+    a = sorted({float(x) for x in _EN_PCT.findall(en)})
+    b = sorted({float(x) for x in _AR_PCT.findall(ar)})
+    if a and not b:
+        review.append(Flag("strength", f"{', '.join(fmt_num(x) + '%' for x in a)} not found in translation"))
+    elif a and set(b) - set(a):
+        flags.append(Flag("strength", f"{', '.join(fmt_num(x) + '%' for x in a)} in source vs "
+                                      f"{', '.join(fmt_num(x) + '%' for x in b)} in translation"))
+    elif set(a) - set(b):
+        review.append(Flag("strength", f"{', '.join(fmt_num(x) + '%' for x in sorted(set(a) - set(b)))} not found in translation"))
+    if _EN_BASIS.search(en) and not _AR_BASIS.search(ar):
+        flags.append(Flag("dose", "per-weight or per-area basis (per kg, per m2) missing in translation"))
+    src_t, hyp_t = _time_pairs(en, _EN_TIME, "to|-|–|or"), _time_pairs(ar, _AR_TIME, "الي|-|–|او")
+    for n, kind in sorted(src_t - hyp_t):
+        other = sorted(k for m, k in hyp_t if m == n and k != kind)
+        if other and (n, kind) not in hyp_t:
+            flags.append(Flag("timing", f"{fmt_num(n)} {kind}(s) rendered as {fmt_num(n)} {other[0]}(s)"))
+    for meal, (pe, pa) in _MEALS.items():
+        e = {w for w in ("before", "after") if re.search(rf"\b{w}\s+(?:(?:your|a|the)\s+)?(?:{pe})", en)}
+        r = {w for w, aw in (("before", "قبل"), ("after", "بعد")) if re.search(rf"{aw}\s+(?:تناول\s+)?(?:وجبه\s+)?{pa}", ar)}
+        if e and r and not e & r:
+            flags.append(Flag("timing", f"{sorted(e)[0]} {meal} in source vs {sorted(r)[0]} {meal} in translation"))
+    night_s, morning_s = bool(_EN_NIGHT.search(en)), bool(_EN_MORNING.search(en))
+    night_h, morning_h = bool(_AR_NIGHT.search(ar)), bool(_AR_MORNING.search(ar))
+    if night_s != morning_s and night_h != morning_h and night_s != night_h:
+        flags.append(Flag("timing", f"{'night' if night_s else 'morning'} in source vs "
+                                    f"{'night' if night_h else 'morning'} in translation"))
+    ta, tb = _at_times(_EN_AT_TIME, en), _at_times(_AR_AT_TIME, ar)
+    if len(ta) == 2 and set(tb) == set(ta) and ta != tb and sorted(ta["am"] | ta["pm"]) == sorted(tb["am"] | tb["pm"]):
+        flags.append(Flag("dose", "morning and evening quantities swapped"))
+    liq_s = {k for k, (pe, _) in _LIQUID.items() if re.search(_EN_WITH_LIQUID.format(pe), en)}
+    liq_h = {k for k, (_, pa) in _LIQUID.items() if re.search(_AR_WITH_LIQUID.format(pa), ar)}
+    if liq_s and liq_h - liq_s:
+        flags.append(Flag("timing", f"take with {sorted(liq_s)[0]} in source vs {sorted(liq_h - liq_s)[0]} in translation"))
+    if _AR_ADDED.search(ar) and not _EN_ADDED.search(en):
+        flags.append(Flag("omission", "translation adds an instruction to change the dose or stop other medicines"))
+
+
+def _sentences(text: str, lang: _Lang) -> list[str]:
+    return [x for x in re.split(lang.split, lang.pre(text)) if len(x.split()) >= 3]
+
+
+def _general_unverified(src_en: str) -> list[str]:
+    """Text with no dosing instruction is checked for numbers, negation and drug names only. A sentence with none of
+    these was not checked at all."""
+    out = []
+    for sentence in _sentences(src_en, EN):
+        if re.search(r"\d", sentence) or EN_PRO.search(sentence) or G.EN_NEG.search(sentence):
+            continue
+        out.append(" ".join(sentence.split()[:8]))
+    return out
+
+
 def check(src_en: str, hyp_ar: str) -> Report2:
     s, h = parse(src_en, EN), parse(hyp_ar, AR)
+    n = len(_sentences(src_en, EN))
     if not _is_medication(s):
         flags, review = _general(src_en, hyp_ar)
-        return Report2(flags, review, s, h)
-    flags, review = compare(s, h)
-    _check_open_names(src_en, hyp_ar, flags, review)
-    _check_sequence(src_en, hyp_ar, flags, review)
-    unverified = _unverified(src_en, s)
+        _check_open_names(src_en, hyp_ar, flags, review, general=True)
+        _check_text(src_en, hyp_ar, flags, review)
+        unverified = _general_unverified(src_en)
+    else:
+        flags, review = compare(s, h)
+        _check_open_names(src_en, hyp_ar, flags, review)
+        _check_sequence(src_en, hyp_ar, flags, review)
+        _check_text(src_en, hyp_ar, flags, review)
+        unverified = _unverified(src_en, s)
     review += [Flag("unverified", f"not checked: '{u}...'") for u in unverified]
-    n = sum(len(x.split()) >= 3 for x in re.split(EN.split, EN.pre(src_en)))
-    return Report2(flags, review, s, h, unverified, n)
+    extra = len(_sentences(hyp_ar, AR)) - n
+    if extra > 0:
+        review.append(Flag("unverified", f"translation has {extra} sentence(s) more than the source; extra content not checked"))
+    return Report2(flags, review, s, h, unverified, n, general=not _is_medication(s))

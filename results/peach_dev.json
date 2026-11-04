@@ -4,37 +4,53 @@
  "clean": {
   "passed": {
    "n": 1589,
-   "rate": 0.6092,
+   "rate": 0.5079,
    "ci95_by_leaflet": [
-    0.5796,
-    0.6382
+    0.477,
+    0.5381
    ]
   },
   "flagged": {
    "n": 1589,
-   "rate": 0.1296,
+   "rate": 0.129,
    "ci95_by_leaflet": [
     0.1108,
-    0.1499
+    0.1493
    ]
   },
   "review_only": {
    "n": 1589,
-   "rate": 0.2612,
+   "rate": 0.3631,
    "ci95_by_leaflet": [
-    0.2331,
-    0.2896
+    0.3312,
+    0.3926
    ]
   },
   "fully_covered": {
    "n": 1589,
-   "rate": 0.8087,
+   "rate": 0.7162,
    "ci95_by_leaflet": [
-    0.7845,
-    0.8347
+    0.688,
+    0.7484
    ]
   },
-  "mean_coverage": 0.8181,
+  "general_path": {
+   "n": 1589,
+   "rate": 0.3071,
+   "ci95_by_leaflet": [
+    0.2714,
+    0.3416
+   ]
+  },
+  "passed_on_general_path": {
+   "n": 1589,
+   "rate": 0.1737,
+   "ci95_by_leaflet": [
+    0.1461,
+    0.2001
+   ]
+  },
+  "mean_coverage": 0.7291,
   "baseline_passed": {
    "n": 1589,
    "rate": 0.7458,
@@ -49,7 +65,7 @@
    "condition": 40,
    "dose": 16,
    "omission": 16,
-   "frequency": 13,
+   "frequency": 12,
    "route": 8,
    "number": 7,
    "timing": 7,
@@ -60,9 +76,9 @@
    "strength": 2
   },
   "review_kinds": {
-   "unverified": 319,
-   "drug": 117,
-   "action": 61,
+   "unverified": 492,
+   "drug": 124,
+   "action": 65,
    "dose": 59,
    "frequency": 27,
    "negation": 14,
@@ -70,27 +86,28 @@
    "omission": 6,
    "number": 5,
    "timing": 3,
+   "strength": 2,
    "sequence": 2
   }
  },
  "injected": {
   "number": {
    "applied": 905,
-   "passed_when_clean": 596,
+   "passed_when_clean": 585,
    "stopped_passing": {
-    "n": 596,
-    "rate": 0.9799,
+    "n": 585,
+    "rate": 0.9778,
     "ci95_by_leaflet": [
-     0.9643,
-     0.9904
+     0.9624,
+     0.9898
     ]
    },
    "flagged": {
-    "n": 596,
-    "rate": 0.8893,
+    "n": 585,
+    "rate": 0.8906,
     "ci95_by_leaflet": [
-     0.8598,
-     0.9161
+     0.8579,
+     0.9202
     ]
    },
    "baseline_stopped_passing": {
@@ -104,21 +121,21 @@
   },
   "negation": {
    "applied": 439,
-   "passed_when_clean": 232,
+   "passed_when_clean": 222,
    "stopped_passing": {
-    "n": 232,
-    "rate": 0.944,
+    "n": 222,
+    "rate": 0.9459,
     "ci95_by_leaflet": [
-     0.9064,
-     0.9731
+     0.9067,
+     0.9765
     ]
    },
    "flagged": {
-    "n": 232,
-    "rate": 0.9267,
+    "n": 222,
+    "rate": 0.9279,
     "ci95_by_leaflet": [
-     0.8848,
-     0.9631
+     0.8839,
+     0.9638
     ]
    },
    "baseline_stopped_passing": {
@@ -132,21 +149,21 @@
   },
   "unit": {
    "applied": 492,
-   "passed_when_clean": 350,
+   "passed_when_clean": 348,
    "stopped_passing": {
-    "n": 350,
-    "rate": 0.9829,
+    "n": 348,
+    "rate": 0.9885,
     "ci95_by_leaflet": [
-     0.9639,
-     0.9969
+     0.9731,
+     1.0
     ]
    },
    "flagged": {
-    "n": 350,
-    "rate": 0.9829,
+    "n": 348,
+    "rate": 0.9885,
     "ci95_by_leaflet": [
-     0.9639,
-     0.9969
+     0.9731,
+     1.0
     ]
    },
    "baseline_stopped_passing": {
