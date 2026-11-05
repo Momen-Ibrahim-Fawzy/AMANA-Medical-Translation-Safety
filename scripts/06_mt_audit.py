@@ -28,8 +28,11 @@ SYSTEMS = {
     "NLLB-200-1.3B": ("facebook/nllb-200-distilled-1.3B", {"src_lang": "eng_Latn"}, "arb_Arab"),
     "M2M100-418M": ("facebook/m2m100_418M", {"src_lang": "en"}, "ar"),
     "OPUS-MT-en-ar": ("Helsinki-NLP/opus-mt-en-ar", {}, ">>ara<<"),
+    "Qwen2.5-7B-Instruct": ("Qwen/Qwen2.5-7B-Instruct", {}, "llm"),  # a general LLM, 4-bit to fit an 8 GB GPU
 }
 NBEST, MAX_NEW_TOKENS = 5, 160
+LLM_PROMPT = ("Translate this medication instruction from English into Modern Standard Arabic for a patient. "
+              "Reply with the Arabic translation only.\n\n{src}")
 
 
 def sources(n: int, seed: int) -> pd.DataFrame:
@@ -42,6 +45,8 @@ def sources(n: int, seed: int) -> pd.DataFrame:
 def translate(name: str, srcs: list[str], nbest: int = NBEST, bs: int = 16) -> tuple[list[list[str]], str | None]:
     from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
     path, tok_kw, tgt = SYSTEMS[name]
+    if tgt == "llm":
+        return translate_llm(path, srcs, nbest)
     device = "cuda" if torch.cuda.is_available() else "cpu"
     tok = AutoTokenizer.from_pretrained(path, **tok_kw)
     model = AutoModelForSeq2SeqLM.from_pretrained(path, torch_dtype=torch.float16 if device == "cuda" else None).to(device).eval()
@@ -62,8 +67,40 @@ def translate(name: str, srcs: list[str], nbest: int = NBEST, bs: int = 16) -> t
     return out, revision
 
 
+def first_line(text: str) -> str:
+    """Every source is one line. A few 4-bit beams run on past the answer into an invented next prompt; a pipeline
+    would keep only the first line, so this does too."""
+    return text.strip().split("\n")[0].strip()
+
+
+@torch.no_grad()
+def translate_llm(path: str, srcs: list[str], nbest: int, bs: int = 4) -> tuple[list[list[str]], str | None]:
+    """A chat LLM with one fixed prompt, 4-bit weights and the same beam search as the MT systems."""
+    from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+    tok = AutoTokenizer.from_pretrained(path, padding_side="left")
+    quant = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=torch.float16)
+    model = AutoModelForCausalLM.from_pretrained(path, quantization_config=quant, device_map="cuda").eval()
+    prompts = [tok.apply_chat_template([{"role": "user", "content": LLM_PROMPT.format(src=s)}], tokenize=False,
+                                       add_generation_prompt=True) for s in srcs]
+    out = []
+    for i in range(0, len(prompts), bs):
+        enc = tok(prompts[i:i + bs], return_tensors="pt", padding=True).to(model.device)
+        gen = model.generate(**enc, num_beams=nbest, num_return_sequences=nbest, max_new_tokens=MAX_NEW_TOKENS,
+                             do_sample=False)
+        dec = [first_line(t) for t in tok.batch_decode(gen[:, enc.input_ids.shape[1]:], skip_special_tokens=True)]
+        out += [dec[j:j + nbest] for j in range(0, len(dec), nbest)]
+        print(f"  {path}: {min(i + bs, len(srcs))}/{len(srcs)}", flush=True)
+    revision = getattr(model.config, "_commit_hash", None)
+    del model
+    torch.cuda.empty_cache()
+    return out, revision
+
+
 def run_config(name: str, n: int, seed: int) -> dict:
-    return {"model": SYSTEMS[name][0], "n": n, "seed": seed, "nbest": NBEST, "max_new_tokens": MAX_NEW_TOKENS}
+    config = {"model": SYSTEMS[name][0], "n": n, "seed": seed, "nbest": NBEST, "max_new_tokens": MAX_NEW_TOKENS}
+    if SYSTEMS[name][2] == "llm":
+        config.update(prompt=LLM_PROMPT, weights="4-bit nf4", output="first line")
+    return config
 
 
 def check_cached(name: str, rows: list[dict], config: dict):

@@ -143,7 +143,7 @@ construct: any one-slot change counts, with no severity. Severity tiers need cli
 2. A fresh test set written by someone who has not seen the rules, with its hash published before scoring.
 3. Real translated medication instructions with naturally occurring, independently annotated errors. PEACH now supplies
    real text, but nobody independent has annotated its differences, and no one has read the rows that passed.
-4. Current MT systems, including commercial ones, and larger metrics such as xCOMET-XL and MetricX-24 XXL. MetricX-24
+4. Current MT systems, including commercial ones and larger LLMs (one open 7B LLM, run in 4-bit, is included), and larger metrics such as xCOMET-XL and MetricX-24 XXL. MetricX-24
    large and XL are included: the larger model is better, but neither changes the conclusions.
 
 ## Why no MLflow, DVC, a config framework or a web service?

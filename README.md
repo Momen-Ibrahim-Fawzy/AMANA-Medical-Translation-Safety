@@ -109,16 +109,20 @@ The heatmap breaks the reworded test down by error type.
 300 instructions for held-out drugs. These inputs are generated, not real prescriptions, so this is an
 exploratory audit, not an estimate of how often these models err on clinical text or a safety ranking.
 
-| | OPUS-MT en-ar | NLLB-200-600M | M2M100-418M |
-|---|---:|---:|---:|
-| chrF / COMET-22 | **74.4** / 0.862 | 67.5 / **0.878** | 66.2 / 0.839 |
-| not passed by AMANA-Guard 2 (95% CI) | 24.7% (20.1–29.8) | **6.7%** (4.4–10.1) | 43.0% (37.5–48.7) |
-| of which flagged / needs review only | 9.3% / 15.3% | 6.7% / 0% | 43.0% / 0% |
-| "mcg" doses written as "mg" (1000×) | **18 / 18** | 0 / 18 | 2 / 18 |
-| "rash" warning → "البراز" ("stool") | 0 / 46 | 0 / 46 | **40 / 46** |
-| safety warnings silently dropped | 2 / 109 | 19 / 109 | **57 / 109** |
-| glimepiride (diabetes) → "حبوب منع الحمل" (contraceptive pills) | 0 / 26 | 0 / 26 | **5 / 26** |
-| "Instill" (eye drops) → "لا تزال" ("still") | **44 / 44** | 0 / 44 | 0 / 44 |
+| | OPUS-MT en-ar | NLLB-200-600M | M2M100-418M | Qwen2.5-7B-Instruct (LLM, 4-bit) |
+|---|---:|---:|---:|---:|
+| chrF / COMET-22 | **74.4** / 0.862 | 67.5 / **0.878** | 66.2 / 0.839 | 55.7 / 0.812 |
+| not passed by AMANA-Guard 2 (95% CI) | 24.7% (20.1–29.8) | **6.7%** (4.4–10.1) | 43.0% (37.5–48.7) | 76.3% (71.2–80.8) |
+| of which flagged / needs review only | 9.3% / 15.3% | 6.7% / 0% | 43.0% / 0% | 32.7% / 43.7% |
+| "mcg" doses written as "mg" (1000×) | **18 / 18** | 0 / 18 | 2 / 18 | 0 / 18 |
+| "rash" warning → "البراز" ("stool") | 0 / 46 | 0 / 46 | **40 / 46** | 0 / 46 |
+| "rash" warning → "حكة" ("itch") | 0 / 46 | 0 / 46 | 0 / 46 | **44 / 46** |
+| safety warnings silently dropped | 2 / 109 | 19 / 109 | **57 / 109** | 0 / 109 |
+| glimepiride (diabetes) → "حبوب منع الحمل" (contraceptive pills) | 0 / 26 | 0 / 26 | **5 / 26** | 0 / 26 |
+| "Instill" (eye drops) → "لا تزال" ("still") | **44 / 44** | 0 / 44 | 0 / 44 | 0 / 44 |
+| "by mouth" → "من فم إلى فم" ("mouth to mouth") | 0 / 229 | 0 / 229 | 0 / 229 | **78 / 229** |
+| "tablet" → "كبسولة" ("capsule") | 0 / 133 | 0 / 133 | 0 / 133 | **50 / 133** |
+| drug name left in English letters | 0 / 300 | 33 / 300 | 0 / 300 | **71 / 300** |
 
 The pattern rows are exact counts of each pattern in `results/mt_error_patterns.json`. They are not independent
 errors: the 300 generated sources reuse a few sentences. All 46 "rash" rows share one warning sentence, so 40 of 46 is
@@ -129,6 +133,14 @@ M2M100 at 21.3%. Guard 2 reports 43.0% mainly because it now checks what each wa
 whether a warning is present. Most of that increase comes from warnings it can no longer find, such as
 the "rash" sentence above.
 
+The LLM column is one open model, Qwen2.5-7B-Instruct, with 4-bit weights to fit an 8 GB GPU, one fixed prompt and the
+same 5-beam search. It avoids every pattern of the dedicated MT systems but has its own: "by mouth" as "mouth to
+mouth", "tablet" as "capsule", "rash" as "itch", and drug names left in English letters (4 drugs). Guard 2 sends 43.7% to
+review, mostly because it cannot find "by mouth" in the Arabic. Six of its 300 1-best outputs (30 of 1,500 candidates)
+ran on into an invented next prompt; they were cut at the first line break, which leaves a broken fragment. 4-bit
+weights can lower quality, so this is not a verdict on the model or on LLMs in general. Commercial systems and larger
+LLMs are untested.
+
 **3. Reranking helps only when a clean candidate exists, which here means mostly NLLB.** The checkers
 choose among each system's own 5-best beam candidates, with no retraining.
 
@@ -137,13 +149,15 @@ choose among each system's own 5-best beam candidates, with no retraining.
 | NLLB-200-600M | 6.7% | 4.3% | **2.3%** | 7 / 300 |
 | OPUS-MT en-ar | 24.7% | 27.0% | 24.7% | 74 / 300 |
 | M2M100-418M | 43.0% | 42.3% | 42.0% | 126 / 300 |
+| Qwen2.5-7B-Instruct | 76.3% | 71.3% | 59.7% | 179 / 300 |
 
 Re-run with the 0.5 checker; only OPUS-MT's first two cells moved (from 25.0% and 27.3%), and 1 of 900 picks changed.
 The Guard 2 + QE column is partly circular, because Guard 2 both chooses and judges. It shows that
 candidates with a detected problem were avoided, not that the chosen output is safe. The QE column is
 the fairer cross-check, and it makes OPUS-MT slightly worse. The reverse cross-check, the share AMANA-QE
 scores below 0.5, moves little after Guard 2 + QE: NLLB 13.0% → 9.7%, OPUS-MT 27.7% → 26.3%, M2M100 21.7%
-→ 20.3%. Changes in chrF stay within ±1.2 and in COMET-22 within ±0.003.
+→ 20.3%. Changes in chrF stay within ±1.2 and in COMET-22 within ±0.003. For the LLM, Guard 2 + QE lowers the share not
+passed from 76.3% to 59.7%, but QE alone only to 71.3%, and all 5 candidates fail for 179 of 300 instructions.
 
 **A human review supports no conclusion.** One reviewer judged the 60 pairs in `adjudication/packet.html`, each
 showing the 1-best and the Guard 2 + QE pick in random order. The packet is not truly blind: the 1-best version of all
@@ -429,7 +443,7 @@ python scripts/18_benchmark_controls.py --learned   # the same for the learned m
 | `data` | builds AMANA-Bench and AMANA-TICO, downloading TICO-19 | no | AMANA-TICO only; AMANA-Bench is rebuilt from a fixed seed and a test checks its hash |
 | `audit` | scores metrics on the 1,620 contrastive pairs, with intervals | yes | yes (`metric_audit.json`, `metric_stats.json`) |
 | `qe` | trains AMANA-QE and 10 generalization runs (two tracks, seeds 13–17), about 70–85 minutes each on an 8 GB GPU | yes | yes; the main checkpoint is on [Hugging Face](https://huggingface.co/momen-ibrahim/amana-qe) |
-| `mt` | translates with 3 systems, scores candidates | yes | yes (`mt_outputs.jsonl`, `mt_audit.json`, `fda_mt_outputs.jsonl`) |
+| `mt` | translates with 4 systems, scores candidates | yes | yes (`mt_outputs.jsonl`, `mt_audit.json`, `fda_mt_outputs.jsonl`) |
 | `peach` | scores the leaflet track's development half; skips itself if `data/raw/peach/peach.zip` is absent, keeping the committed results | no | counts only (`peach_*.json`) |
 | `sealed` | scores the hold-out, the sealed drug names, FDA and PEACH halves, and logs each run; never part of a default run | no | yes (`sealed_runs.jsonl`) |
 | `report` | rebuilds AMANA-Bench, then guard, drug name and real-input evaluations, error patterns, figures, manifest | no | yes (`MANIFEST.json` has file hashes) |

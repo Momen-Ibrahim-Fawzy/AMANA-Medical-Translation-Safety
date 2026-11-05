@@ -5,6 +5,8 @@ sacrebleu>=2.4
 sentence-transformers>=3.0
 bert-score>=0.3.13
 unbabel-comet>=2.2
+bitsandbytes>=0.45  # only for the 4-bit LLM in 06_mt_audit.py
+accelerate>=1.0
 pandas
 pyarrow
 scikit-learn

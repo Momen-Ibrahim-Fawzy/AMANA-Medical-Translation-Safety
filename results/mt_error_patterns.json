@@ -19,6 +19,22 @@
     "instill_as_still": {
       "errors": 0,
       "applicable": 44
+    },
+    "rash_as_itch": {
+      "errors": 0,
+      "applicable": 46
+    },
+    "by_mouth_as_mouth_to_mouth": {
+      "errors": 0,
+      "applicable": 229
+    },
+    "tablet_as_capsule": {
+      "errors": 0,
+      "applicable": 133
+    },
+    "drug_name_left_in_english": {
+      "errors": 33,
+      "applicable": 300
     }
   },
   "OPUS-MT-en-ar": {
@@ -41,6 +57,22 @@
     "instill_as_still": {
       "errors": 44,
       "applicable": 44
+    },
+    "rash_as_itch": {
+      "errors": 0,
+      "applicable": 46
+    },
+    "by_mouth_as_mouth_to_mouth": {
+      "errors": 0,
+      "applicable": 229
+    },
+    "tablet_as_capsule": {
+      "errors": 0,
+      "applicable": 133
+    },
+    "drug_name_left_in_english": {
+      "errors": 0,
+      "applicable": 300
     }
   },
   "M2M100-418M": {
@@ -63,12 +95,78 @@
     "instill_as_still": {
       "errors": 0,
       "applicable": 44
+    },
+    "rash_as_itch": {
+      "errors": 0,
+      "applicable": 46
+    },
+    "by_mouth_as_mouth_to_mouth": {
+      "errors": 0,
+      "applicable": 229
+    },
+    "tablet_as_capsule": {
+      "errors": 0,
+      "applicable": 133
+    },
+    "drug_name_left_in_english": {
+      "errors": 0,
+      "applicable": 300
+    }
+  },
+  "Qwen2.5-7B-Instruct": {
+    "mcg_rendered_as_mg": {
+      "errors": 0,
+      "applicable": 18
+    },
+    "safety_warning_dropped": {
+      "errors": 0,
+      "applicable": 109
+    },
+    "glimepiride_as_contraceptive": {
+      "errors": 0,
+      "applicable": 26
+    },
+    "rash_as_stool": {
+      "errors": 0,
+      "applicable": 46
+    },
+    "instill_as_still": {
+      "errors": 0,
+      "applicable": 44
+    },
+    "rash_as_itch": {
+      "errors": 44,
+      "applicable": 46
+    },
+    "by_mouth_as_mouth_to_mouth": {
+      "errors": 78,
+      "applicable": 229
+    },
+    "tablet_as_capsule": {
+      "errors": 50,
+      "applicable": 133
+    },
+    "drug_name_left_in_english": {
+      "errors": 71,
+      "applicable": 300
     }
   },
   "_distinct": {
     "safety_warning_dropped": {
       "drugs": 13,
       "warning_sentences": 6
+    },
+    "by_mouth_as_mouth_to_mouth": {
+      "drugs": 10,
+      "warning_sentences": 6
+    },
+    "tablet_as_capsule": {
+      "drugs": 6,
+      "warning_sentences": 6
+    },
+    "drug_name_left_in_english": {
+      "drugs": 13,
+      "warning_sentences": 8
     },
     "instill_as_still": {
       "drugs": 2,
@@ -79,6 +177,10 @@
       "warning_sentences": 5
     },
     "rash_as_stool": {
+      "drugs": 13,
+      "warning_sentences": 1
+    },
+    "rash_as_itch": {
       "drugs": 13,
       "warning_sentences": 1
     },

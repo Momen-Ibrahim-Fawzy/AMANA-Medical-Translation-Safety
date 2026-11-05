@@ -159,8 +159,10 @@ for each track.
 
 ## 6. Real MT audit and safety reranking
 
-300 generated AMANA-Bench instructions for test drugs (not real prescriptions) are translated with NLLB-200 (600M distilled), M2M100-418M and OPUS-MT
-en-ar. `06_mt_audit.py` also lists NLLB-200-1.3B, which can be added with
+300 generated AMANA-Bench instructions for test drugs (not real prescriptions) are translated with NLLB-200 (600M distilled), M2M100-418M, OPUS-MT
+en-ar and one open LLM, Qwen2.5-7B-Instruct. The LLM runs with 4-bit (nf4) weights to fit an 8 GB GPU, one fixed
+prompt (in `06_mt_audit.py`) and the same beam search, and its output is cut at the first line break, because a few beams
+run on into an invented next prompt. `06_mt_audit.py` also lists NLLB-200-1.3B, which can be added with
 `translate --systems NLLB-200-1.3B`, though it was not run. For each, the system keeps its 5-best beam
 candidates. Five strategies are compared:
 

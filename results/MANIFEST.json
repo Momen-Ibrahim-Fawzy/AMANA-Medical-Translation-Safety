@@ -1,5 +1,5 @@
 {
- "code_revision_before_this_commit": "82cc34f9b6a383cdef9d9a2b205618bcd3283350",
+ "code_revision_before_this_commit": "7d6bb48561e4659ef8f87b6b6b30914603508c78",
  "python": "3.11.5",
  "packages": {
   "torch": "2.6.0+cu124",
@@ -10,7 +10,9 @@
   "scikit-learn": "1.9.1",
   "pandas": "3.0.6",
   "numpy": "1.26.4",
-  "scipy": "1.17.1"
+  "scipy": "1.17.1",
+  "bitsandbytes": "0.45.5",
+  "accelerate": "1.6.0"
  },
  "mt_models": {
   "NLLB-200-600M": {
@@ -36,6 +38,17 @@
    "seed": 5,
    "nbest": 5,
    "max_new_tokens": 160
+  },
+  "Qwen2.5-7B-Instruct": {
+   "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+   "model": "Qwen/Qwen2.5-7B-Instruct",
+   "n": 300,
+   "seed": 5,
+   "nbest": 5,
+   "max_new_tokens": 160,
+   "prompt": "Translate this medication instruction from English into Modern Standard Arabic for a patient. Reply with the Arabic translation only.\n\n{src}",
+   "weights": "4-bit nf4",
+   "output": "first line"
   }
  },
  "files": {
@@ -56,14 +69,14 @@
   "results/guard2_holdout.json": "b557fdec44515312e7eaa1282d04c392db42b7c46d273eb7f45200ae4e49b9bb",
   "results/guard2_holdout_first_run.json": "780ea574eb72f11da0cfb07a0de758377146924e2d66d77e547821f755dc195b",
   "results/guard_summary.json": "58441e0651b64a8973e5505d8b5754a7470bca4e41650124bc24c742ce99c966",
-  "results/hard_cases.json": "7b15a5ea4fed71fd6f687426609a186d2fe48efd47d9974a1f5e6efdb2f69eeb",
+  "results/hard_cases.json": "ae469d82fdd0a34dbafac176b797a2ca573516f365090a91722c9b4a2da0d0fa",
   "results/metric_audit.json": "ce9dff14b3dcd1ffc156d875c009e19ed87ee364e31115708333f33eb9f0cf73",
   "results/metric_stats.json": "ef555c0ac152a3fb41e0c1adeff427822280849c9a4cca30d44e80c8ab6dfa76",
-  "results/mt_audit.json": "f1ed87946af065b2cfdade9140827aeed8825a142774898af9afa6dcd09e46d4",
-  "results/mt_error_patterns.json": "b3d78607fbe41d8cd77d2c8b24db331962ad8963f5f74d740ee840e3f5d6b844",
-  "results/mt_flagged_examples.jsonl": "a8b757ea2a7223075b296ef5ee61f21ee83fdcee2a7360499d59a1b3e0d93fde",
-  "results/mt_outputs.jsonl": "3323e30e77759b08bca29ae3e8ad3db4e90a3764853e74747884bd83c7e88cc0",
-  "results/mt_picks.jsonl": "a9bd43ae2d15fd1ea321cae5ce304752a920d1fbd102f88896abb65b2ad0bacf",
+  "results/mt_audit.json": "554ae1699cf6dc14b5c5300b499dae59b97a1cf234a4028e9ba80de655fced1c",
+  "results/mt_error_patterns.json": "0a1cb7d1e97d72b4ed5236fb32db9082210b4dba325779342da2e5aa6a58b97d",
+  "results/mt_flagged_examples.jsonl": "39a11abaf82c0f56fbfe2232b0e8be6bfc8e0157f0c9742233209653201d122b",
+  "results/mt_outputs.jsonl": "728cd49480d0c9d8e6ebb852cd4b76bb4322629788ff105076499d92dc3708c1",
+  "results/mt_picks.jsonl": "7f824c4ddec2d619bd1137f1be576f0a7c2c89c8ebf9858352b6a33123d73395",
   "results/peach_dev.json": "993cca61eda2f8be5204eb8d5b1582d806d24e91fc5b617ab36abedbde2e9d6b",
   "results/peach_sealed.json": "c627e5d2b4a0808f996002d3bd6b507a771736302fadfb18a4a6cb40acfe7974",
   "results/peach_sealed_first_run.json": "c809c14326674e6987ba264689bfa1fdbaf51cf2c9481decd16233795c9d0df4",

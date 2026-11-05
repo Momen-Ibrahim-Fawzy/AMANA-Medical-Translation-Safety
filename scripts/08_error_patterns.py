@@ -27,6 +27,15 @@ PATTERNS = {
                       lambda r, rep: "البراز" in r["cands"][0]),
     "instill_as_still": (lambda r, rep: r["src_en"].startswith("Instill"),
                          lambda r, rep: bool(re.search("لا [تي]زال", r["cands"][0]))),
+    # found in the LLM output
+    "rash_as_itch": (lambda r, rep: "rash" in r["src_en"],
+                     lambda r, rep: "حكة" in r["cands"][0]),
+    "by_mouth_as_mouth_to_mouth": (lambda r, rep: "by mouth" in r["src_en"],
+                                   lambda r, rep: "فم إلى فم" in r["cands"][0]),
+    "tablet_as_capsule": (lambda r, rep: bool(re.search(r"\btablets?\b", r["src_en"])),
+                          lambda r, rep: "كبسول" in r["cands"][0]),
+    "drug_name_left_in_english": (lambda r, rep: True,
+                                  lambda r, rep: r["drug"].lower() in r["cands"][0].lower()),
 }
 
 
