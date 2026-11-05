@@ -63,6 +63,8 @@ for test. The metric audit and every reported number use the test drugs only.
 - LaBSE cosine to the reference, and LaBSE source-translation cosine (reference-free)
 - COMET-22 (Unbabel/wmt22-comet-da)
 - CometKiwi-22 (Unbabel/wmt22-cometkiwi-da, reference-free; a gated model under CC BY-NC-SA 4.0, used for scoring only)
+- MetricX-24 (google/metricx-24-hybrid-large-v2p6), with and without the reference, scored by a re-implementation
+  of its reference code; the larger checkpoints and xCOMET-XL did not fit on an 8 GB GPU
 
 Reported per metric:
 
@@ -149,7 +151,7 @@ A LaBSE cross-encoder fine-tuned to classify (source, translation) pairs as safe
   - AMANA-TICO, real professional translations of COVID-19 and medical text with injected number
     and negation errors. This text is out of domain and never seen in training.
   - unseen error types (unit, laterality, negation) and unseen dosage forms (eye drops, inhalers), left
-    out of training with `--exclude-types` and `--exclude-forms`, two seeds each
+    out of training with `--exclude-types` and `--exclude-forms`, five seeds each (13–17)
 
 The score is used for ranking and is not a calibrated probability. Expected calibration error is reported
 for each track.
@@ -219,8 +221,8 @@ no parser: whether each digit sequence in the source appears in the translation.
 - AMANA-QE is trained on template text only. It ranks real TICO-19 translations reasonably
   (AUROC 0.80) but its 0.5 threshold does not transfer: most safe real sentences fall below it.
   It is used for ranking candidates, not as a pass/fail gate. On error types left out of training, its
-  AUROC is 0.67–0.71, so it has learned the generator to a large degree. Two seeds per track are too few to
-  measure variance well.
+  AUROC is 0.66–0.73 over five seeds (mean 0.69), so it has learned the generator to a large degree. Recall at 0.5
+  ranges from 7% to 36% across those seeds, so any single-seed threshold result is unreliable.
 - Bootstrap intervals resample pairs, and pairs from similar instructions are not fully independent.
 - There are no severity tiers, and no clinician has reviewed any result.
 - PEACH leaflets were published, not adjudicated, and may differ between language versions by design. The flag reading is

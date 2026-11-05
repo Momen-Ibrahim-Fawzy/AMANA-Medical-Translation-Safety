@@ -26,7 +26,7 @@ that result is no longer a clean estimate, because whoever changed the code had 
 | `metric_stats.json` | `11_metric_stats.py` | bootstrap intervals for the metric audit |
 | `guard_summary.json` | `04_guard_eval.py` | the baseline checker on AMANA-Bench and AMANA-TICO |
 | `amana_qe_summary.json`, `amana_qe_predictions.json` | `05_train_qe.py` | AMANA-QE scores on held-out drugs and TICO-19 |
-| `qe_generalization_{forms,types}_seed{13,14}.json` | `05_train_qe.py --tag` | AMANA-QE trained without some dosage forms or error types |
+| `qe_generalization_{forms,types}_seed{13..17}.json` | `05_train_qe.py --tag` | AMANA-QE trained without some dosage forms or error types |
 | `mt_outputs.jsonl`, `mt_picks.jsonl`, `mt_flagged_examples.jsonl`, `mt_audit.json` | `06_mt_audit.py` | three MT systems' 5-best outputs, which candidate each strategy picked, and the audit |
 | `mt_error_patterns.json` | `08_error_patterns.py` | exact counts of recurring MT errors, with the number of distinct drugs and warning sentences behind each |
 | `hard_cases.json` | `09_hard_cases.py` | the baseline checker on the hand-written cases |

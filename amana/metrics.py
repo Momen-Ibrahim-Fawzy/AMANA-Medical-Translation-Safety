@@ -83,6 +83,43 @@ def cometkiwi(srcs, hyps, refs):
     return _comet_score("Unbabel/wmt22-cometkiwi-da", [{"src": s, "mt": h} for s, h in zip(srcs, hyps)])
 
 
+@lru_cache(maxsize=1)
+def _metricx():
+    """MetricX-24 hybrid (Juraska et al., 2024), loaded as plain mT5: the score is the first decoder step's logit for
+    one fixed vocabulary item, as in google-research/metricx. It is an error score from 0 (best) to 25."""
+    import torch
+    from transformers import AutoTokenizer, MT5ForConditionalGeneration
+    tok = AutoTokenizer.from_pretrained("google/mt5-large")
+    model = MT5ForConditionalGeneration.from_pretrained("google/metricx-24-hybrid-large-v2p6",
+                                                        torch_dtype=torch.float32).to(_device()).eval()
+    return tok, model
+
+
+def _metricx_score(texts, bs=16):
+    import torch
+    tok, model = _metricx()
+    out = []
+    with torch.no_grad():
+        for i in range(0, len(texts), bs):
+            # the reference code drops the EOS token from each input, which here means not adding it before padding
+            enc = tok(texts[i:i + bs], max_length=1535, truncation=True, padding=True, add_special_tokens=False,
+                      return_tensors="pt")
+            ids, mask = enc.input_ids, enc.attention_mask
+            dec = torch.zeros((ids.shape[0], 1), dtype=torch.long)
+            logits = model(input_ids=ids.to(model.device), attention_mask=mask.to(model.device),
+                           decoder_input_ids=dec.to(model.device)).logits
+            out += torch.clamp(logits[:, 0, 250089], 0, 25).float().cpu().tolist()
+    return [-x for x in out]  # higher is better, like every other metric here
+
+
+def metricx24(srcs, hyps, refs):
+    return _metricx_score([f"source: {s} candidate: {h} reference: {r}" for s, h, r in zip(srcs, hyps, refs)])
+
+
+def metricx24_qe(srcs, hyps, refs):
+    return _metricx_score([f"source: {s} candidate: {h}" for s, h in zip(srcs, hyps)])
+
+
 def amana_guard(srcs, hyps, refs):
     from .guard import check
     return [check(s, h).score for s, h in zip(srcs, hyps)]
@@ -96,9 +133,10 @@ def amana_guard2(srcs, hyps, refs):
 METRICS = {
     "BLEU": bleu, "chrF": chrf, "chrF++": chrfpp, "TER (neg)": ter, "BERTScore": bertscore,
     "LaBSE-ref": labse_ref, "LaBSE-QE": labse_qe, "COMET-22": comet22, "CometKiwi-22 (QE)": cometkiwi,
+    "MetricX-24": metricx24, "MetricX-24 (QE)": metricx24_qe,
     "AMANA-Guard (QE)": amana_guard, "AMANA-Guard2 (QE)": amana_guard2,
 }
-REFERENCE_FREE = {"LaBSE-QE", "CometKiwi-22 (QE)", "AMANA-Guard (QE)", "AMANA-Guard2 (QE)", "AMANA-QE"}
+REFERENCE_FREE = {"LaBSE-QE", "CometKiwi-22 (QE)", "MetricX-24 (QE)", "AMANA-Guard (QE)", "AMANA-Guard2 (QE)", "AMANA-QE"}
 
 
 def contrastive_accuracy(good: np.ndarray, bad: np.ndarray) -> float:

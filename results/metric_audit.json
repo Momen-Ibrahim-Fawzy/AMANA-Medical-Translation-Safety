@@ -688,5 +688,119 @@
       }
     },
     "critical_vs_benign_drop": 36.532135858915744
+  },
+  "MetricX-24": {
+    "contrastive_minimal": 0.6759259259259259,
+    "contrastive_matched": 0.9586419753086419,
+    "auroc": 0.7407201646090535,
+    "mean_score": {
+      "ref": -0.38362503662866393,
+      "good": -0.7140195609484282,
+      "bad_matched": -1.6268168289248865
+    },
+    "per_type": {
+      "dose": {
+        "minimal": 0.5733333333333334,
+        "matched": 0.9133333333333333
+      },
+      "drug": {
+        "minimal": 0.84,
+        "matched": 1.0
+      },
+      "duration": {
+        "minimal": 0.6333333333333333,
+        "matched": 0.98
+      },
+      "frequency": {
+        "minimal": 0.4666666666666667,
+        "matched": 0.8866666666666667
+      },
+      "laterality": {
+        "minimal": 0.3333333333333333,
+        "matched": 0.85
+      },
+      "negation": {
+        "minimal": 0.9733333333333334,
+        "matched": 1.0
+      },
+      "omission": {
+        "minimal": 0.9533333333333334,
+        "matched": 1.0
+      },
+      "route": {
+        "minimal": 0.7533333333333333,
+        "matched": 1.0
+      },
+      "strength": {
+        "minimal": 0.8466666666666667,
+        "matched": 0.9733333333333334
+      },
+      "timing": {
+        "minimal": 0.5333333333333333,
+        "matched": 0.96
+      },
+      "unit": {
+        "minimal": 0.46,
+        "matched": 0.96
+      }
+    },
+    "critical_vs_benign_drop": 3.6834652101077143
+  },
+  "MetricX-24 (QE)": {
+    "contrastive_minimal": 0.4993827160493827,
+    "contrastive_matched": 0.7895061728395062,
+    "auroc": 0.6215512117055327,
+    "mean_score": {
+      "ref": -0.9571421970923741,
+      "good": -1.1633289391795794,
+      "bad_matched": -1.8318345535316585
+    },
+    "per_type": {
+      "dose": {
+        "minimal": 0.17333333333333334,
+        "matched": 0.4
+      },
+      "drug": {
+        "minimal": 0.48,
+        "matched": 0.7533333333333333
+      },
+      "duration": {
+        "minimal": 0.34,
+        "matched": 0.7933333333333333
+      },
+      "frequency": {
+        "minimal": 0.3466666666666667,
+        "matched": 0.7133333333333334
+      },
+      "laterality": {
+        "minimal": 0.475,
+        "matched": 0.6333333333333333
+      },
+      "negation": {
+        "minimal": 0.92,
+        "matched": 0.9466666666666667
+      },
+      "omission": {
+        "minimal": 1.0,
+        "matched": 1.0
+      },
+      "route": {
+        "minimal": 0.6733333333333333,
+        "matched": 0.9333333333333333
+      },
+      "strength": {
+        "minimal": 0.24666666666666667,
+        "matched": 0.82
+      },
+      "timing": {
+        "minimal": 0.54,
+        "matched": 0.7733333333333333
+      },
+      "unit": {
+        "minimal": 0.29333333333333333,
+        "matched": 0.8866666666666667
+      }
+    },
+    "critical_vs_benign_drop": 2.632017052133152
   }
 }

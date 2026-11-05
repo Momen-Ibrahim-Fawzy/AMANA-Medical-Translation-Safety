@@ -8,7 +8,7 @@
    change: orthographic only, lexical only, or both.
 
     python scripts/18_benchmark_controls.py              # CPU; needs data/processed/amana_bench.jsonl and results/audit_set.jsonl
-    python scripts/18_benchmark_controls.py --learned    # also BERTScore, COMET-22, CometKiwi-22 and LaBSE, normalised; GPU
+    python scripts/18_benchmark_controls.py --learned    # also BERTScore, COMET-22, CometKiwi-22, LaBSE and MetricX-24, normalised; GPU
 """
 from __future__ import annotations
 
@@ -96,15 +96,16 @@ def normalised_metrics(rows: list[dict]) -> dict:
     return out
 
 
-LEARNED = ("BERTScore", "COMET-22", "CometKiwi-22 (QE)", "LaBSE-ref", "LaBSE-QE")
+LEARNED = ("BERTScore", "COMET-22", "CometKiwi-22 (QE)", "LaBSE-ref", "LaBSE-QE", "MetricX-24", "MetricX-24 (QE)")
 
 
-def learned_metrics(rows: list[dict]) -> dict:
-    """The learned metrics on raw and normalised text, both scored here so they share one environment. GPU."""
+def learned_metrics(rows: list[dict], done: dict) -> dict:
+    """The learned metrics on raw and normalised text, both scored here so they share one environment. GPU. Metrics
+    already in `done` are kept, not re-scored."""
     from amana.metrics import METRICS
     cols = ("ref_ar", "good_ar", "bad_ar", "bad_matched_ar")
-    out = {}
-    for name in LEARNED:
+    out = dict(done)
+    for name in (n for n in LEARNED if n not in done):
         res = {}
         for label, f in (("raw", lambda x: x), ("normalised", normalize)):
             texts = [(r["src_en"], f(r[c]), f(r["ref_ar"])) for r in rows for c in cols]
@@ -128,7 +129,7 @@ def main():
     old = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
     out = {"source_blind": source_blind(bench), "normalised_metrics": normalised_metrics(audit)}
     if args.learned:
-        out["normalised_learned_metrics"] = learned_metrics(audit)
+        out["normalised_learned_metrics"] = learned_metrics(audit, old.get("normalised_learned_metrics", {}))
     elif "normalised_learned_metrics" in old:
         out["normalised_learned_metrics"] = old["normalised_learned_metrics"]  # keep the GPU results
     path.write_text(json.dumps(out, indent=1), encoding="utf-8")

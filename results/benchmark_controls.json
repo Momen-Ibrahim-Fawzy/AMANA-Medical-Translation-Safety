@@ -233,6 +233,26 @@
     "reworded": 0.8457,
     "same_wording": 0.9451
    }
+  },
+  "MetricX-24": {
+   "raw": {
+    "reworded": 0.6759,
+    "same_wording": 0.9586
+   },
+   "normalised": {
+    "reworded": 0.7167,
+    "same_wording": 0.9321
+   }
+  },
+  "MetricX-24 (QE)": {
+   "raw": {
+    "reworded": 0.4994,
+    "same_wording": 0.7895
+   },
+   "normalised": {
+    "reworded": 0.5642,
+    "same_wording": 0.7519
+   }
   }
  }
 }

@@ -1,0 +1,16 @@
+{
+  "excluded_types": [
+    "unit",
+    "laterality",
+    "negation"
+  ],
+  "excluded_forms": [],
+  "seed": 16,
+  "auroc": 0.6644260683760684,
+  "auprc_error_class": 0.6606917892218751,
+  "ece": 0.4555458046955489,
+  "recall_at_0.5": 0.07133333333333333,
+  "false_alarm_at_0.5": 0.02435897435897436,
+  "n_bad": 1500,
+  "n_safe": 1560
+}

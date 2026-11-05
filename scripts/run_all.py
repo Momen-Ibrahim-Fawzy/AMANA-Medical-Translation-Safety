@@ -18,8 +18,9 @@ STAGES = {
     "data": ["01_build_bench.py", "02_build_tico.py"],
     "audit": ["03_metric_audit.py", "11_metric_stats.py"],
     "qe": ["05_train_qe.py --epochs 2", "03_metric_audit.py --metrics AMANA-QE",
-           "05_train_qe.py --exclude-types unit laterality negation --tag types",
-           "05_train_qe.py --exclude-forms eye_drop inhaler --tag forms"],
+           *(f"05_train_qe.py {track} --seed {seed}" for seed in range(13, 18)
+             for track in ("--exclude-types unit laterality negation --tag types",
+                           "--exclude-forms eye_drop inhaler --tag forms"))],
     "mt": ["06_mt_audit.py translate --n 300", "06_mt_audit.py evaluate", "16_real_inputs.py translate"],
     "peach": ["17_peach.py evaluate"],
     "report": ["01_build_bench.py", "04_guard_eval.py", "08_error_patterns.py", "09_hard_cases.py", "10_guard2_eval.py",

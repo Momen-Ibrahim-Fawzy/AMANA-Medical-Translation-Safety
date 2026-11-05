@@ -12,8 +12,8 @@ they were built with, and much weaker as the test moves away from it:
 | evaluation track | what is new to the checker | AMANA-Guard 2 | AMANA-QE |
 |---|---|---|---|
 | Held-out drugs (AMANA-Bench) | the drug only; same templates | recall 100%, false alarms 0% *(upper bound)* | AUROC 0.999; a classifier that never sees the English reaches 0.711 |
-| Unseen dosage forms | eye drops, inhalers | not applicable (rules) | AUROC 0.85–0.86; false alarms 70–100% at 0.5 |
-| Unseen error types | unit, laterality, negation | not applicable (rules) | AUROC 0.67–0.71; recall 31–36% at 0.5 |
+| Unseen dosage forms | eye drops, inhalers | not applicable (rules) | AUROC 0.85–0.86; false alarms 70–100% at 0.5 (5 seeds) |
+| Unseen error types | unit, laterality, negation | not applicable (rules) | AUROC 0.66–0.73; recall 7–36% at 0.5 (5 seeds) |
 | Real text, controlled errors (AMANA-TICO) | the wording; errors are still injected | recall 95.7%, false alarms 25.5% *(development data; sentences with nothing to compare count as not checked)* | AUROC 0.80; false alarms 70% at 0.5 |
 | Hand-written hold-out (n = 40) | the phrasing | 20/20 errors, 15/20 safe *(same author, not blind; first run 19/20, 14/20)* | not run |
 | An outside reviewer's probes (n = 41) | cases written by someone else, who had read the code | first run: **10/30 errors caught**, 8/11 safe accepted; after the fixes they led to, 30/30 and 9/11 *(now fitted)* | not run |
@@ -23,7 +23,7 @@ they were built with, and much weaker as the test moves away from it:
 | Human review of reranking (n = 60, one rater) | a person, not the checker, judges | reranking better in 5, worse in 4, same in 51: no evidence either way *(not truly blinded; qualification not recorded)* | part of the reranked pick |
 | Naturally occurring errors, independently annotated | everything | **not done** | **not done** |
 
-AMANA-QE was not tested on the hand-written cases. Its unseen-type and unseen-form rows use two seeds each.
+AMANA-QE was not tested on the hand-written cases. Its unseen-type and unseen-form rows use five seeds each (13–17).
 
 **Version 0.5 corrects claims made in 0.4.** An outside review, reproduced here, found that:
 
@@ -54,9 +54,11 @@ the safe rewording itself. There are 1,620 pairs on 13 held-out drugs, covering 
 | LaBSE, reference | 82.9% (79.1–86.7) | 87.8% | 99% | 99.7% (99.3–100) |
 | LaBSE, source only | 81.6% (77.8–85.8) | 84.6% | 98% | 97.2% (94.9–98.9) |
 | CometKiwi-22, source only | 82.1% (76.5–86.8) | 81.5% | 74% | 90.4% (87.6–93.1) |
+| MetricX-24, reference | 67.6% (63.6–71.9) | 71.7% | 85% | 95.9% (94.3–97.3) |
+| MetricX-24, source only | 49.9% (46.3–54.6) | 56.4% | 25% | 78.9% (76.0–81.9) |
 
 Ties count as half. They matter only for BLEU (5.4%) and TER (16.5%). So these metrics can see the
-error: with the wording held equal, they catch it at least 90% of the time. The failure is one of
+error: with the wording held equal, all but MetricX-24 without the reference catch it at least 90% of the time. The failure is one of
 weighting, since a harmless rewording can cost more score than a tenfold dose change. The reworded
 test is built to expose this, because the erroneous sentence is one word from the reference. It does
 not estimate how metrics behave on natural MT output. Margins, ties, pair-level intervals and per-type results are in
@@ -83,6 +85,12 @@ CometKiwi-22, the standard reference-free quality estimator, is among the least 
 when the wording is held equal. Its blind spots are by error type: for a left/right eye swap it prefers the safe
 version 48% of the time when reworded and 73% with the same wording, and for a tenfold strength error 74% and 85%.
 It prefers the safe version every time when a warning is dropped or a negation removed.
+
+MetricX-24 (the hybrid large checkpoint) sits between COMET-22 and the LaBSE scores when it has the reference. Without
+the reference it is a coin flip on reworded pairs, and it is the only metric here that often misses the error even with
+the wording held equal: for a wrong dose it prefers the error 60% of the time. Its scoring is re-implemented in
+`amana/metrics.py` from the published model, not run through the official package. The larger MetricX-24 checkpoints
+and xCOMET-XL did not fit on the 8 GB GPU used here and are not reported.
 
 ![A harmless rewording can cost more score than a clinical error](figures/metric_blindness.png)
 
@@ -280,7 +288,7 @@ report.status, report.flags, report.review
 | **AMANA-TICO** | 703 real professional EN→AR sentences from TICO-19 with one number or negation error injected. The text is real and the errors are constructed, and it covers only these 2 of the 11 error types. |
 | **AMANA-Guard** (`amana/guard.py`) | The first rule-based checker, kept as the baseline. It compares flat slots. It shares spelling and unit handling with Guard 2, and later additions there did not change its benchmark, TICO-19 or hold-out scores. |
 | **AMANA-Guard 2** (`amana/guard2.py`) | Parses each side into per-drug instructions and warnings with a topic and polarity, then compares them. It separates flags from cases it needs a person to review. It is still rules and regular expressions, with a closed list of 11 warning topics. Sentences without a dosing instruction get a narrower check, and are counted as not checked unless they have a number or a negation. |
-| **AMANA-QE** | LaBSE cross-encoder fine-tuned on training drugs. It returns a **score for ranking, not a calibrated probability**. |
+| **AMANA-QE** | LaBSE cross-encoder fine-tuned on training drugs. It returns a **score for ranking, not a calibrated probability**. Weights: [momen-ibrahim/amana-qe](https://huggingface.co/momen-ibrahim/amana-qe). |
 | **Open drug names** (`amana/drugnames.py`) | 1,893 English and Arabic drug names from Wikidata (CC0), and a comparison of an English name with an Arabic word through a shared consonant spelling, so a drug outside the benchmark can be looked for in a translation. |
 | **Real-input track** (`scripts/16_real_inputs.py`) | 600 sentences from US FDA patient labels (public domain) and their MT outputs. |
 | **Real-leaflet track** (`scripts/17_peach.py`) | Scores the checker on PEACH leaflets. The corpus is not included: download it and the script does the rest. Results hold counts and file and row references, no text. |
@@ -352,11 +360,11 @@ results (95.7%, 25.5%) barely beat the baseline's recall (94.9%), and its false 
 this track is COVID-19 news with little medication structure, so many sentences have nothing to compare and are
 reported as not checked.
 
-**AMANA-QE learned the generator to a large degree.** The drop from 0.999 to 0.67–0.71 on error types left
+**AMANA-QE learned the generator to a large degree.** The drop from 0.999 to 0.66–0.73 (mean 0.69, five seeds) on error types left
 out of training is the clearest evidence. Calibration also fails away from the benchmark: expected
-calibration error is 0.009 on held-out drugs, 0.26–0.36 on the unseen tracks, and 0.46 on TICO-19. At the
+calibration error is 0.009 on held-out drugs, 0.26–0.46 on the unseen tracks, and 0.46 on TICO-19. At the
 0.5 threshold, false alarms swing from 0% to 100% across tracks, and between 70% and 100% just from the
-seed on unseen forms. It should not be used as a pass/fail gate.
+seed on unseen forms (four of five seeds give 100%). It should not be used as a pass/fail gate.
 
 **Human review so far is limited.** The author, a native Arabic speaker but not a clinician, judged 12
 flags from the first guard and 20 benchmark instructions. All 20 instructions were judged correct, and
@@ -406,14 +414,14 @@ python scripts/run_all.py --stages sealed       # scores the sealed sets and log
 pytest tests
 python scripts/10_guard2_eval.py --probes       # re-scores the outside probes
 python scripts/18_benchmark_controls.py         # source-blind baseline and normalised metrics, CPU
-python scripts/18_benchmark_controls.py --learned   # the same for BERTScore, COMET-22, CometKiwi-22 and LaBSE, GPU
+python scripts/18_benchmark_controls.py --learned   # the same for the learned metrics, GPU
 ```
 
 | stage | what it does | GPU | results in the repository |
 |---|---|---|---|
 | `data` | builds AMANA-Bench and AMANA-TICO, downloading TICO-19 | no | AMANA-TICO only; AMANA-Bench is rebuilt from a fixed seed and a test checks its hash |
 | `audit` | scores metrics on the 1,620 contrastive pairs, with intervals | yes | yes (`metric_audit.json`, `metric_stats.json`) |
-| `qe` | trains AMANA-QE and 4 generalization runs, about 70–85 minutes per generalization run on an 8 GB GPU | yes | yes, except checkpoints |
+| `qe` | trains AMANA-QE and 10 generalization runs (two tracks, seeds 13–17), about 70–85 minutes each on an 8 GB GPU | yes | yes; the main checkpoint is on [Hugging Face](https://huggingface.co/momen-ibrahim/amana-qe) |
 | `mt` | translates with 3 systems, scores candidates | yes | yes (`mt_outputs.jsonl`, `mt_audit.json`, `fda_mt_outputs.jsonl`) |
 | `peach` | scores the leaflet track's development half; skips itself if `data/raw/peach/peach.zip` is absent, keeping the committed results | no | counts only (`peach_*.json`) |
 | `sealed` | scores the hold-out, the sealed drug names, FDA and PEACH halves, and logs each run; never part of a default run | no | yes (`sealed_runs.jsonl`) |

@@ -7,7 +7,7 @@ Short answers to the hard questions, with the evidence or the gap for each.
 Mostly its own generator. AMANA-Bench is a controlled instrument. It can show that a metric prefers a
 one-word error, because the labels are exact by construction. It cannot show that a checker is safe, and
 its 100% is reported as an upper bound. The evidence for generator learning is direct: AMANA-QE falls
-from AUROC 0.999 to 0.67–0.71 on error types left out of training. The labels also leak through the Arabic alone: a
+from AUROC 0.999 to 0.66–0.73 (five seeds) on error types left out of training. The labels also leak through the Arabic alone: a
 classifier that never sees the English reaches AUROC 0.711 on held-out drugs, and 0.94 for unit, route and negation
 errors, because correct instructions never use some words that errors use.
 
@@ -126,7 +126,8 @@ pattern. They are still not independent: all 18 are levothyroxine, and the 46 "r
 
 A ranking score. Its output is not a calibrated probability: expected calibration error is 0.009 on held-out
 drugs but 0.46 on TICO-19, and false alarms at 0.5 vary between 0% and 100% across tracks. In the unseen-form
-track, seed choice alone moved them from 70% to 100%. Two seeds per track also cannot measure variance well.
+track, seed choice alone moved them from 70% to 100% (four of five seeds give 100%). Across five seeds, AUROC is
+stable (0.85–0.86 on unseen forms, 0.66–0.73 on unseen types), but recall at 0.5 on unseen types ranges from 7% to 36%.
 
 ## Is there clinical validation?
 
@@ -142,7 +143,8 @@ construct: any one-slot change counts, with no severity. Severity tiers need cli
 2. A fresh test set written by someone who has not seen the rules, with its hash published before scoring.
 3. Real translated medication instructions with naturally occurring, independently annotated errors. PEACH now supplies
    real text, but nobody independent has annotated its differences, and no one has read the rows that passed.
-4. Current MT systems, including commercial ones and LLMs, and current metrics such as xCOMET and MetricX-24.
+4. Current MT systems, including commercial ones and LLMs, and larger current metrics such as xCOMET-XL and the
+   XL and XXL MetricX-24 checkpoints. MetricX-24-large is included and does not change the conclusions.
 
 ## Why no MLflow, DVC, a config framework or a web service?
 
