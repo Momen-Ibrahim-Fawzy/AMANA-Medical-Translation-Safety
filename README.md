@@ -1,5 +1,7 @@
 # AMANA (أمانة): clinical meaning preservation in English → Arabic medication translation
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23989821.svg)](https://doi.org/10.5281/zenodo.23989821)
+
 *Amana* means faithfulness to what you were entrusted with.
 
 A translated medication instruction can be fluent, get a strong MT score, and still tell the patient

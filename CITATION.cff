@@ -5,6 +5,7 @@ type: software
 authors:
   - family-names: "Fawzy"
     given-names: "Momen Ibrahim"
+doi: "10.5281/zenodo.23989821"
 repository-code: "https://github.com/Momen-Ibrahim-Fawzy/AMANA-Medical-Translation-Safety"
 license: MIT
 version: 0.5.0
