@@ -63,8 +63,9 @@ for test. The metric audit and every reported number use the test drugs only.
 - LaBSE cosine to the reference, and LaBSE source-translation cosine (reference-free)
 - COMET-22 (Unbabel/wmt22-comet-da)
 - CometKiwi-22 (Unbabel/wmt22-cometkiwi-da, reference-free; a gated model under CC BY-NC-SA 4.0, used for scoring only)
-- MetricX-24 (google/metricx-24-hybrid-large-v2p6), with and without the reference, scored by a re-implementation
-  of its reference code; the larger checkpoints and xCOMET-XL did not fit on an 8 GB GPU
+- MetricX-24 (google/metricx-24-hybrid-large-v2p6 and -xl-v2p6), with and without the reference, scored by a
+  re-implementation of its reference code. The XL checkpoint was scored on two Kaggle T4 GPUs with newer libraries;
+  xCOMET-XL and the XXL checkpoint were not run
 
 Reported per metric:
 

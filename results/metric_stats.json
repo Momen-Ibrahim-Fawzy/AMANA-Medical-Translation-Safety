@@ -4332,5 +4332,793 @@
     }
    }
   }
+ },
+ "MetricX-24 XL": {
+  "reworded": {
+   "safe_preferred": 0.75,
+   "ci95": [
+    0.729,
+    0.771
+   ],
+   "ties": 0.0,
+   "p_vs_chance": 6.344717551153266e-94,
+   "median_margin": 0.6101,
+   "iqr_margin": [
+    -0.0003,
+    2.0991
+   ],
+   "n": 1620,
+   "ci95_by_drug": [
+    0.7208,
+    0.783
+   ]
+  },
+  "same_wording": {
+   "safe_preferred": 0.9537,
+   "ci95": [
+    0.9432,
+    0.9636
+   ],
+   "ties": 0.0,
+   "p_vs_chance": 0.0,
+   "median_margin": 0.7913,
+   "iqr_margin": [
+    0.2436,
+    2.0867
+   ],
+   "n": 1620,
+   "ci95_by_drug": [
+    0.9388,
+    0.9675
+   ]
+  },
+  "per_type": {
+   "dose": {
+    "reworded": {
+     "safe_preferred": 0.84,
+     "ci95": [
+      0.78,
+      0.8933
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 6.68983977234623e-18,
+     "median_margin": 1.564,
+     "iqr_margin": [
+      0.1579,
+      3.1196
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 0.9467,
+     "ci95": [
+      0.9133,
+      0.98
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 7.799950339037261e-33,
+     "median_margin": 1.0088,
+     "iqr_margin": [
+      0.2619,
+      2.7333
+     ],
+     "n": 150
+    }
+   },
+   "drug": {
+    "reworded": {
+     "safe_preferred": 0.84,
+     "ci95": [
+      0.78,
+      0.9
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 6.68983977234623e-18,
+     "median_margin": 1.5199,
+     "iqr_margin": [
+      0.2713,
+      2.5184
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 0.98,
+     "ci95": [
+      0.9533,
+      1.0
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 7.884069497892145e-40,
+     "median_margin": 1.7486,
+     "iqr_margin": [
+      0.6928,
+      2.7465
+     ],
+     "n": 150
+    }
+   },
+   "duration": {
+    "reworded": {
+     "safe_preferred": 0.6933,
+     "ci95": [
+      0.6133,
+      0.7667
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 2.4715829058159514e-06,
+     "median_margin": 0.5146,
+     "iqr_margin": [
+      -0.0734,
+      2.3432
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 0.9733,
+     "ci95": [
+      0.94,
+      0.9933
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 2.91790991940877e-38,
+     "median_margin": 0.5763,
+     "iqr_margin": [
+      0.1294,
+      2.279
+     ],
+     "n": 150
+    }
+   },
+   "frequency": {
+    "reworded": {
+     "safe_preferred": 0.74,
+     "ci95": [
+      0.6667,
+      0.8067
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 3.3846378857556043e-09,
+     "median_margin": 0.5854,
+     "iqr_margin": [
+      -0.0164,
+      1.019
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 0.9533,
+     "ci95": [
+      0.92,
+      0.9867
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 4.330280643440687e-34,
+     "median_margin": 0.6184,
+     "iqr_margin": [
+      0.1859,
+      1.1559
+     ],
+     "n": 150
+    }
+   },
+   "laterality": {
+    "reworded": {
+     "safe_preferred": 0.5917,
+     "ci95": [
+      0.5083,
+      0.6833
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 0.054779796913702127,
+     "median_margin": 0.0855,
+     "iqr_margin": [
+      -0.2443,
+      0.2553
+     ],
+     "n": 120
+    },
+    "same_wording": {
+     "safe_preferred": 0.825,
+     "ci95": [
+      0.7583,
+      0.8917
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 2.661783496052934e-13,
+     "median_margin": 0.1994,
+     "iqr_margin": [
+      0.1256,
+      1.7272
+     ],
+     "n": 120
+    }
+   },
+   "negation": {
+    "reworded": {
+     "safe_preferred": 0.9867,
+     "ci95": [
+      0.9667,
+      1.0
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 1.5871106406942878e-41,
+     "median_margin": 5.3597,
+     "iqr_margin": [
+      3.8876,
+      7.7318
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 1.0,
+     "ci95": [
+      1.0,
+      1.0
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 1.401298464324817e-45,
+     "median_margin": 5.4534,
+     "iqr_margin": [
+      4.0266,
+      7.9131
+     ],
+     "n": 150
+    }
+   },
+   "omission": {
+    "reworded": {
+     "safe_preferred": 0.7333,
+     "ci95": [
+      0.66,
+      0.8
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 9.562829077717881e-09,
+     "median_margin": 0.4343,
+     "iqr_margin": [
+      -0.1034,
+      0.8691
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 0.9667,
+     "ci95": [
+      0.9333,
+      0.9933
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 8.581873127276034e-37,
+     "median_margin": 1.1269,
+     "iqr_margin": [
+      0.7146,
+      1.4475
+     ],
+     "n": 150
+    }
+   },
+   "route": {
+    "reworded": {
+     "safe_preferred": 0.72,
+     "ci95": [
+      0.6467,
+      0.7933
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 6.915618314188355e-08,
+     "median_margin": 0.4771,
+     "iqr_margin": [
+      -0.0953,
+      0.6538
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 1.0,
+     "ci95": [
+      1.0,
+      1.0
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 1.401298464324817e-45,
+     "median_margin": 0.6396,
+     "iqr_margin": [
+      0.4289,
+      0.8544
+     ],
+     "n": 150
+    }
+   },
+   "strength": {
+    "reworded": {
+     "safe_preferred": 0.9733,
+     "ci95": [
+      0.9467,
+      0.9933
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 2.91790991940877e-38,
+     "median_margin": 2.43,
+     "iqr_margin": [
+      1.3538,
+      3.5311
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 0.9867,
+     "ci95": [
+      0.9667,
+      1.0
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 1.5871106406942878e-41,
+     "median_margin": 1.6883,
+     "iqr_margin": [
+      0.9034,
+      2.7647
+     ],
+     "n": 150
+    }
+   },
+   "timing": {
+    "reworded": {
+     "safe_preferred": 0.4,
+     "ci95": [
+      0.32,
+      0.48
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 0.017597691928785828,
+     "median_margin": -0.0883,
+     "iqr_margin": [
+      -0.4644,
+      0.099
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 0.9267,
+     "ci95": [
+      0.8867,
+      0.9667
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 2.2621587335491238e-29,
+     "median_margin": 0.1649,
+     "iqr_margin": [
+      0.0519,
+      0.3373
+     ],
+     "n": 150
+    }
+   },
+   "unit": {
+    "reworded": {
+     "safe_preferred": 0.7,
+     "ci95": [
+      0.6267,
+      0.7733
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 1.0588547527634479e-06,
+     "median_margin": 0.2612,
+     "iqr_margin": [
+      -0.085,
+      0.6597
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 0.9067,
+     "ci95": [
+      0.86,
+      0.9467
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 2.7927572561866964e-26,
+     "median_margin": 0.4124,
+     "iqr_margin": [
+      0.1946,
+      0.7507
+     ],
+     "n": 150
+    }
+   }
+  }
+ },
+ "MetricX-24 XL (QE)": {
+  "reworded": {
+   "safe_preferred": 0.6395,
+   "ci95": [
+    0.6154,
+    0.6624
+   ],
+   "ties": 0.0,
+   "p_vs_chance": 1.6651237029721713e-29,
+   "median_margin": 0.1207,
+   "iqr_margin": [
+    -0.0883,
+    0.9983
+   ],
+   "n": 1620,
+   "ci95_by_drug": [
+    0.5916,
+    0.6861
+   ]
+  },
+  "same_wording": {
+   "safe_preferred": 0.8136,
+   "ci95": [
+    0.7944,
+    0.8321
+   ],
+   "ties": 0.0,
+   "p_vs_chance": 3.585116099542425e-151,
+   "median_margin": 0.247,
+   "iqr_margin": [
+    0.0285,
+    1.0947
+   ],
+   "n": 1620,
+   "ci95_by_drug": [
+    0.7731,
+    0.8514
+   ]
+  },
+  "per_type": {
+   "dose": {
+    "reworded": {
+     "safe_preferred": 0.5733,
+     "ci95": [
+      0.4933,
+      0.6533
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 0.08607110318597079,
+     "median_margin": 0.0191,
+     "iqr_margin": [
+      -0.1066,
+      0.5665
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 0.66,
+     "ci95": [
+      0.58,
+      0.7333
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 0.00010978172637063543,
+     "median_margin": 0.0882,
+     "iqr_margin": [
+      -0.04,
+      0.4786
+     ],
+     "n": 150
+    }
+   },
+   "drug": {
+    "reworded": {
+     "safe_preferred": 0.6533,
+     "ci95": [
+      0.58,
+      0.7267
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 0.00021507659441552862,
+     "median_margin": 0.2708,
+     "iqr_margin": [
+      -0.1341,
+      0.6881
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 0.7333,
+     "ci95": [
+      0.66,
+      0.8
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 9.562829077717881e-09,
+     "median_margin": 0.394,
+     "iqr_margin": [
+      -0.0143,
+      0.8064
+     ],
+     "n": 150
+    }
+   },
+   "duration": {
+    "reworded": {
+     "safe_preferred": 0.52,
+     "ci95": [
+      0.44,
+      0.6067
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 0.6832317601040961,
+     "median_margin": 0.0155,
+     "iqr_margin": [
+      -0.1643,
+      0.6929
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 0.7533,
+     "ci95": [
+      0.68,
+      0.8267
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 3.830070299438247e-10,
+     "median_margin": 0.1071,
+     "iqr_margin": [
+      0.001,
+      0.648
+     ],
+     "n": 150
+    }
+   },
+   "frequency": {
+    "reworded": {
+     "safe_preferred": 0.4,
+     "ci95": [
+      0.3267,
+      0.48
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 0.017597691928785828,
+     "median_margin": -0.0439,
+     "iqr_margin": [
+      -0.1988,
+      0.0752
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 0.7067,
+     "ci95": [
+      0.6333,
+      0.7733
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 4.3994527618805575e-07,
+     "median_margin": 0.057,
+     "iqr_margin": [
+      -0.0102,
+      0.2034
+     ],
+     "n": 150
+    }
+   },
+   "laterality": {
+    "reworded": {
+     "safe_preferred": 0.4,
+     "ci95": [
+      0.3167,
+      0.4833
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 0.035323682537769574,
+     "median_margin": -0.0488,
+     "iqr_margin": [
+      -0.3121,
+      0.5214
+     ],
+     "n": 120
+    },
+    "same_wording": {
+     "safe_preferred": 0.6,
+     "ci95": [
+      0.5083,
+      0.6917
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 0.035323682537769574,
+     "median_margin": 0.0162,
+     "iqr_margin": [
+      -0.0274,
+      1.8648
+     ],
+     "n": 120
+    }
+   },
+   "negation": {
+    "reworded": {
+     "safe_preferred": 0.98,
+     "ci95": [
+      0.9533,
+      1.0
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 7.884069497892145e-40,
+     "median_margin": 5.0075,
+     "iqr_margin": [
+      2.2328,
+      7.5052
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 1.0,
+     "ci95": [
+      1.0,
+      1.0
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 1.401298464324817e-45,
+     "median_margin": 5.2198,
+     "iqr_margin": [
+      2.5714,
+      7.5957
+     ],
+     "n": 150
+    }
+   },
+   "omission": {
+    "reworded": {
+     "safe_preferred": 1.0,
+     "ci95": [
+      1.0,
+      1.0
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 1.401298464324817e-45,
+     "median_margin": 3.5771,
+     "iqr_margin": [
+      2.7575,
+      4.0969
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 1.0,
+     "ci95": [
+      1.0,
+      1.0
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 1.401298464324817e-45,
+     "median_margin": 3.984,
+     "iqr_margin": [
+      3.1179,
+      4.5957
+     ],
+     "n": 150
+    }
+   },
+   "route": {
+    "reworded": {
+     "safe_preferred": 0.62,
+     "ci95": [
+      0.5467,
+      0.7
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 0.004113298503347417,
+     "median_margin": 0.0693,
+     "iqr_margin": [
+      -0.1288,
+      0.2796
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 0.84,
+     "ci95": [
+      0.78,
+      0.8933
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 6.68983977234623e-18,
+     "median_margin": 0.2026,
+     "iqr_margin": [
+      0.0715,
+      0.3909
+     ],
+     "n": 150
+    }
+   },
+   "strength": {
+    "reworded": {
+     "safe_preferred": 0.7133,
+     "ci95": [
+      0.64,
+      0.7867
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 1.7720068707586792e-07,
+     "median_margin": 0.153,
+     "iqr_margin": [
+      -0.0338,
+      0.5121
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 0.9733,
+     "ci95": [
+      0.9467,
+      0.9933
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 2.91790991940877e-38,
+     "median_margin": 0.2134,
+     "iqr_margin": [
+      0.0852,
+      0.5041
+     ],
+     "n": 150
+    }
+   },
+   "timing": {
+    "reworded": {
+     "safe_preferred": 0.4733,
+     "ci95": [
+      0.3933,
+      0.5533
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 0.5677754876753279,
+     "median_margin": -0.0125,
+     "iqr_margin": [
+      -0.1732,
+      0.1344
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 0.7,
+     "ci95": [
+      0.6267,
+      0.7733
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 1.0588547527634479e-06,
+     "median_margin": 0.0414,
+     "iqr_margin": [
+      -0.006,
+      0.2073
+     ],
+     "n": 150
+    }
+   },
+   "unit": {
+    "reworded": {
+     "safe_preferred": 0.6533,
+     "ci95": [
+      0.5733,
+      0.7333
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 0.00021507659441552862,
+     "median_margin": 0.0917,
+     "iqr_margin": [
+      -0.0331,
+      0.2616
+     ],
+     "n": 150
+    },
+    "same_wording": {
+     "safe_preferred": 0.94,
+     "ci95": [
+      0.9,
+      0.9733
+     ],
+     "ties": 0.0,
+     "p_vs_chance": 1.2403361289530762e-31,
+     "median_margin": 0.2779,
+     "iqr_margin": [
+      0.1836,
+      0.3891
+     ],
+     "n": 150
+    }
+   }
+  }
  }
 }

@@ -4,7 +4,9 @@
 
 English medication instructions with Arabic translations. Each row pairs one instruction with one
 clinically critical error. At 35 MB, this file is not stored in git: run `python scripts/01_build_bench.py`
-to rebuild it. `tests/test_repro.py` checks the result against the hash in `results/MANIFEST.json`.
+to rebuild it. `tests/test_repro.py` checks the result against the hash in `results/MANIFEST.json`. The same rows, split
+into train, validation and test files and with `slots` stored as a JSON string, are on Hugging Face as
+[momen-ibrahim/amana-bench](https://huggingface.co/datasets/momen-ibrahim/amana-bench), together with AMANA-TICO.
 
 | field | meaning |
 |---|---|

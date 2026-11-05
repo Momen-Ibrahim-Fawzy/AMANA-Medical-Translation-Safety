@@ -22,7 +22,7 @@ that result is no longer a clean estimate, because whoever changed the code had 
 | file | written by | what it holds |
 |---|---|---|
 | `audit_set.jsonl` | `03_metric_audit.py` | the contrastive pairs the metrics are scored on |
-| `metric_audit.json` | `03_metric_audit.py` | how often each metric prefers the safe translation |
+| `metric_audit.json` | `03_metric_audit.py` | how often each metric prefers the safe translation; the MetricX-24 XL entries were scored on Kaggle by `kaggle_metricx_xl.py` |
 | `metric_stats.json` | `11_metric_stats.py` | bootstrap intervals for the metric audit |
 | `guard_summary.json` | `04_guard_eval.py` | the baseline checker on AMANA-Bench and AMANA-TICO |
 | `amana_qe_summary.json`, `amana_qe_predictions.json` | `05_train_qe.py` | AMANA-QE scores on held-out drugs and TICO-19 |

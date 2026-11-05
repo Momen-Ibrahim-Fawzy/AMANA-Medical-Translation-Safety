@@ -96,7 +96,8 @@ def normalised_metrics(rows: list[dict]) -> dict:
     return out
 
 
-LEARNED = ("BERTScore", "COMET-22", "CometKiwi-22 (QE)", "LaBSE-ref", "LaBSE-QE", "MetricX-24", "MetricX-24 (QE)")
+LEARNED = ("BERTScore", "COMET-22", "CometKiwi-22 (QE)", "LaBSE-ref", "LaBSE-QE", "MetricX-24", "MetricX-24 (QE)",
+           "MetricX-24 XL", "MetricX-24 XL (QE)")
 
 
 def learned_metrics(rows: list[dict], done: dict) -> dict:

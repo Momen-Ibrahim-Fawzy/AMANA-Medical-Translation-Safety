@@ -6,6 +6,9 @@ A translated medication instruction can be fluent, get a strong MT score, and st
 to take **25 mg instead of 25 mcg**, or to put drops in the **right** eye instead of the left. AMANA
 is a research framework for measuring this. It is **not a clinically validated safety system**.
 
+On Hugging Face: the benchmark, [momen-ibrahim/amana-bench](https://huggingface.co/datasets/momen-ibrahim/amana-bench),
+and the learned scorer, [momen-ibrahim/amana-qe](https://huggingface.co/momen-ibrahim/amana-qe).
+
 The most useful result here is a gap, not a high score. The checkers look excellent on the benchmark
 they were built with, and much weaker as the test moves away from it:
 
@@ -56,9 +59,11 @@ the safe rewording itself. There are 1,620 pairs on 13 held-out drugs, covering 
 | CometKiwi-22, source only | 82.1% (76.5–86.8) | 81.5% | 74% | 90.4% (87.6–93.1) |
 | MetricX-24, reference | 67.6% (63.6–71.9) | 71.7% | 85% | 95.9% (94.3–97.3) |
 | MetricX-24, source only | 49.9% (46.3–54.6) | 56.4% | 25% | 78.9% (76.0–81.9) |
+| MetricX-24 XL, reference | 75.0% (72.1–78.3) | 80.3% | 97% | 95.4% (93.9–96.8) |
+| MetricX-24 XL, source only | 63.9% (59.2–68.6) | 68.8% | 71% | 81.4% (77.3–85.1) |
 
 Ties count as half. They matter only for BLEU (5.4%) and TER (16.5%). So these metrics can see the
-error: with the wording held equal, all but MetricX-24 without the reference catch it at least 90% of the time. The failure is one of
+error: with the wording held equal, all but MetricX-24 without the reference (79–81%) catch it at least 90% of the time. The failure is one of
 weighting, since a harmless rewording can cost more score than a tenfold dose change. The reworded
 test is built to expose this, because the erroneous sentence is one word from the reference. It does
 not estimate how metrics behave on natural MT output. Margins, ties, pair-level intervals and per-type results are in
@@ -86,11 +91,13 @@ when the wording is held equal. Its blind spots are by error type: for a left/ri
 version 48% of the time when reworded and 73% with the same wording, and for a tenfold strength error 74% and 85%.
 It prefers the safe version every time when a warning is dropped or a negation removed.
 
-MetricX-24 (the hybrid large checkpoint) sits between COMET-22 and the LaBSE scores when it has the reference. Without
-the reference it is a coin flip on reworded pairs, and it is the only metric here that often misses the error even with
-the wording held equal: for a wrong dose it prefers the error 60% of the time. Its scoring is re-implemented in
-`amana/metrics.py` from the published model, not run through the official package. The larger MetricX-24 checkpoints
-and xCOMET-XL did not fit on the 8 GB GPU used here and are not reported.
+MetricX-24 (hybrid, v2.6) improves with size: with the reference, the large checkpoint prefers the safe version 68% of
+the time when reworded and the XL checkpoint 75%. Without the reference both stay weak, at 50% and 64%, and they are the
+only metrics here that often miss the error even with the wording held equal (79% and 81%). For a wrong dose, the large
+one prefers the error 60% of the time. Its scoring is re-implemented in `amana/metrics.py` from the published model, not
+run through the official package. The XL checkpoint needs about 30 GB of GPU memory in float32, so it was scored on two
+free Kaggle T4 GPUs, with newer libraries (torch 2.11, transformers 5.20); every other metric run in that environment
+reproduced its committed figures exactly. xCOMET-XL (gated) and MetricX-24 XXL (13B parameters) were not run.
 
 ![A harmless rewording can cost more score than a clinical error](figures/metric_blindness.png)
 

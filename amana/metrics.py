@@ -84,20 +84,22 @@ def cometkiwi(srcs, hyps, refs):
 
 
 @lru_cache(maxsize=1)
-def _metricx():
+def _metricx(size):
     """MetricX-24 hybrid (Juraska et al., 2024), loaded as plain mT5: the score is the first decoder step's logit for
-    one fixed vocabulary item, as in google-research/metricx. It is an error score from 0 (best) to 25."""
+    one fixed vocabulary item, as in google-research/metricx. It is an error score from 0 (best) to 25. On a GPU the
+    weights are spread over all visible devices, which the XL checkpoint needs in float32."""
     import torch
     from transformers import AutoTokenizer, MT5ForConditionalGeneration
     tok = AutoTokenizer.from_pretrained("google/mt5-large")
-    model = MT5ForConditionalGeneration.from_pretrained("google/metricx-24-hybrid-large-v2p6",
-                                                        torch_dtype=torch.float32).to(_device()).eval()
+    kw = {"device_map": "auto"} if _device() == "cuda" else {}
+    model = MT5ForConditionalGeneration.from_pretrained(f"google/metricx-24-hybrid-{size}-v2p6",
+                                                        torch_dtype=torch.float32, **kw).eval()
     return tok, model
 
 
-def _metricx_score(texts, bs=16):
+def _metricx_score(texts, size="large", bs=16):
     import torch
-    tok, model = _metricx()
+    tok, model = _metricx(size)
     out = []
     with torch.no_grad():
         for i in range(0, len(texts), bs):
@@ -112,12 +114,20 @@ def _metricx_score(texts, bs=16):
     return [-x for x in out]  # higher is better, like every other metric here
 
 
-def metricx24(srcs, hyps, refs):
-    return _metricx_score([f"source: {s} candidate: {h} reference: {r}" for s, h, r in zip(srcs, hyps, refs)])
+def metricx24(srcs, hyps, refs, size="large"):
+    return _metricx_score([f"source: {s} candidate: {h} reference: {r}" for s, h, r in zip(srcs, hyps, refs)], size)
 
 
-def metricx24_qe(srcs, hyps, refs):
-    return _metricx_score([f"source: {s} candidate: {h}" for s, h in zip(srcs, hyps)])
+def metricx24_qe(srcs, hyps, refs, size="large"):
+    return _metricx_score([f"source: {s} candidate: {h}" for s, h in zip(srcs, hyps)], size)
+
+
+def metricx24_xl(srcs, hyps, refs):
+    return metricx24(srcs, hyps, refs, "xl")
+
+
+def metricx24_xl_qe(srcs, hyps, refs):
+    return metricx24_qe(srcs, hyps, refs, "xl")
 
 
 def amana_guard(srcs, hyps, refs):
@@ -134,9 +144,11 @@ METRICS = {
     "BLEU": bleu, "chrF": chrf, "chrF++": chrfpp, "TER (neg)": ter, "BERTScore": bertscore,
     "LaBSE-ref": labse_ref, "LaBSE-QE": labse_qe, "COMET-22": comet22, "CometKiwi-22 (QE)": cometkiwi,
     "MetricX-24": metricx24, "MetricX-24 (QE)": metricx24_qe,
+    "MetricX-24 XL": metricx24_xl, "MetricX-24 XL (QE)": metricx24_xl_qe,
     "AMANA-Guard (QE)": amana_guard, "AMANA-Guard2 (QE)": amana_guard2,
 }
-REFERENCE_FREE = {"LaBSE-QE", "CometKiwi-22 (QE)", "MetricX-24 (QE)", "AMANA-Guard (QE)", "AMANA-Guard2 (QE)", "AMANA-QE"}
+REFERENCE_FREE = {"LaBSE-QE", "CometKiwi-22 (QE)", "MetricX-24 (QE)", "MetricX-24 XL (QE)", "AMANA-Guard (QE)", "AMANA-Guard2 (QE)",
+                  "AMANA-QE"}
 
 
 def contrastive_accuracy(good: np.ndarray, bad: np.ndarray) -> float:

@@ -16,7 +16,8 @@ ROOT = Path(__file__).resolve().parents[1]
 RES = ROOT / "results"
 METRICS = {"BLEU": "BLEU", "TER (neg)": "TER_neg", "BERTScore": "BERTScore", "chrF": "chrF", "chrF++": "chrF++",
            "COMET-22": "COMET-22", "LaBSE-ref": "LaBSE-ref", "LaBSE-QE": "LaBSE-QE",
-           "CometKiwi-22": "CometKiwi-22_QE", "MetricX-24": "MetricX-24", "MetricX-24 (QE)": "MetricX-24_QE"}
+           "CometKiwi-22": "CometKiwi-22_QE", "MetricX-24": "MetricX-24", "MetricX-24 (QE)": "MetricX-24_QE",
+           "MetricX-24 XL": "MetricX-24_XL", "MetricX-24 XL (QE)": "MetricX-24_XL_QE"}
 N_BOOT = 2000
 
 

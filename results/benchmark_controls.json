@@ -253,6 +253,26 @@
     "reworded": 0.5642,
     "same_wording": 0.7519
    }
+  },
+  "MetricX-24 XL": {
+   "raw": {
+    "reworded": 0.75,
+    "same_wording": 0.9537
+   },
+   "normalised": {
+    "reworded": 0.8025,
+    "same_wording": 0.9481
+   }
+  },
+  "MetricX-24 XL (QE)": {
+   "raw": {
+    "reworded": 0.6395,
+    "same_wording": 0.8136
+   },
+   "normalised": {
+    "reworded": 0.6877,
+    "same_wording": 0.8216
+   }
   }
  }
 }
