@@ -63,8 +63,8 @@ project. Built by `scripts/16_real_inputs.py fetch`, and the file is a snapshot.
 ## PEACH: not included
 
 [PEACH](https://data.mendeley.com/datasets/5k6yrrhng7/1) (Al-Sabbagh, 2024) holds about 52,000 aligned English and Arabic
-rows from patient leaflets and educational materials. Its Mendeley page says CC BY 4.0, its arXiv page shows CC BY-NC-SA 4.0,
-and the leaflets come from their manufacturers, so no text is committed here. To reproduce, save the zip as
+rows from patient leaflets and educational materials. It is released under CC BY 4.0, as its Mendeley page states and its
+author confirmed. The leaflets come from their manufacturers, so no text is committed here. To reproduce, save the zip as
 `data/raw/peach/peach.zip` and run `scripts/17_peach.py`.
 
 ## `amana/data/drug_names.tsv`: drug names

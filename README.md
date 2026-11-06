@@ -374,8 +374,8 @@ and its hash were also first committed together with Guard 2, so "frozen before 
 **The PEACH half was first sealed once, and its leaflets are not a random sample of practice.** `results/peach_sealed_first_run.json`
 keeps that run; the table above is the third scoring. Injected errors are constructed, and development reading shaped the checker that was tested. Before the fixes,
 6 of 60 development flags pointed at a real difference. The English side is often a UK or EU leaflet and the Arabic a regional
-version. The corpus licence needs care: its Mendeley page says CC BY 4.0, its arXiv page shows CC BY-NC-SA 4.0, and the leaflets
-come from their manufacturers, so this repository redistributes none of the text.
+version. The corpus is released under CC BY 4.0, as its Mendeley page states and its author confirmed. The leaflets themselves
+come from their manufacturers, so this repository still redistributes none of the text.
 
 **The TICO-19 and MT rates are development data for the guard.** False alarms on TICO-19 references and
 reading MT outputs both led to guard changes. TICO-19 remains unseen for AMANA-QE. Guard 2's TICO-19
